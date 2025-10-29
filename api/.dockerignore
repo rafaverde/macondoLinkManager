@@ -1,0 +1,15 @@
+# Dependências locais, não devem ir para o container
+node_modules
+
+# Arquivos de ambiente locais
+.env
+.env.*
+
+# Logs e arquivos do Docker
+npm-debug.log
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Pasta de build (se usarmos)
+dist

@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2020", // Gera código JS moderno
+    "module": "commonjs", // Padrão do Node.js
+    "lib": ["ES2020"],
+    "rootDir": "src", // Onde nosso código TS vai ficar
+    "outDir": "dist", // Onde o código JS compilado vai sair
+    "strict": true, // Habilita checagens rigorosas de tipo
+    "esModuleInterop": true, // Permite 'import' de módulos 'require'
+    "skipLibCheck": true, // Pula a checagem de tipos em libs (mais rápido)
+    "forceConsistentCasingInFileNames": true, // Evita erros de case em nomes de arquivos
+    "resolveJsonModule": true // Permite importar arquivos .json
+  },
+  "include": ["src"], // Quais pastas o TS deve "assistir"
+  "exclude": ["node_modules"] // Quais pastas ele deve ignorar
+}

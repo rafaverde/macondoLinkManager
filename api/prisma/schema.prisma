@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo para os usuários da agência
+model User {
+  id        String   @id @default(uuid()) // Chave primária UUID
+  email     String   @unique //Email único da Empresa
+  name      String
+  avatarUrl String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  links Link[] // Um usuário pode ter muitos links
+
+  @@map("users") // Renomeia a tabela para "users"
+}
+
+// Modelo para os clientes da agência
+model Client {
+  id        String   @id @default(uuid()) // Chave primária UUID
+  name      String   @unique // Nome único do cliente
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  links     Link[] // Um cliente pode ter muitos links
+  campaigns Campaign[] // Um cliente pode ter muitas campanhas
+
+  @@map("clients") // Renomeia a tabela para "clients"
+}
+
+// Modelo para as campanhas de marketing
+model Campaign {
+  id        String   @id @default(uuid()) // Chave primária UUID
+  name      String // Nome da campanha
+  clientId  String // Chave estrangeira para Client
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade) // Relacionamento com Client. Cascade significa que se o cliente for deletado, suas campanhas também serão.
+  links  Link[] //Uma campanha pode ter muitos links
+
+  @@map("campaigns")
+}
+
+// Modelo para as tags de categorização
+model Tag {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  links LinkTag[] //Relacionamento com a tabela de junção
+
+  @@map("tags")
+}
+
+// Modelo principal para os links encurtados
+model Link {
+  id          String   @id @default(uuid()) // Chave primária UUID
+  originalUrl String   @map("original_url") @db.Text // URL original longa tipo TEXT
+  shortCode   String   @unique @map("short_code") // Código do encurtamento do link único
+  userId      String   @map("user_id") // Chave estrangeira para user
+  clientId    String   @map("client_id") // Chave estrangeira para cliente
+  campaignId  String?  @map("campaign_id") // Chave estrangeira para campanha
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Definição dos relacionamentos
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade) // Se o usuário for deletado, seus links também serão.
+  client   Client    @relation(fields: [clientId], references: [id], onDelete: Cascade) // Se o cliente for deletado, seus links também serão.
+  campaign Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull) // Se a campanha for deletada, o campaignId no link vira NULL.
+
+  tags   LinkTag[] // Relacionamento com a tabela de junção
+  clicks Click[] // Um link pode ter muitos cliques
+
+  // Índices para performance
+  @@index([userId])
+  @@index([clientId])
+  @@index([campaignId])
+  @@map("links")
+}
+
+// Tabela de junção para relacionamento N-N entre Link e Tag
+model LinkTag {
+  linkId     String   @map("link_id")
+  tagId      String   @map("tag_id")
+  assignedAt DateTime @default(now()) @map("assigned_at")
+
+  link Link @relation(fields: [linkId], references: [id], onDelete: Cascade) // Se o link for deletado, a entrada na junção também é.
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade) // Se o link for deletado, a entrada na junção também é.
+
+  @@id([linkId, tagId]) // Chave primária composta
+  @@index([tagId])
+  @@map("link_tags")
+}
+
+// Modelo para registrar cada clique
+model Click {
+  id        String   @id @default(uuid()) // Chave primária UUID
+  linkId    String   @map("link_id") // Chave estrangeira para Link
+  timestamp DateTime @default(now()) // Registra data e hora do clique
+  ipAddress String?  @map("ip_address") // IP do clique (opcional)
+  userAgent String?  @map("user_agent") @db.Text // Browser (opcional)
+
+  link Link @relation(fields: [linkId], references: [id], onDelete: Cascade) // Deleta os cliques do link apagado
+
+  // Índices de performance
+  @@index([linkId])
+  @@index([timestamp])
+  @@map("clicks")
+}
