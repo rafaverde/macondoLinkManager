@@ -4,6 +4,7 @@ import { prisma } from "./lib/prisma"; // Importamos nossa instância do Prisma
 import { env } from "./env";
 import jwt from "@fastify/jwt";
 import { authRoutes } from "./routes/auth";
+import { usersRoute } from "./routes/users";
 
 // Inicializa o Fastify
 const app = Fastify({
@@ -21,6 +22,7 @@ app.register(jwt, {
 
 app.register(fastifyCookie);
 app.register(authRoutes);
+app.register(usersRoute);
 
 // Criação da Rota "Health Check"
 // Esta rota é essencial para sabermos se a API está online

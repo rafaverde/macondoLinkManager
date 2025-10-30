@@ -57,12 +57,12 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
       // Gera o token JWT, caso o serviço seja bem sucedido.
       const jwtToken = app.jwt.sign(
         {
+          sub: user.id,
           name: user.name,
-          email: user.email,
           avatarUrl: user.avatarUrl,
+          email: user.email,
         },
         {
-          sub: user.id,
           expiresIn: "7d",
         }
       );
