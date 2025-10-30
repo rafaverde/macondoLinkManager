@@ -1,12 +1,26 @@
 import Fastify from 'fastify'
+import fastifyCookie from '@fastify/cookie'
 import { prisma } from './lib/prisma' // Importamos nossa instância do Prisma
+import { env } from './env'
+import jwt from '@fastify/jwt'
 
-// 1. Inicializa o Fastify
+// Inicializa o Fastify
 const app = Fastify({
   logger: true, // Habilita o logger do Fastify (ótimo para dev)
 })
 
-// 2. Criação da Rota "Health Check"
+// Regista os plugins globais
+app.register(jwt, {
+  secret: env.JWT_SECRET,
+  cookie: {
+    cookieName: "@macondo-token@v1",
+    signed: false,
+  }
+})
+
+app.register(fastifyCookie)
+
+// Criação da Rota "Health Check"
 // Esta rota é essencial para sabermos se a API está online
 // e se consegue acessar o banco de dados.
 app.get('/health', async (request, reply) => {
@@ -30,19 +44,19 @@ app.get('/health', async (request, reply) => {
   }
 })
 
-// 3. Função para Iniciar o Servidor
+// Função para Iniciar o Servidor
 const start = async () => {
   try {
     // O host '0.0.0.0' é crucial para o Docker
     // Significa "ouvir em todas as interfaces de rede" dentro do container
-    await app.listen({ port: 3333, host: '0.0.0.0' })
+    await app.listen({ port: env.PORT, host: '0.0.0.0' })
     
-    console.log(`🚀 Servidor rodando em http://localhost:3333`)
+    console.log(`🚀 Servidor rodando em http://localhost:${env.PORT}`)
   } catch (err) {
     app.log.error(err)
     process.exit(1)
   }
 }
 
-// 4. Executa a função de início
+// Executa a função de início
 start()
