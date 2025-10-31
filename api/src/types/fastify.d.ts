@@ -5,11 +5,11 @@ declare module "fastify" {
   // Adiciona a propriedade 'googleOAuth2' à interface FastifyInstance
   interface FastifyInstance {
     googleOAuth2: OAuth2Namespace;
+    jwt: JWT;
   }
 
   // Define o que vamos 'anexar' ao request.user
   interface FastifyRequest {
-    jwt: JWT;
     user: {
       sub: string;
       name: string;

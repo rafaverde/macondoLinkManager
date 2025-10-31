@@ -1,4 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyJWT } from "@fastify/jwt";
 
 // Função de proteção
 export async function authHook(request: FastifyRequest, reply: FastifyReply) {
@@ -18,7 +19,9 @@ export async function authHook(request: FastifyRequest, reply: FastifyReply) {
     // vai ler o token, checar a assinatura com o nosso JWT_SECRET
     // e verificar se não está expirado.
     // Se for válido, ele retorna o 'payload' (o que guardamos nele).
-    const userData = await request.jwt.verify(token);
+    const userData = (await request.server.jwt.verify(
+      token
+    )) as FastifyJWT["payload"];
 
     // Anexa os dados do usuário à requisição para usarmos nossos controllers
     request.user = userData;

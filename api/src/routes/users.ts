@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { authHook } from "../hooks/auth";
 
-export async function usersRoute(app: FastifyInstance) {
+export async function usersRoutes(app: FastifyInstance) {
   // Endpoint GET /me
   // Opções da rota
   app.get(
