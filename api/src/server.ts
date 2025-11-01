@@ -11,6 +11,7 @@ import {
   ZodTypeProvider,
   serializerCompiler,
   validatorCompiler,
+  jsonSchemaTransform,
 } from "fastify-type-provider-zod";
 import { clientsRoutes } from "./routes/clients";
 
@@ -36,11 +37,7 @@ const start = async () => {
         },
         servers: [{ url: `http://localhost:${env.PORT}` }],
       },
-      transform: ({ schema, url }) => {
-        // Ajusta os schemas para o formato OpenAPI
-        const { ...rest } = schema;
-        return { schema: rest, url };
-      },
+      transform: jsonSchemaTransform,
     });
 
     // Registra o Swagger UI (Interface)
