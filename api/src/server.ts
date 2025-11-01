@@ -12,6 +12,7 @@ import {
   serializerCompiler,
   validatorCompiler,
 } from "fastify-type-provider-zod";
+import { clientsRoutes } from "./routes/clients";
 
 // Inicializa o Fastify
 const app = Fastify({
@@ -65,6 +66,7 @@ const start = async () => {
 
     await app.register(authRoutes);
     await app.register(usersRoutes);
+    await app.register(clientsRoutes);
 
     // Criação da Rota "Health Check"
     // Esta rota é essencial para sabermos se a API está online
