@@ -8,4 +8,5 @@ export interface ClientsRepository {
   create(data: CreateClientDTO): Promise<Client>; // Cria um novo cliente
   findMany(): Promise<Client[]>; // Busca todos os clientes
   findByName(name: string): Promise<Client | null>; // Busca cliente pelo nome
+  findById(id: string): Promise<Client | null>; // Busca cliente pelo id
 }
