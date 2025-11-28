@@ -1,6 +1,7 @@
-import { prisma } from "../lib/prisma";
+import { ClientsRepository } from "../repositories/clients-repository";
 import { LinksRepository } from "../repositories/links-repository";
 import { generateShortCode } from "../utils/generate-short-code";
+import { ClientNotFoundError } from "./errors/client-not-found-error";
 
 interface CreateLinkRequest {
   originalUrl: string;
@@ -11,7 +12,16 @@ interface CreateLinkRequest {
 }
 
 export class LinksService {
-  constructor(private linksRepository: LinksRepository) {}
+  constructor(
+    private linksRepository: LinksRepository,
+    private clientsRepository: ClientsRepository
+  ) {}
+
+  // Método público que busca por ShortCode (usado no redirecionamento)
+  async getLinkByShortCode(shortCode: string) {
+    const link = await this.linksRepository.findByShortCode(shortCode);
+    return link;
+  }
 
   async createLink({
     originalUrl,
@@ -20,15 +30,23 @@ export class LinksService {
     campaignId,
     tags = [],
   }: CreateLinkRequest) {
+    // Validação se cliente existe
+    const client = await this.clientsRepository.findById(clientId);
+    if (!client) {
+      throw new ClientNotFoundError(); // Erro cliente não encontrado
+    }
+
     // Gera um shortcode único
     let shortCode = generateShortCode();
 
-    const linkAlreadyExists = await this.linksRepository.findByShortCode(
+    let linkAlreadyExists = await this.linksRepository.findByShortCode(
       shortCode
     );
-    if (linkAlreadyExists) {
-      // Se por acaso colidir, gera outro.
+
+    // Retry logic, tenta maus uma vez se colidir
+    while (linkAlreadyExists) {
       shortCode = generateShortCode();
+      linkAlreadyExists = await this.linksRepository.findByShortCode(shortCode);
     }
 
     // Cria o link

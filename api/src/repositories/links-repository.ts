@@ -2,7 +2,7 @@ import { Link } from "@prisma/client";
 
 // Interface para os filtros de listagem
 export interface FindLinksParams {
-  userId: string;
+  userId?: string;
   clientId?: string;
   campaignId?: string;
 }

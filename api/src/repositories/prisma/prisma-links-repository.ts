@@ -1,4 +1,3 @@
-import { Link } from "@prisma/client";
 import {
   CreateLinkDTO,
   FindLinksParams,
@@ -46,7 +45,7 @@ export class PrismaLinkRepository implements LinksRepository {
   async findMany({ userId, campaignId, clientId }: FindLinksParams) {
     const link = await prisma.link.findMany({
       where: {
-        userId, // Filtra pelo usuário (opcional, dependendo da regra de negócio)
+        userId, // Se for undefined, ignora e traz todos
         clientId, // Opcional
         campaignId, // Opcional
       },
