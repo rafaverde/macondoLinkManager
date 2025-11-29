@@ -5,7 +5,7 @@ import {
 } from "../links-repository";
 import { prisma } from "../../lib/prisma";
 
-export class PrismaLinkRepository implements LinksRepository {
+export class PrismaLinksRepository implements LinksRepository {
   async create({
     originalUrl,
     shortCode,

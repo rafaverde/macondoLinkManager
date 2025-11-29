@@ -62,15 +62,12 @@ export class LinksService {
     return link;
   }
 
-  async listLinks(
-    userId: string,
-    filters: { cilentId?: string; campaignId?: string }
-  ) {
-    const links = await this.linksRepository.findMany({
-      userId,
-      ...filters,
-    });
-
+  async listLinks(filters: {
+    userId: string;
+    clientId?: string;
+    campaignId?: string;
+  }) {
+    const links = await this.linksRepository.findMany(filters);
     return links;
   }
 }
