@@ -6,6 +6,19 @@ export interface CreateClickDTO {
   userAgent?: string | null;
 }
 
+// Interface para resultados agregados
+export interface ClicksByDate {
+  date: string;
+  count: number;
+}
+
+export interface MetricsResult {
+  clicksByDate: ClicksByDate[];
+  topBrowsers: { browser: string; count: number }[];
+  topLocations: { ip: string; count: number }[];
+}
+
 export interface ClicksRepository {
   create(data: CreateClickDTO): Promise<Click>;
+  getMetrics(linkId: string, days: number): Promise<MetricsResult>;
 }

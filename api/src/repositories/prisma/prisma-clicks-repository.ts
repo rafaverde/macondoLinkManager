@@ -1,5 +1,10 @@
+import { format, subDays } from "date-fns";
 import { prisma } from "../../lib/prisma";
-import { ClicksRepository, CreateClickDTO } from "../clicks-repository";
+import {
+  ClicksRepository,
+  CreateClickDTO,
+  MetricsResult,
+} from "../clicks-repository";
 
 export class PrismaClicksRepository implements ClicksRepository {
   async create({ linkId, ipAddress, userAgent }: CreateClickDTO) {
@@ -12,5 +17,86 @@ export class PrismaClicksRepository implements ClicksRepository {
     });
 
     return click;
+  }
+
+  async getMetrics(linkId: string, days: number): Promise<MetricsResult> {
+    // Calcula a data de corte (Ex.: 30 dias atrás)
+    const startDate = subDays(new Date(), days);
+
+    // Busca TODOS os cliques brutos desse período
+    // (Isso é rápido para milhares de cliques. Se fossem milhões, usaríamos raw SQL)
+    const clicks = await prisma.click.findMany({
+      where: {
+        linkId,
+        timestamp: {
+          gte: startDate, // Maior ou igual a data de corte
+        },
+      },
+      orderBy: {
+        timestamp: "asc",
+      },
+    });
+
+    // Processamento em memória
+    // Agrupar por Data (YYYY-MM-DD)
+    const clicksByDateMap = new Map<string, number>();
+
+    // Inicializa os últimos "days" com 0 para o gráfico não ficar com buracos
+    for (let i = 0; i <= days; i++) {
+      const date = subDays(new Date(), i);
+      const dateString = format(date, "yyyy-MM-dd");
+      clicksByDateMap.set(dateString, 0);
+    }
+
+    // Preenche com dados reais
+    clicks.forEach((click) => {
+      const dateString = format(click.timestamp, "yyyy-MM-dd");
+      const currentCount = clicksByDateMap.get(dateString) ?? 0;
+      clicksByDateMap.set(dateString, currentCount + 1);
+    });
+
+    // Converte Map para Array e ordena
+    const clicksByDate = Array.from(clicksByDateMap.entries())
+      .map(([date, count]) => ({ date, count }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    // Agrupar por Browser (Simplificado do UserAgent)
+    const browserMap = new Map<string, number>();
+    clicks.forEach((click) => {
+      const ua = click.userAgent || "Desconhecido";
+
+      let browser = "Outros";
+      if (ua.includes("Chrome")) browser = "Chrome";
+      else if (ua.includes("Firefox")) browser = "Firefox";
+      else if (ua.includes("Safari")) browser = "Safari";
+      else if (ua.includes("Edge")) browser = "Edge";
+
+      browserMap.set(browser, (browserMap.get(browser) ?? 0) + 1);
+    });
+
+    const topBrowsers = Array.from(browserMap.entries())
+      .map(([browser, count]) => ({ browser, count }))
+      .sort((a, b) => b.count - a.count); // Maior para menor
+
+    // Agrupar por IP (Localização provisória)
+    const ipMap = new Map<string, number>();
+    clicks.forEach((click) => {
+      const ip = click.ipAddress || "Desconhecido";
+      ipMap.set(ip, (ipMap.get(ip) ?? 0) + 1);
+    });
+
+    const topLocations = Array.from(ipMap.entries())
+      .map(([ip, count]) => ({
+        ip,
+        count,
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5); // Pega os top 5
+
+    return {
+      clicksByDate,
+      topBrowsers,
+      topLocations,
+    };
   }
 }
