@@ -16,8 +16,18 @@ export interface CreateLinkDTO {
   tags: string[];
 }
 
+export interface UpdateLinkDTO {
+  originalUrl?: string;
+  clientId?: string;
+  campaignId?: string | null;
+}
+
 export interface LinksRepository {
   create(data: CreateLinkDTO): Promise<Link>;
   findMany(params: FindLinksParams): Promise<Link[]>;
   findByShortCode(shortCode: string): Promise<Link | null>;
+
+  findById(id: string): Promise<Link | null>;
+  update(id: string, data: UpdateLinkDTO): Promise<Link>;
+  delete(id: string): Promise<void>;
 }

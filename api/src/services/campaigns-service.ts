@@ -1,7 +1,7 @@
 import { CampaignsRepository } from "../repositories/campaigns-repository";
 import { ClientsRepository } from "../repositories/clients-repository";
 import { CampaignAlreadyExistsError } from "./errors/campaign-already-exists-error";
-import { ClientNotFoundError } from "./errors/client-not-found-error";
+import { ClientNotFoundError } from "./errors/link-not-found-error";
 
 interface CreateCampaignRequest {
   name: string;

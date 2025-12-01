@@ -2,7 +2,8 @@ import { ClicksRepository } from "../repositories/clicks-repository";
 import { ClientsRepository } from "../repositories/clients-repository";
 import { LinksRepository } from "../repositories/links-repository";
 import { generateShortCode } from "../utils/generate-short-code";
-import { ClientNotFoundError } from "./errors/client-not-found-error";
+import { ClientNotFoundError } from "./errors/client-not-found-error copy";
+import { LinkNotFoundError } from "./errors/link-not-found-error";
 
 interface CreateLinkRequest {
   originalUrl: string;
@@ -10,6 +11,12 @@ interface CreateLinkRequest {
   clientId: string;
   campaignId?: string | null;
   tags?: string[];
+}
+
+export class NotAllowedError extends Error {
+  constructor() {
+    super("Você não tem permissão para alterar este link.");
+  }
 }
 
 export class LinksService {
@@ -79,5 +86,53 @@ export class LinksService {
   }) {
     const links = await this.linksRepository.findMany(filters);
     return links;
+  }
+
+  async getLink(id: string, userId: string) {
+    const link = await this.linksRepository.findById(id);
+
+    if (!link) {
+      return null;
+    }
+
+    if (link.userId !== userId) {
+      throw new NotAllowedError();
+    }
+
+    return link;
+  }
+
+  async updateLink(
+    id: string,
+    userId: string,
+    data: {
+      originalUrl?: string;
+      clientId?: string;
+      campaignId?: string | null;
+    }
+  ) {
+    const link = await this.getLink(id, userId);
+
+    if (!link) {
+      throw new LinkNotFoundError();
+    }
+
+    if (data.clientId) {
+      const client = await this.clientsRepository.findById(data.clientId);
+      if (!client) throw new ClientNotFoundError();
+    }
+
+    const updatedLink = await this.linksRepository.update(id, data);
+    return updatedLink;
+  }
+
+  async deleteLink(id: string, userId: string) {
+    const link = await this.getLink(id, userId);
+
+    if (!link) {
+      throw new LinkNotFoundError();
+    }
+
+    await this.linksRepository.delete(id);
   }
 }

@@ -2,8 +2,10 @@ import {
   CreateLinkDTO,
   FindLinksParams,
   LinksRepository,
+  UpdateLinkDTO,
 } from "../links-repository";
 import { prisma } from "../../lib/prisma";
+import { Link } from "@prisma/client";
 
 export class PrismaLinksRepository implements LinksRepository {
   async create({
@@ -69,5 +71,42 @@ export class PrismaLinksRepository implements LinksRepository {
     });
 
     return link;
+  }
+
+  async findById(id: string) {
+    const link = await prisma.link.findUnique({
+      where: { id },
+      include: {
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
+      },
+    });
+
+    return link;
+  }
+
+  async update(
+    id: string,
+    { originalUrl, clientId, campaignId }: UpdateLinkDTO
+  ) {
+    const link = await prisma.link.update({
+      where: { id },
+      data: {
+        originalUrl,
+        clientId,
+        campaignId,
+      },
+    });
+
+    return link;
+  }
+
+  async delete(id: string) {
+    await prisma.link.delete({
+      where: { id },
+    });
   }
 }

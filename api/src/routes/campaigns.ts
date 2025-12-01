@@ -5,7 +5,7 @@ import { authHook } from "../hooks/auth";
 import { PrismaCampaignsRepository } from "../repositories/prisma/prisma-campaign-repository";
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { CampaignsService } from "../services/campaigns-service";
-import { ClientNotFoundError } from "../services/errors/client-not-found-error";
+import { ClientNotFoundError } from "../services/errors/link-not-found-error";
 import { CampaignAlreadyExistsError } from "../services/errors/campaign-already-exists-error";
 
 const campaignSchema = z.object({
