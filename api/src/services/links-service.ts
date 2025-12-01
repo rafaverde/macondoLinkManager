@@ -1,3 +1,4 @@
+import { ClicksRepository } from "../repositories/clicks-repository";
 import { ClientsRepository } from "../repositories/clients-repository";
 import { LinksRepository } from "../repositories/links-repository";
 import { generateShortCode } from "../utils/generate-short-code";
@@ -14,7 +15,8 @@ interface CreateLinkRequest {
 export class LinksService {
   constructor(
     private linksRepository: LinksRepository,
-    private clientsRepository: ClientsRepository
+    private clientsRepository: ClientsRepository,
+    private clicksRepository: ClicksRepository
   ) {}
 
   // Método público que busca por ShortCode (usado no redirecionamento)
@@ -60,6 +62,14 @@ export class LinksService {
     });
 
     return link;
+  }
+
+  async trackClick(linkId: string, ipAddress?: string, userAgent?: string) {
+    await this.clicksRepository.create({
+      linkId,
+      ipAddress: ipAddress ?? null,
+      userAgent: userAgent ?? null,
+    });
   }
 
   async listLinks(filters: {

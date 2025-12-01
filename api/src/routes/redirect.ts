@@ -4,6 +4,7 @@ import { z } from "zod";
 import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repository";
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { LinksService } from "../services/links-service";
+import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
 
 export async function redirectRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
@@ -26,7 +27,8 @@ export async function redirectRoutes(app: FastifyInstance) {
 
       const linksRepo = new PrismaLinksRepository();
       const clientsRepo = new PrismaClientsRepository();
-      const service = new LinksService(linksRepo, clientsRepo);
+      const clicksRepo = new PrismaClicksRepository();
+      const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
 
       // Busca o link pelo código
       const link = await service.getLinkByShortCode(shortCode);
@@ -36,7 +38,11 @@ export async function redirectRoutes(app: FastifyInstance) {
         return reply.status(404).send({ message: "Link não encontrado." });
       }
 
-      // Futuramente, registraremos o clique aqui
+      // Registra o clique
+      const ip = request.ip;
+      const userAgent = request.headers["user-agent"];
+
+      await service.trackClick(link.id, ip, userAgent);
 
       // Redireciona para a URL original
       return reply.redirect(link.originalUrl);

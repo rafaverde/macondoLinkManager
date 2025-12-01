@@ -6,6 +6,7 @@ import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repos
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { LinksService } from "../services/links-service";
 import { ClientNotFoundError } from "../services/errors/client-not-found-error";
+import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
 
 const linkSchema = z.object({
   id: z.uuid(),
@@ -50,7 +51,8 @@ export async function linksRoutes(app: FastifyInstance) {
       // Instanciando dependências
       const linkRepo = new PrismaLinksRepository();
       const clientsRepo = new PrismaClientsRepository();
-      const service = new LinksService(linkRepo, clientsRepo);
+      const clicksRepo = new PrismaClicksRepository();
+      const service = new LinksService(linkRepo, clientsRepo, clicksRepo);
 
       try {
         const link = await service.createLink({
@@ -94,7 +96,8 @@ export async function linksRoutes(app: FastifyInstance) {
 
       const linksRepo = new PrismaLinksRepository();
       const clientsRepo = new PrismaClientsRepository();
-      const service = new LinksService(linksRepo, clientsRepo);
+      const clicksRepo = new PrismaClicksRepository();
+      const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
 
       const links = await service.listLinks({
         userId,
