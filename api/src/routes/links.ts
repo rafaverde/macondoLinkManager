@@ -24,6 +24,27 @@ const linkSchema = z.object({
   _count: z.object({ clicks: z.number() }).optional(),
 });
 
+const metricsSchema = z.object({
+  clicksByDate: z.array(
+    z.object({
+      date: z.string(),
+      count: z.number(),
+    })
+  ),
+  topBrowsers: z.array(
+    z.object({
+      browser: z.string(),
+      count: z.number(),
+    })
+  ),
+  topLocations: z.array(
+    z.object({
+      ip: z.string(),
+      count: z.number(),
+    })
+  ),
+});
+
 export async function linksRoutes(app: FastifyInstance) {
   // Rota POST cria link
   app.withTypeProvider<ZodTypeProvider>().post(
@@ -235,6 +256,52 @@ export async function linksRoutes(app: FastifyInstance) {
           return reply.status(403).send({ message: err.message });
         if (err instanceof LinkNotFoundError)
           return reply.status(404).send({ message: err.message });
+        throw err;
+      }
+    }
+  );
+
+  // Rota GET Metrics
+  app.withTypeProvider<ZodTypeProvider>().get(
+    "/links/:id/metrics",
+    {
+      onRequest: [authHook],
+      schema: {
+        tags: ["Analytics"],
+        summary: "Obtém estatísticas de acesso do link.",
+        params: z.object({
+          id: z.uuid(),
+        }),
+        querystring: z.object({
+          days: z.coerce.number().min(1).max(365).optional().default(30),
+        }),
+        response: {
+          200: metricsSchema,
+          403: z.object({ message: z.string() }),
+          404: z.object({ message: z.string() }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const { days } = request.query;
+      const userId = request.user.sub;
+
+      const linksRepo = new PrismaLinksRepository();
+      const clientsRepo = new PrismaClientsRepository();
+      const clicksRepo = new PrismaClicksRepository();
+      const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
+
+      try {
+        const metrics = await service.getLinkMetrics(id, userId, days);
+        return reply.status(200).send(metrics);
+      } catch (err) {
+        if (err instanceof NotAllowedError) {
+          return reply.status(403).send({ message: err.message });
+        }
+        if (err instanceof LinkNotFoundError) {
+          return reply.status(404).send({ message: err.message });
+        }
         throw err;
       }
     }

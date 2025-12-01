@@ -71,14 +71,6 @@ export class LinksService {
     return link;
   }
 
-  async trackClick(linkId: string, ipAddress?: string, userAgent?: string) {
-    await this.clicksRepository.create({
-      linkId,
-      ipAddress: ipAddress ?? null,
-      userAgent: userAgent ?? null,
-    });
-  }
-
   async listLinks(filters: {
     userId: string;
     clientId?: string;
@@ -134,5 +126,27 @@ export class LinksService {
     }
 
     await this.linksRepository.delete(id);
+  }
+
+  async trackClick(linkId: string, ipAddress?: string, userAgent?: string) {
+    await this.clicksRepository.create({
+      linkId,
+      ipAddress: ipAddress ?? null,
+      userAgent: userAgent ?? null,
+    });
+  }
+
+  async getLinkMetrics(id: string, userId: string, days: number = 30) {
+    // Segurança: Verifica se o link existe e se pertence ao usuário
+    // O método getLink já lança NotAllowedErro se não for do usuário
+    const link = await this.getLink(id, userId);
+
+    if (!link) {
+      throw new LinkNotFoundError();
+    }
+
+    // Busca dados agragados
+    const metrics = await this.clicksRepository.getMetrics(id, days);
+    return metrics;
   }
 }
