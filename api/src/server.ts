@@ -15,6 +15,8 @@ import {
 } from "fastify-type-provider-zod";
 import { clientsRoutes } from "./routes/clients";
 import { campaignsRoutes } from "./routes/campaigns";
+import { linksRoutes } from "./routes/links";
+import { redirectRoutes } from "./routes/redirect";
 
 // Inicializa o Fastify
 const app = Fastify({
@@ -66,6 +68,8 @@ const start = async () => {
     await app.register(usersRoutes);
     await app.register(clientsRoutes);
     await app.register(campaignsRoutes);
+    await app.register(linksRoutes);
+    await app.register(redirectRoutes);
 
     // Criação da Rota "Health Check"
     // Esta rota é essencial para sabermos se a API está online
