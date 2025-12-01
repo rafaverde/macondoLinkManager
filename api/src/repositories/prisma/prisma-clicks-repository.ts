@@ -99,4 +99,16 @@ export class PrismaClicksRepository implements ClicksRepository {
       topLocations,
     };
   }
+
+  async count(userId?: string) {
+    const count = await prisma.click.count({
+      where: {
+        link: {
+          userId: userId,
+        },
+      },
+    });
+
+    return count;
+  }
 }

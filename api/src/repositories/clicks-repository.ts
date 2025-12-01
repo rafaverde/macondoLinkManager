@@ -21,4 +21,5 @@ export interface MetricsResult {
 export interface ClicksRepository {
   create(data: CreateClickDTO): Promise<Click>;
   getMetrics(linkId: string, days: number): Promise<MetricsResult>;
+  count(userId?: string): Promise<number>;
 }
