@@ -149,44 +149,6 @@ export async function linksRoutes(app: FastifyInstance) {
     }
   );
 
-  // Rota DELETE apaga um link
-  app.withTypeProvider<ZodTypeProvider>().delete(
-    "/links/:id",
-    {
-      onRequest: [authHook],
-      schema: {
-        tags: ["Links"],
-        summary: "Deleta um link.",
-        params: z.object({ id: z.uuid() }),
-        response: {
-          204: z.null(),
-          403: z.object({ message: z.string() }),
-          404: z.object({ message: z.string() }),
-        },
-      },
-    },
-    async (request, reply) => {
-      const { id } = request.params;
-      const userId = request.user.sub;
-
-      const linksRepo = new PrismaLinksRepository();
-      const clientsRepo = new PrismaClientsRepository();
-      const clicksRepo = new PrismaClicksRepository();
-      const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
-
-      try {
-        await service.deleteLink(id, userId);
-        return reply.status(204).send();
-      } catch (err) {
-        if (err instanceof NotAllowedError)
-          return reply.status(403).send({ message: err.message });
-        if (err instanceof LinkNotFoundError)
-          return reply.status(404).send({ message: err.message });
-        throw err;
-      }
-    }
-  );
-
   // Rota PUT faz update do link
   app.withTypeProvider<ZodTypeProvider>().put(
     "/links/:id",
@@ -235,6 +197,44 @@ export async function linksRoutes(app: FastifyInstance) {
         if (err instanceof ClientNotFoundError) {
           return reply.status(404).send({ message: err.message });
         }
+        throw err;
+      }
+    }
+  );
+
+  // Rota DELETE apaga um link
+  app.withTypeProvider<ZodTypeProvider>().delete(
+    "/links/:id",
+    {
+      onRequest: [authHook],
+      schema: {
+        tags: ["Links"],
+        summary: "Deleta um link.",
+        params: z.object({ id: z.uuid() }),
+        response: {
+          204: z.null(),
+          403: z.object({ message: z.string() }),
+          404: z.object({ message: z.string() }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const userId = request.user.sub;
+
+      const linksRepo = new PrismaLinksRepository();
+      const clientsRepo = new PrismaClientsRepository();
+      const clicksRepo = new PrismaClicksRepository();
+      const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
+
+      try {
+        await service.deleteLink(id, userId);
+        return reply.status(204).send();
+      } catch (err) {
+        if (err instanceof NotAllowedError)
+          return reply.status(403).send({ message: err.message });
+        if (err instanceof LinkNotFoundError)
+          return reply.status(404).send({ message: err.message });
         throw err;
       }
     }
