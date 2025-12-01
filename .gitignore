@@ -11,7 +11,7 @@ npm-debug.log*
 
 .env
 .env.*
-!.env.example # Exceto o arquivo de exemplo
+!.env.example 
 
 # Dependências (locais)
 # Cada sub-projeto terá sua própria node_modules
