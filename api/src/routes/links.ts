@@ -186,4 +186,57 @@ export async function linksRoutes(app: FastifyInstance) {
       }
     }
   );
+
+  // Rota PUT faz update do link
+  app.withTypeProvider<ZodTypeProvider>().put(
+    "/links/:id",
+    {
+      onRequest: [authHook],
+      schema: {
+        tags: ["Links"],
+        summary: "Atualiza informações de um link.",
+        params: z.object({
+          id: z.uuid(),
+        }),
+        body: z.object({
+          originalUrl: z.url().optional(),
+          clientId: z.uuid().optional(),
+          campaignId: z.uuid().optional().nullable(),
+        }),
+        response: {
+          200: linkSchema,
+          403: z.object({ message: z.string() }),
+          404: z.object({ message: z.string() }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const { originalUrl, clientId, campaignId } = request.body;
+      const userId = request.user.sub;
+
+      const linksRepo = new PrismaLinksRepository();
+      const clientsRepo = new PrismaClientsRepository();
+      const clicksRepo = new PrismaClicksRepository();
+      const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
+
+      try {
+        const updatedLink = await service.updateLink(id, userId, {
+          originalUrl,
+          clientId,
+          campaignId,
+        });
+
+        return reply.status(200).send(updatedLink);
+      } catch (err) {
+        if (err instanceof NotAllowedError) {
+          return reply.status(403).send({ message: err.message });
+        }
+        if (err instanceof ClientNotFoundError) {
+          return reply.status(404).send({ message: err.message });
+        }
+        throw err;
+      }
+    }
+  );
 }
