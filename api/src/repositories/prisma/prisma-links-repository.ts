@@ -109,4 +109,16 @@ export class PrismaLinksRepository implements LinksRepository {
       where: { id },
     });
   }
+
+  async count({ userId, clientId, campaignId }: FindLinksParams) {
+    const count = await prisma.link.count({
+      where: {
+        userId,
+        clientId,
+        campaignId,
+      },
+    });
+
+    return count;
+  }
 }

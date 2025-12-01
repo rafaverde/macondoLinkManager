@@ -17,6 +17,7 @@ import { clientsRoutes } from "./routes/clients";
 import { campaignsRoutes } from "./routes/campaigns";
 import { linksRoutes } from "./routes/links";
 import { redirectRoutes } from "./routes/redirect";
+import { dashboardRoutes } from "./routes/dashboard";
 
 // Inicializa o Fastify
 const app = Fastify({
@@ -70,6 +71,7 @@ const start = async () => {
     await app.register(campaignsRoutes);
     await app.register(linksRoutes);
     await app.register(redirectRoutes);
+    await app.register(dashboardRoutes);
 
     // Criação da Rota "Health Check"
     // Esta rota é essencial para sabermos se a API está online
