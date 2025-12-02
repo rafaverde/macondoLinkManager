@@ -1,4 +1,5 @@
 import Fastify from "fastify";
+import cors from "@fastify/cors"
 import fastifyCookie from "@fastify/cookie";
 import { prisma } from "./lib/prisma"; // Importamos nossa instância do Prisma
 import { env } from "./env";
@@ -31,6 +32,13 @@ app.setSerializerCompiler(serializerCompiler);
 // Função para Iniciar o Servidor
 const start = async () => {
   try {
+    // Registra CORS
+    await app.register(cors, {
+      // Limita acesso pelo front-end
+      origin: [env.FRONTEND_URL, "http:/localhost:3000"],
+      // Permite que cookies sejam enviados/recebidos
+      credentials: true,
+    })
     // Registra o Swagger
     await app.register(swagger, {
       openapi: {
