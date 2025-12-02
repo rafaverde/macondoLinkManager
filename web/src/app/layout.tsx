@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Onest, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { TanstackProvider } from "@/providers/tanstack-provider";
 
-const geistSans = Onest({
+const onest = Onest({
   variable: "--font-onest",
   subsets: ["latin"],
 });
@@ -24,10 +25,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${onest.variable} ${geistMono.variable} antialiased`}>
+        <TanstackProvider>{children}</TanstackProvider>
       </body>
     </html>
   );
