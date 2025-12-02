@@ -1,18 +1,15 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
 import { api } from "@/lib/api";
-import { RiGoogleFill } from "@remixicon/react";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+
+import { Button } from "@/components/ui/button";
+
+import macondoLogo from "@/assets/macondo-logo.svg";
+import googleLogo from "@/assets/google-color.svg";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -54,42 +51,32 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-gray-50 p-4">
-      <Card className="w-full max-w-md border-none shadow-lg">
-        <CardHeader className="space-y-4 pb-8 text-center">
-          {/* Placeholder para a Logo - Depois você põe a imagem real */}
-          <div className="bg-macondo-red-500 mx-auto flex h-16 w-16 items-center justify-center rounded-full text-2xl font-bold text-white">
-            M
-          </div>
-
-          <div className="space-y-2">
-            <CardTitle className="text-2xl font-bold tracking-tight">
-              Plataforma de Links
-            </CardTitle>
-            <CardDescription className="text-base">
-              Gerencie suas campanhas e encurtamentos em um só lugar.
-            </CardDescription>
-          </div>
-        </CardHeader>
-
-        <CardContent className="space-y-4">
-          <Button
-            size="lg"
-            className="w-full gap-2 text-base font-semibold"
-            onClick={handleLogin}
-          >
-            <RiGoogleFill size={20} />
-            Fazer login com Google
-          </Button>
-
-          <p className="text-muted-foreground px-4 text-center text-xs">
-            É necessário fazer parte da equipe <br />
-            <span className="text-foreground font-medium">
-              @macondopropaganda.com
-            </span>
-          </p>
-        </CardContent>
-      </Card>
+    <div className="grid h-dvh w-full grid-rows-2 items-center md:grid-cols-2 md:grid-rows-none md:justify-center">
+      <div className="flex flex-col items-center justify-center gap-4 p-24 md:p-10">
+        <Image
+          src={macondoLogo}
+          alt="Macondo Propaganda Logo"
+          className="w-50 md:w-70"
+        />
+        <p className="w-[70%] text-center text-sm">
+          Bem-vindo à plataforma de Links da Macondo Propaganda.
+        </p>
+      </div>
+      <div className="bg-secondary flex h-full w-full flex-col items-center justify-center gap-4 text-xs md:gap-8">
+        <Button
+          variant="outline"
+          size="default"
+          className="cursor-pointer rounded-4xl bg-transparent p-10"
+          onClick={handleLogin}
+        >
+          <Image src={googleLogo} alt="" className="size-8" />
+          <p className="font-light">Fazer login com Google</p>
+        </Button>
+        <p>
+          É necessário fazer parte da equipe{" "}
+          <strong className="text-primary">@macondopropaganda.com</strong>
+        </p>
+      </div>
     </div>
   );
 }
