@@ -1,7 +1,6 @@
 "use client";
 
 import { api } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -10,20 +9,13 @@ import { Button } from "@/components/ui/button";
 
 import macondoLogo from "@/assets/macondo-logo.svg";
 import googleLogo from "@/assets/google-color.svg";
+import { useUser } from "@/hooks/use-user";
 
 export default function LoginPage() {
   const router = useRouter();
 
   // Busca usuário atual (/me)
-  const { data: user, isLoading } = useQuery({
-    queryKey: ["me"],
-    queryFn: async () => {
-      // Se houver erro 401, o axios lança exceção e cai no isError
-      const response = await api.get("/me");
-      return response.data?.user;
-    },
-    retry: false,
-  });
+  const { data: user, isLoading } = useUser();
 
   // Se o usuário existe e faz login, redireciona para o Dashboard
   useEffect(() => {

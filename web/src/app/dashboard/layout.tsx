@@ -1,5 +1,6 @@
+import AppHeader from "@/components/app-header";
 import AppSidebar from "@/components/app-sidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export default function DashboardLayout({
   children,
@@ -9,6 +10,14 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
+
+      <SidebarInset className="bg-macondo-gray-50 flex min-h-screen flex-col">
+        <AppHeader />
+
+        <main className="mx-auto w-full max-w-7xl flex-1 p-4 md:p-8">
+          {children}
+        </main>
+      </SidebarInset>
     </SidebarProvider>
   );
 }

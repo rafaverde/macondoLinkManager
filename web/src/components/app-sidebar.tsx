@@ -34,9 +34,14 @@ export default function AppSidebar({
 }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader className="h-20">
-        <div className="flex h-auto w-full max-w-[80%] items-center justify-center px-4 pt-6 group-data-[collapsible=icon]:hidden">
+    <Sidebar
+      collapsible="icon"
+      {...props}
+      variant="sidebar"
+      className="bg-background"
+    >
+      <SidebarHeader className="bg-background h-16 justify-center">
+        <div className="flex max-w-[80%] justify-center px-4 group-data-[collapsible=icon]:hidden">
           <Image
             src={macondoLogo}
             alt="Macondo Propaganda"
@@ -53,7 +58,7 @@ export default function AppSidebar({
         </div>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="bg-background">
         <SidebarMenu className="p-2">
           {menuItems.map((item, index) => {
             const isActive = pathname === item.href;
