@@ -13,17 +13,29 @@ import {
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { RiLogoutBoxLine } from "@remixicon/react";
+import { useQueryClient } from "@tanstack/react-query";
+import { api } from "@/lib/api";
 
 export default function AppHeader() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { data: user } = useUser();
   console.log(user);
 
-  function handleLogout() {
-    document.cookie =
-      "macondo.token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-    router.push("/");
+  async function handleLogout() {
+    try {
+      // Chama api para invalidar o cookie no navegador
+      await api.post("/auth/logout");
+      // Limpa cache do ReactQuery
+      queryClient.clear();
+      // Redireciona para o login
+      router.push("/");
+    } catch (error) {
+      console.error("Erro ao fazer logout", error);
+      // Mesmo com erro, força o redirecionamento por segurança
+      router.push("/");
+    }
   }
 
   const initials = user?.name
