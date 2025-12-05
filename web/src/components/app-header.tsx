@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { RiLogoutBoxLine } from "@remixicon/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import ModeToggle from "./ui/mode-toggle";
 
 export default function AppHeader() {
   const router = useRouter();
@@ -47,7 +48,8 @@ export default function AppHeader() {
   return (
     <header className="bg-background shadow-b-sm sticky top-0 z-10 flex h-20 items-center justify-between border-b px-4">
       <div className="flex items-center gap-2">
-        <SidebarTrigger className="-ml-1" />
+        <SidebarTrigger className="-ml-1 cursor-pointer" />
+        <ModeToggle />
       </div>
       <div className="flex items-center gap-4">
         <div className="hidden md:block">
