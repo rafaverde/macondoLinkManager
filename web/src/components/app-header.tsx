@@ -18,6 +18,7 @@ export default function AppHeader() {
   const router = useRouter();
 
   const { data: user } = useUser();
+  console.log(user);
 
   function handleLogout() {
     document.cookie =
@@ -40,8 +41,8 @@ export default function AppHeader() {
       <div className="flex items-center gap-4">
         <div className="hidden md:block">
           <div className="text-muted-foreground text-right leading-tight">
-            <p className="font-bold">{user?.name}</p>
-            <p className="text-sm">{user?.email}</p>
+            <p className="text-sm font-bold">{user?.name}</p>
+            <p className="text-xs">{user?.email}</p>
           </div>
         </div>
 
