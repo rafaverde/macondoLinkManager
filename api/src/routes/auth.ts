@@ -87,4 +87,16 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
       return reply.status(500).send({ message: "Erro interno no login." });
     }
   });
+
+  // Rota de Logout
+  app.post("/auth/logout", async (request, reply) => {
+    // Apaga o cookie httpOnly
+    reply.clearCookie("macondo.token", {
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax"
+    })
+
+    return reply.status(200).send({message: "Logout realizado com sucesso."})
+  })
 });
