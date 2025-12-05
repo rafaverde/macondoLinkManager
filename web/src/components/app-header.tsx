@@ -21,7 +21,6 @@ export default function AppHeader() {
   const queryClient = useQueryClient();
 
   const { data: user } = useUser();
-  console.log(user);
 
   async function handleLogout() {
     try {
@@ -59,13 +58,15 @@ export default function AppHeader() {
         </div>
 
         <DropdownMenu>
-          <DropdownMenuTrigger className="focus:ring-ring cursor-pointer rounded-full ring-offset-2 outline-none focus:ring-1">
-            <Avatar className="size-10 hover:brightness-80">
-              <AvatarImage src={user?.avatarUrl || ""} alt={user?.name} />
-              <AvatarFallback className="bg-primary font-bold text-white">
-                {initials || "U2"}
-              </AvatarFallback>
-            </Avatar>
+          <DropdownMenuTrigger asChild>
+            <button className="focus:ring-ring cursor-pointer rounded-full ring-offset-2 outline-none focus:ring-1">
+              <Avatar className="size-10 hover:brightness-80">
+                <AvatarImage src={user?.avatarUrl || ""} alt={user?.name} />
+                <AvatarFallback className="bg-primary font-bold text-white">
+                  {initials || "U2"}
+                </AvatarFallback>
+              </Avatar>
+            </button>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-56">
