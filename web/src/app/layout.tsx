@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Onest, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { TanstackProvider } from "@/providers/tanstack-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const onest = Onest({
   variable: "--font-onest",
@@ -24,9 +25,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${onest.variable} ${geistMono.variable} antialiased`}>
-        <TanstackProvider>{children}</TanstackProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TanstackProvider>{children}</TanstackProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
