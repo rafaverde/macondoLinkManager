@@ -40,7 +40,7 @@ export default function AppSidebar({
       variant="sidebar"
       className="bg-background"
     >
-      <SidebarHeader className="bg-background h-16 justify-center">
+      <SidebarHeader className="bg-background h-20 justify-center">
         <div className="flex max-w-[80%] justify-center px-4 group-data-[collapsible=icon]:hidden">
           <Image
             src={macondoLogo}

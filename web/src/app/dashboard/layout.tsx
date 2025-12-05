@@ -11,7 +11,7 @@ export default function DashboardLayout({
     <SidebarProvider>
       <AppSidebar />
 
-      <SidebarInset className="bg-macondo-gray-50 flex min-h-screen flex-col">
+      <SidebarInset className="bg-muted flex min-h-screen flex-col">
         <AppHeader />
 
         <main className="mx-auto w-full max-w-7xl flex-1 p-4 md:p-8">
