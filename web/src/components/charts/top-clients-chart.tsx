@@ -7,7 +7,14 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { TopClient } from "@/types";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  LabelList,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   Card,
   CardContent,
@@ -15,6 +22,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 const chartConfig = {
   clicks: {
@@ -23,11 +31,15 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-interface TopClientsChartProps {
+interface TopClientsChartProps extends React.ComponentProps<typeof Card> {
   data?: TopClient[];
 }
 
-export function TopClientsChart({ data }: TopClientsChartProps) {
+export function TopClientsChart({
+  data,
+  className,
+  ...props
+}: TopClientsChartProps) {
   console.log(data);
 
   if (!data || data.length === 0) {
@@ -39,7 +51,7 @@ export function TopClientsChart({ data }: TopClientsChartProps) {
   }
 
   return (
-    <Card className="col-span-1">
+    <Card className={cn("shadow-xs hover:shadow-sm", className)} {...props}>
       <CardHeader>
         <CardTitle>Top 5 Clientes</CardTitle>
         <CardDescription>
@@ -47,22 +59,47 @@ export function TopClientsChart({ data }: TopClientsChartProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-          <BarChart accessibilityLayer data={data}>
-            <CartesianGrid vertical={false} />
-            <XAxis
+        <ChartContainer config={chartConfig} className="h-32 w-full">
+          <BarChart
+            accessibilityLayer
+            data={data}
+            layout="vertical"
+            margin={{
+              right: 24,
+              left: 0,
+            }}
+          >
+            <CartesianGrid horizontal={false} />
+            <XAxis type="number" dataKey="clicks" hide />
+            <YAxis
               dataKey="name"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
+              type="category"
               tickFormatter={(value) => value.slice(0, 10)}
+              hide
             />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <Bar
-              dataKey="clicks"
-              fill="var(--color-primary)"
-              radius={[4, 4, 0, 0]}
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent indicator="line" />}
             />
+            <Bar dataKey="clicks" fill="var(--color-primary)" radius={4}>
+              <LabelList
+                dataKey="name"
+                position="insideLeft"
+                offset={8}
+                className="fill-(--color-primary-foreground)"
+                fontSize={12}
+              />
+              <LabelList
+                dataKey="clicks"
+                position="right"
+                offset={8}
+                className="fill-foreground"
+                fontSize={12}
+              />
+            </Bar>
           </BarChart>
         </ChartContainer>
       </CardContent>

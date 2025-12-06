@@ -3,7 +3,7 @@
 import { TopClientsChart } from "@/components/charts/top-clients-chart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import CardNumbers from "@/components/ui/card-numbers";
+import CardNumbers from "@/components/charts/card-numbers";
 import { ChartConfig } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDashboardMetrics } from "@/hooks/use-dashboard-metrics";
@@ -40,8 +40,8 @@ export default function DashboardPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 py-8 lg:grid-cols-3">
-        <div className="col-span-1 flex w-full flex-col gap-4">
+      <div className="grid grid-cols-1 grid-rows-2 space-y-4 py-8 lg:grid-cols-3 lg:gap-4 lg:space-y-0">
+        <div className="flex w-full flex-col gap-4 lg:col-span-1">
           <CardNumbers
             title="Total de Cliques"
             value={general.data?.totalClicks}
@@ -49,14 +49,7 @@ export default function DashboardPage() {
           <CardNumbers title="Links Ativos" value={general.data?.activeLinks} />
         </div>
 
-        <Card className="col-span-2">
-          <CardHeader className="text-muted-foreground/50">
-            Top 5 clientes por colume de cliques (Total)
-          </CardHeader>
-          <CardContent>
-            <TopClientsChart data={topClients.data} />
-          </CardContent>
-        </Card>
+        <TopClientsChart data={topClients.data} className="col-span-2" />
       </div>
     </>
   );
