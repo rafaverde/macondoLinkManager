@@ -2,7 +2,7 @@ import { api } from "@/lib/api";
 import { GeneralMetrics, TopClient } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
-export function useDashoboardMetrics() {
+export function useDashboardMetrics() {
   // Métricas gerais
   const generalQuery = useQuery({
     queryKey: ["metrics", "general"],
