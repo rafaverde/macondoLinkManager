@@ -23,6 +23,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { RiEmotionUnhappyLine } from "@remixicon/react";
 
 const chartConfig = {
   clicks: {
@@ -44,8 +45,14 @@ export function TopClientsChart({
 
   if (!data || data.length === 0) {
     return (
-      <Card className="text-muted-foreground col-span-1 flex items-center justify-center p-6">
-        Nenhum dado para exibir.
+      <Card
+        className={cn(
+          "text-muted-foreground flex flex-row items-center justify-center gap-2 p-6",
+          className,
+        )}
+      >
+        <RiEmotionUnhappyLine className="text-primary" />
+        <p> Nenhum dado para exibir. Short links!</p>
       </Card>
     );
   }
