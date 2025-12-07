@@ -3,7 +3,7 @@
 import { TopClientsChart } from "@/components/charts/top-clients-chart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import CardNumbers from "@/components/charts/card-numbers";
+import CardNumbers from "@/components/card-numbers";
 import { ChartConfig } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDashboardMetrics } from "@/hooks/use-dashboard-metrics";

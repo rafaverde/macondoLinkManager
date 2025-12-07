@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { RemixiconComponentType } from "@remixicon/react";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "./ui/skeleton";
 
 interface CardNumbersProps extends React.ComponentProps<typeof Card> {
   title: string;
