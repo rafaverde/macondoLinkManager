@@ -3,11 +3,53 @@
 import LinkCard from "@/components/link-card";
 import LinkCardSkeleton from "@/components/link-card-skeleton";
 import { Button } from "@/components/ui/button";
-import { useLinks } from "@/hooks/use-links";
-import { RiArrowRightLine } from "@remixicon/react";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectValue,
+  SelectTrigger,
+} from "@/components/ui/select";
+import { RiArrowRightLine, RiSearchLine } from "@remixicon/react";
 
-export default function DashboardPage() {
-  const { data: links, isLoading } = useLinks();
+import { useCampaigns } from "@/hooks/use-campaigns";
+import { useClients } from "@/hooks/use-clients";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useLinks } from "@/hooks/use-links";
+import { useState } from "react";
+
+export default function LinksPage() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedClient, setSelectedClient] = useState<string>("all");
+  const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
+  const debounceSearch = useDebounce(searchTerm, 500);
+
+  const { data: clients } = useClients();
+  const { data: campaigns } = useCampaigns();
+
+  const { data: links, isLoading } = useLinks({
+    search: debounceSearch,
+    // Só envia id se não for "all"
+    clientId: selectedClient === "all" ? undefined : selectedClient,
+    campaignId: selectedCampaign === "all" ? undefined : selectedCampaign,
+  });
+
+  // Limpa filtros
+  const clearFilters = () => {
+    setSearchTerm("");
+    setSelectedClient("all");
+    setSelectedCampaign("all");
+  };
+
+  const hasActiveFilters =
+    searchTerm || selectedClient !== "all" || selectedCampaign !== "all";
 
   return (
     <>
@@ -17,6 +59,62 @@ export default function DashboardPage() {
           Novo Link
           <RiArrowRightLine />
         </Button>
+      </div>
+
+      {/* Barra de filtros */}
+
+      <div className="flex flex-col items-center gap-2 border-b py-6 lg:flex-row">
+        <span>Filtrar por:</span>
+
+        {/* Filtros por digitação */}
+        <div className="flex w-full flex-1">
+          <InputGroup>
+            <InputGroupInput
+              placeholder="Buscar por link, código..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <InputGroupAddon align="inline-start">
+              <RiSearchLine />
+            </InputGroupAddon>
+          </InputGroup>
+        </div>
+
+        {/* Filtro por cliente */}
+        <Select value={selectedClient} onValueChange={setSelectedClient}>
+          <SelectTrigger className="w-full lg:w-[200px]">
+            <SelectValue placeholder="Selecione o cliente..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Clientes</SelectLabel>
+              <SelectItem value="all">Todos os clientes</SelectItem>
+              {clients?.map((client) => (
+                <SelectItem key={client.id} value={client.id}>
+                  {client.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        {/* Filtro por campanha */}
+        <Select value={selectedCampaign} onValueChange={setSelectedCampaign}>
+          <SelectTrigger className="w-full lg:w-[200px]">
+            <SelectValue placeholder="Selecione o cliente..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Campanhas</SelectLabel>
+              <SelectItem value="all">Todos as campanhas</SelectItem>
+              {campaigns?.map((campaign) => (
+                <SelectItem key={campaign.id} value={campaign.id}>
+                  {campaign.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </div>
 
       {isLoading ? (
