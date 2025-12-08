@@ -5,6 +5,7 @@ export interface FindLinksParams {
   userId?: string;
   clientId?: string;
   campaignId?: string;
+  search?: string;
 }
 
 export interface CreateLinkDTO {

@@ -5,7 +5,6 @@ import {
   UpdateLinkDTO,
 } from "../links-repository";
 import { prisma } from "../../lib/prisma";
-import { Link } from "@prisma/client";
 
 export class PrismaLinksRepository implements LinksRepository {
   async create({
@@ -44,12 +43,21 @@ export class PrismaLinksRepository implements LinksRepository {
     return link;
   }
 
-  async findMany({ userId, campaignId, clientId }: FindLinksParams) {
-    const link = await prisma.link.findMany({
+  async findMany({ userId, campaignId, clientId, search }: FindLinksParams) {
+    const links = await prisma.link.findMany({
       where: {
         userId, // Se for undefined, ignora e traz todos
         clientId, // Opcional
         campaignId, // Opcional
+        // Busca textual
+        ...(search ? {
+          OR: [
+            {originalUrl: {contains: search, mode: "insensitive"}},
+            {shortCode: {contains: search, mode: "insensitive"}},
+            {client: {name: {contains: search, mode: "insensitive"}}},
+            {campaign: {name: {contains: search, mode: "insensitive"}}},
+          ]
+        } : {})
       },
       orderBy: {
         createdAt: "desc",
@@ -62,7 +70,7 @@ export class PrismaLinksRepository implements LinksRepository {
       },
     });
 
-    return link;
+    return links;
   }
 
   async findByShortCode(shortCode: string) {

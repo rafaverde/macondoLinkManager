@@ -107,6 +107,7 @@ export async function linksRoutes(app: FastifyInstance) {
           // Filtros opcionais na URL
           clientId: z.uuid().optional(),
           campaignId: z.uuid().optional(),
+          search: z.string().optional(),
         }),
         response: {
           200: z.array(linkSchema),
@@ -114,7 +115,7 @@ export async function linksRoutes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const { clientId, campaignId } = request.query;
+      const { clientId, campaignId, search } = request.query;
       const userId = request.user.sub; // Filtra pelo usuário logado
 
       const linksRepo = new PrismaLinksRepository();
@@ -126,6 +127,7 @@ export async function linksRoutes(app: FastifyInstance) {
         userId,
         clientId,
         campaignId,
+        search,
       });
 
       return reply.status(200).send(links);
