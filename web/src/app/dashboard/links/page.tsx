@@ -17,7 +17,12 @@ import {
   SelectValue,
   SelectTrigger,
 } from "@/components/ui/select";
-import { RiArrowRightLine, RiSearchLine } from "@remixicon/react";
+import {
+  RiArrowRightLine,
+  RiCloseLine,
+  RiLinkUnlink,
+  RiSearchLine,
+} from "@remixicon/react";
 
 import { useCampaigns } from "@/hooks/use-campaigns";
 import { useClients } from "@/hooks/use-clients";
@@ -42,7 +47,7 @@ export default function LinksPage() {
   });
 
   // Limpa filtros
-  const clearFilters = () => {
+  const handleClearFilters = () => {
     setSearchTerm("");
     setSelectedClient("all");
     setSelectedCampaign("all");
@@ -62,7 +67,6 @@ export default function LinksPage() {
       </div>
 
       {/* Barra de filtros */}
-
       <div className="flex flex-col items-center gap-2 border-b py-6 lg:flex-row">
         <span>Filtrar por:</span>
 
@@ -77,6 +81,15 @@ export default function LinksPage() {
             <InputGroupAddon align="inline-start">
               <RiSearchLine />
             </InputGroupAddon>
+            {searchTerm && (
+              <InputGroupAddon
+                onClick={handleClearFilters}
+                align="inline-end"
+                className="cursor-pointer"
+              >
+                <RiCloseLine className="select-none" />
+              </InputGroupAddon>
+            )}
           </InputGroup>
         </div>
 
@@ -122,6 +135,16 @@ export default function LinksPage() {
           {Array.from({ length: 3 }).map((_, i) => (
             <LinkCardSkeleton key={i} />
           ))}
+        </div>
+      ) : links?.length === 0 ? (
+        <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-2 py-20">
+          <RiLinkUnlink className="text-primary size-10" />
+          <h3 className="text-3xl font-bold">Nenhum link econtrado.</h3>
+          <p className="mb-6 text-center text-sm">
+            Cadastre um novo link ou tente ajustar ou limpar os filtros da
+            pesquisa.
+          </p>
+          <Button onClick={handleClearFilters}>Limpar filtros</Button>
         </div>
       ) : (
         <div className="flex flex-col gap-4 py-8">
