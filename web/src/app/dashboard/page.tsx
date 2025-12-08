@@ -2,20 +2,10 @@
 
 import { TopClientsChart } from "@/components/charts/top-clients-chart";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import CardNumbers from "@/components/card-numbers";
-import { ChartConfig } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDashboardMetrics } from "@/hooks/use-dashboard-metrics";
 import { RiArrowRightLine } from "@remixicon/react";
-
-// Configuração do Gráfico (Shadcn Charts)
-const chartConfig = {
-  clicks: {
-    label: "Cliques",
-    color: "hsl(var(--chart-1))", // Usa a variável do seu CSS
-  },
-} satisfies ChartConfig;
 
 export default function DashboardPage() {
   const { general, topClients, isLoading } = useDashboardMetrics();

@@ -41,8 +41,6 @@ export function TopClientsChart({
   className,
   ...props
 }: TopClientsChartProps) {
-  console.log(data);
-
   if (!data || data.length === 0) {
     return (
       <Card
