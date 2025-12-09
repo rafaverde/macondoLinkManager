@@ -129,7 +129,10 @@ export default function LinkCard({ link }: LinkCardProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <Link href={formatLink(link.shortCode)} target="_blank">
+                <Link
+                  href={`${process.env.NEXT_PUBLIC_API_URL}/${link.shortCode}`}
+                  target="_blank"
+                >
                   <DropdownMenuItem className="cursor-pointer">
                     <RiExternalLinkLine className="size-4" />
                     Abrir Link
