@@ -31,34 +31,42 @@ import {
 import CreateClientDialog from "./create-client-dialog";
 import CreateCampaignDialog from "./create-campaign-dialog";
 import { InputTags } from "./ui/input-tags";
+import { Link } from "@/types";
+import { useUpdateLink } from "@/hooks/use-update-link";
 
-const createLinkSchema = z.object({
+const linkFormSchema = z.object({
   originalUrl: z.url("Insira uma URL válida, ex.: 'https://...'"),
   clientId: z.string().min(1, "Selecione um cliente"),
   campaignId: z.string().optional(),
   tags: z.array(z.string()).optional(),
 });
 
-type CreateLinkFormValues = z.infer<typeof createLinkSchema>;
+type LinkFormValues = z.infer<typeof linkFormSchema>;
 
-export default function CreateLinkForm() {
+interface LinkFormProps {
+  initialData?: Link | null; // Se houver dados, é edição. Se não, é criação.
+}
+
+export default function LinkForm({ initialData }: LinkFormProps) {
   const router = useRouter();
+  const isEditing = !!initialData;
 
   // Hooks de dados
   const { data: clients } = useClients();
 
-  // Hook de criação
-  const { mutate, isPending } = useCreateLink(() => {
-    router.push("/dashboard/links");
-  });
+  // Hook de criação e edição (Mutations)
+  const createMutation = useCreateLink(() => router.push("/dashboard/links"));
+  const updateMutation = useUpdateLink(() => router.push("/dashboard/links"));
 
-  // Formulário
-  const form = useForm<CreateLinkFormValues>({
-    resolver: zodResolver(createLinkSchema),
+  const isPending = createMutation.isPending || updateMutation.isPending;
+
+  // Formulário com Default Values inteligentes
+  const form = useForm<LinkFormValues>({
+    resolver: zodResolver(linkFormSchema),
     defaultValues: {
-      originalUrl: "",
-      clientId: "",
-      campaignId: "",
+      originalUrl: initialData?.originalUrl || "",
+      clientId: initialData?.clientId || "",
+      campaignId: initialData?.campaignId || "",
       tags: [],
     },
   });
@@ -68,13 +76,24 @@ export default function CreateLinkForm() {
   const { data: campaigns, isLoading: isLoadingCampaigns } =
     useCampaigns(selectedClientId);
 
-  function onSubmit(data: CreateLinkFormValues) {
-    mutate({
-      originalUrl: data.originalUrl,
-      clientId: data.clientId,
-      campaignId: data.campaignId || null,
-      tags: data.tags || [],
-    });
+  function onSubmit(data: LinkFormValues) {
+    if (isEditing && initialData) {
+      // Modo Edição
+      updateMutation.mutate({
+        id: initialData.id,
+        originalUrl: data.originalUrl,
+        clientId: data.clientId,
+        campaignId: data.campaignId || null,
+      });
+    } else {
+      // Modo criação
+      createMutation.mutate({
+        originalUrl: data.originalUrl,
+        clientId: data.clientId,
+        campaignId: data.campaignId || null,
+        tags: data.tags || [],
+      });
+    }
   }
 
   return (
@@ -116,7 +135,7 @@ export default function CreateLinkForm() {
                           field.onChange(value);
                           form.setValue("campaignId", "");
                         }}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger className="h-11 w-full">
@@ -151,7 +170,7 @@ export default function CreateLinkForm() {
                     <div className="flex gap-1">
                       <Select
                         onValueChange={field.onChange}
-                        value={field.value}
+                        value={field.value || ""}
                         disabled={!selectedClientId || isLoadingCampaigns}
                       >
                         <FormControl>
@@ -192,24 +211,28 @@ export default function CreateLinkForm() {
             </div>
 
             {/* 4. Tags */}
-            <FormField
-              control={form.control}
-              name="tags"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tags</FormLabel>
-                  <FormControl>
-                    <InputTags
-                      value={field.value || []}
-                      onChange={field.onChange}
-                      placeholder="Digite e tecle enter"
-                    />
-                  </FormControl>
-                  <FormDescription>Separe as tags por vírgula.</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!isEditing && (
+              <FormField
+                control={form.control}
+                name="tags"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tags</FormLabel>
+                    <FormControl>
+                      <InputTags
+                        value={field.value || []}
+                        onChange={field.onChange}
+                        placeholder="Digite e tecle enter"
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Separe as tags por vírgula.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             {/* Ações (Rodapé do Form) */}
             <div className="flex items-center justify-end gap-3 border-t pt-4">
@@ -226,15 +249,16 @@ export default function CreateLinkForm() {
                 type="submit"
                 size="lg"
                 disabled={isPending}
-                className="bg-macondo-red-500 hover:bg-macondo-red-600 min-w-[140px] px-8 font-semibold"
+                className="bg-macondo-red-500 hover:bg-macondo-red-600 min-w-[180px] px-8 font-semibold"
               >
-                {isPending && (
+                {isPending ? (
                   <>
-                    <RiLoader4Line className="mr-2 h-4 w-4 animate-spin" />
-                    Salvando...
+                    <RiLoader4Line className="h-4 w-4 animate-spin" />
+                    Salvando
                   </>
+                ) : (
+                  <>Salvar</>
                 )}
-                Salvar
               </Button>
             </div>
           </form>

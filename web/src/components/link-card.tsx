@@ -116,9 +116,11 @@ export default function LinkCard({ link }: LinkCardProps) {
               Compartilhar
             </Button>
 
-            <Button size="icon" variant="outline">
-              <RiPencilLine />
-            </Button>
+            <Link href={`/dashboard/links/${link.id}/edit`}>
+              <Button size="icon" variant="outline">
+                <RiPencilLine />
+              </Button>
+            </Link>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -133,10 +135,12 @@ export default function LinkCard({ link }: LinkCardProps) {
                     Abrir Link
                   </DropdownMenuItem>
                 </Link>
-                <DropdownMenuItem>
-                  <RiPencilLine className="size-4" />
-                  Editar
-                </DropdownMenuItem>
+                <Link href={`/dashboard/links/${link.id}/edit`}>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <RiPencilLine className="size-4" />
+                    Editar
+                  </DropdownMenuItem>
+                </Link>
                 <DropdownMenuItem>
                   <RiBarChartFill />
                   Estatísticas

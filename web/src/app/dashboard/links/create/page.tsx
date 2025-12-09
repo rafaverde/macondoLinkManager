@@ -1,6 +1,6 @@
 "use client";
 
-import CreateLinkForm from "@/components/create-link-form";
+import LinkForm from "@/components/link-form";
 import { Button } from "@/components/ui/button";
 import { RiArrowLeftLine } from "@remixicon/react";
 import Link from "next/link";
@@ -19,7 +19,7 @@ export default function CreateLinkPage() {
       </div>
 
       <div className="py-8">
-        <CreateLinkForm />
+        <LinkForm />
       </div>
     </>
   );

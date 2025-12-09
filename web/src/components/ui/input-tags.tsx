@@ -37,12 +37,12 @@ export function InputTags({
   };
 
   return (
-    <div className="bg-background focus-within:ring-ring/50 focus-within:outline-destructive flex flex-wrap gap-1 rounded-md border p-2 transition-all duration-300 ease-in-out focus-within:ring-4 focus-within:ring-offset-0 focus-within:outline-1">
+    <div className="bg-background dark:bg-input/30 focus-within:ring-ring/50 focus-within:outline-destructive flex flex-wrap gap-1 rounded-md border p-2 transition-all duration-300 ease-in-out focus-within:ring-4 focus-within:ring-offset-0 focus-within:outline-1">
       {value.map((tag) => (
         <Badge
           key={tag}
           variant="secondary"
-          className="gap-1 pr-1 text-sm font-normal"
+          className="bg-muted-foreground/10 gap-1 pr-1 text-sm font-normal"
         >
           {tag}
           <button
@@ -56,7 +56,7 @@ export function InputTags({
       ))}
 
       <Input
-        className="h-auto min-w-[120px] flex-1 border-none p-0 shadow-none focus-visible:ring-0"
+        className="h-auto min-w-[120px] flex-1 border-none bg-transparent! p-0 shadow-none focus-visible:ring-0"
         placeholder={value.length === 0 ? placeholder : ""}
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
