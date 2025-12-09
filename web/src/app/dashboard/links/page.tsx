@@ -29,6 +29,7 @@ import { useClients } from "@/hooks/use-clients";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLinks } from "@/hooks/use-links";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function LinksPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -53,17 +54,16 @@ export default function LinksPage() {
     setSelectedCampaign("all");
   };
 
-  const hasActiveFilters =
-    searchTerm || selectedClient !== "all" || selectedCampaign !== "all";
-
   return (
     <>
       <div className="flex items-center justify-between border-b pb-8">
         <h2 className="text-4xl font-bold">Meus links</h2>
-        <Button size="lg">
-          Novo Link
-          <RiArrowRightLine />
-        </Button>
+        <Link href="/dashboard/links/create">
+          <Button size="lg">
+            Novo Link
+            <RiArrowRightLine />
+          </Button>
+        </Link>
       </div>
 
       {/* Barra de filtros */}

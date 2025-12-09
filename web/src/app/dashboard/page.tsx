@@ -6,6 +6,7 @@ import CardNumbers from "@/components/card-numbers";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDashboardMetrics } from "@/hooks/use-dashboard-metrics";
 import { RiArrowRightLine } from "@remixicon/react";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const { general, topClients, isLoading } = useDashboardMetrics();
@@ -24,10 +25,12 @@ export default function DashboardPage() {
     <>
       <div className="flex items-center justify-between border-b pb-8">
         <h2 className="text-4xl font-bold">Resultados gerais</h2>
-        <Button size="lg">
-          Novo Link
-          <RiArrowRightLine />
-        </Button>
+        <Link href="/dashboard/links/create">
+          <Button size="lg">
+            Novo Link
+            <RiArrowRightLine />
+          </Button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 grid-rows-2 space-y-4 py-8 lg:grid-cols-3 lg:gap-4 lg:space-y-0">
