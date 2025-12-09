@@ -1,4 +1,4 @@
-import { Link } from "@/types";
+import { Link as LinkType } from "@/types";
 import { toast } from "sonner";
 import { Card, CardContent } from "./ui/card";
 import { Avatar, AvatarFallback } from "./ui/avatar";
@@ -33,9 +33,10 @@ import {
   AlertDialogTitle,
   AlertDialogContent,
 } from "./ui/alert-dialog";
+import Link from "next/link";
 
 interface LinkCardProps {
-  link: Link;
+  link: LinkType;
 }
 
 export default function LinkCard({ link }: LinkCardProps) {
@@ -126,10 +127,12 @@ export default function LinkCard({ link }: LinkCardProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem>
-                  <RiExternalLinkLine className="size-4" />
-                  Abrir Link
-                </DropdownMenuItem>
+                <Link href={formatLink(link.shortCode)} target="_blank">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <RiExternalLinkLine className="size-4" />
+                    Abrir Link
+                  </DropdownMenuItem>
+                </Link>
                 <DropdownMenuItem>
                   <RiPencilLine className="size-4" />
                   Editar
@@ -177,9 +180,13 @@ export default function LinkCard({ link }: LinkCardProps) {
                 handleDelete();
               }}
               disabled={isDeleting}
+              className="min-w-[140px]"
             >
               {isDeleting ? (
-                <RiLoader4Line className="size-4 animate-spin" />
+                <>
+                  <RiLoader4Line className="mr-2 size-4 animate-spin" />
+                  Removendo
+                </>
               ) : (
                 "Sim, deletar!"
               )}

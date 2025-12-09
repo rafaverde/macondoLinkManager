@@ -226,10 +226,13 @@ export default function CreateLinkForm() {
                 type="submit"
                 size="lg"
                 disabled={isPending}
-                className="bg-macondo-red-500 hover:bg-macondo-red-600 px-8 font-semibold"
+                className="bg-macondo-red-500 hover:bg-macondo-red-600 min-w-[140px] px-8 font-semibold"
               >
                 {isPending && (
-                  <RiLoader4Line className="mr-2 h-4 w-4 animate-spin" />
+                  <>
+                    <RiLoader4Line className="mr-2 h-4 w-4 animate-spin" />
+                    Salvando...
+                  </>
                 )}
                 Salvar
               </Button>
