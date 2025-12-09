@@ -15,7 +15,7 @@ export function useCampaigns(clientId?: string) {
       });
       return data;
     },
-    enabled: !!clientId,
+    enabled: clientId !== "",
     staleTime: 1000 * 60 * 5,
   });
 }
