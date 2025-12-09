@@ -17,7 +17,7 @@ export class CampaignsService {
 
   // Serviço para listar
   async listCampaigns(clientId?: string) {
-    const campaigns = await this.campaignsRepository.findMany();
+    const campaigns = await this.campaignsRepository.findMany(clientId);
     return campaigns;
   }
 
