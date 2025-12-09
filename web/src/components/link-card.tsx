@@ -38,7 +38,7 @@ export default function LinkCard({ link }: LinkCardProps) {
   return (
     <>
       <Card className="group flex shadow-xs transition-all duration-200 hover:shadow-sm">
-        <CardContent className="flex flex-col gap-6 md:flex-row">
+        <CardContent className="flex flex-col gap-6 lg:flex-row">
           <Avatar className="size-12">
             <AvatarFallback className="text-background bg-macondo-gray-200 flex w-full items-center justify-center text-center font-bold">
               {initials}

@@ -30,12 +30,13 @@ import {
 } from "./ui/select";
 import CreateClientDialog from "./create-client-dialog";
 import CreateCampaignDialog from "./create-campaign-dialog";
+import { InputTags } from "./ui/input-tags";
 
 const createLinkSchema = z.object({
   originalUrl: z.url("Insira uma URL válida, ex.: 'https://...'"),
   clientId: z.string().min(1, "Selecione um cliente"),
   campaignId: z.string().optional(),
-  tags: z.string().optional(),
+  tags: z.array(z.string()).optional(),
 });
 
 type CreateLinkFormValues = z.infer<typeof createLinkSchema>;
@@ -59,23 +60,16 @@ export default function CreateLinkForm() {
       originalUrl: "",
       clientId: "",
       campaignId: "",
-      tags: "",
+      tags: [],
     },
   });
 
   function onSubmit(data: CreateLinkFormValues) {
-    const tagsArray = data.tags
-      ? data.tags
-          .split(",")
-          .map((tag) => tag.trim())
-          .filter(Boolean)
-      : [];
-
     mutate({
       originalUrl: data.originalUrl,
       clientId: data.clientId,
       campaignId: data.campaignId || null,
-      tags: tagsArray,
+      tags: data.tags || [],
     });
   }
 
@@ -185,10 +179,10 @@ export default function CreateLinkForm() {
                 <FormItem>
                   <FormLabel>Tags</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="whatsapp, instagram, black friday"
-                      {...field}
-                      className="h-11"
+                    <InputTags
+                      value={field.value || []}
+                      onChange={field.onChange}
+                      placeholder="Digite e tecle enter"
                     />
                   </FormControl>
                   <FormDescription>Separe as tags por vírgula.</FormDescription>
@@ -198,10 +192,11 @@ export default function CreateLinkForm() {
             />
 
             {/* Ações (Rodapé do Form) */}
-            <div className="flex items-center justify-end gap-4 border-t pt-4">
+            <div className="flex items-center justify-end gap-3 border-t pt-4">
               <Button
                 type="button"
-                variant="ghost"
+                variant="outline"
+                size="lg"
                 onClick={() => router.back()}
                 className="text-muted-foreground"
               >

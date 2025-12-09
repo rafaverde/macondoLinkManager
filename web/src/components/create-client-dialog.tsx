@@ -33,8 +33,7 @@ export default function CreateClientDialog({
     onSelectNew(newId);
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = () => {
     if (!name.trim()) return;
     mutate(name);
   };
@@ -53,38 +52,42 @@ export default function CreateClientDialog({
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[425px]">
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>Novo Cliente</DialogTitle>
-            <DialogDescription>
-              Adicione um novo cliente para vincular aos links.
-            </DialogDescription>
-          </DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Novo Cliente</DialogTitle>
+          <DialogDescription>
+            Adicione um novo cliente para vincular aos links.
+          </DialogDescription>
+        </DialogHeader>
 
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Nome do Cliente</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Ex: Macondo Propaganda"
-              />
-            </div>
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="name">Nome do Cliente</Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Ex: Macondo Propaganda"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleSave;
+                }
+              }}
+            />
           </div>
+        </div>
 
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Cancelar</Button>
-            </DialogClose>
-            <Button type="submit" disabled={isPending}>
-              {isPending && (
-                <RiLoader4Line className="mr-2 size-4 animate-spin" />
-              )}
-              Salvar Cliente
-            </Button>
-          </DialogFooter>
-        </form>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Cancelar</Button>
+          </DialogClose>
+          <Button type="button" disabled={isPending} onClick={handleSave}>
+            {isPending && (
+              <RiLoader4Line className="mr-2 size-4 animate-spin" />
+            )}
+            Salvar Cliente
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

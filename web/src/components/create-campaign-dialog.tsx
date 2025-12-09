@@ -36,13 +36,14 @@ export default function CreateCampaignDialog({
     onSelectNew(newId);
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = () => {
     if (!clientId) {
       toast.error("Selecione um cliente primeiro.");
       return;
     }
+
     if (!name.trim()) return;
+
     mutate({ name, clientId });
   };
 
@@ -60,36 +61,40 @@ export default function CreateCampaignDialog({
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>Nova Campanha</DialogTitle>
-            <DialogDescription>
-              Crie uma campanha para o cliente selecionado.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Nome da Campanha</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Ex: Black Friday 2025"
-              />
-            </div>
+        <DialogHeader>
+          <DialogTitle>Nova Campanha</DialogTitle>
+          <DialogDescription>
+            Crie uma campanha para o cliente selecionado.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="name">Nome da Campanha</Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Ex: Black Friday 2025"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleSave;
+                }
+              }}
+            />
           </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Cancelar</Button>
-            </DialogClose>
-            <Button type="submit" disabled={isPending}>
-              {isPending && (
-                <RiLoader4Line className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Salvar Campanha
-            </Button>
-          </DialogFooter>
-        </form>
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Cancelar</Button>
+          </DialogClose>
+          <Button type="button" disabled={isPending} onClick={handleSave}>
+            {isPending && (
+              <RiLoader4Line className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            Salvar Campanha
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
