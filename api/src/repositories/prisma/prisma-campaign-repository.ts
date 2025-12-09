@@ -19,8 +19,13 @@ export class PrismaCampaignsRepository implements CampaignsRepository {
     return campaign;
   }
 
-  async findMany() {
-    const campaigns = await prisma.campaign.findMany();
+  async findMany(clientId?: string) {
+    const campaigns = await prisma.campaign.findMany({
+      where: {
+        clientId,
+      },
+      orderBy: {name: "asc"}
+    });
     return campaigns;
   }
 

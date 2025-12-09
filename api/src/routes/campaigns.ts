@@ -25,17 +25,22 @@ export async function campaignsRoutes(app: FastifyInstance) {
       schema: {
         tags: ["Management"],
         summary: "Lista todas as campanhas.",
+        querystring: z.object({
+          clientId: z.uuid().optional()
+        }),
         response: {
           200: z.array(campaignSchema), // Retorna um array de campanhas
         },
       },
     },
     async (request, reply) => {
+      const { clientId } = request.query;
+      
       const campaignsRepo = new PrismaCampaignsRepository();
       const clientsRepo = new PrismaClientsRepository();
       const service = new CampaignsService(campaignsRepo, clientsRepo);
 
-      const campaigns = await service.listCampaigns();
+      const campaigns = await service.listCampaigns(clientId);
       return reply.status(200).send(campaigns);
     }
   );
