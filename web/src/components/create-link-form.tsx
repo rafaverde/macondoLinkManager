@@ -46,7 +46,6 @@ export default function CreateLinkForm() {
 
   // Hooks de dados
   const { data: clients } = useClients();
-  const { data: campaigns } = useCampaigns();
 
   // Hook de criação
   const { mutate, isPending } = useCreateLink(() => {
@@ -63,6 +62,11 @@ export default function CreateLinkForm() {
       tags: [],
     },
   });
+
+  // Assistir o valor do campo "clientId" e passa para o hook de campanhas
+  const selectedClientId = form.watch("clientId");
+  const { data: campaigns, isLoading: isLoadingCampaigns } =
+    useCampaigns(selectedClientId);
 
   function onSubmit(data: CreateLinkFormValues) {
     mutate({
@@ -99,7 +103,7 @@ export default function CreateLinkForm() {
             />
 
             <div className="grid items-start gap-6 md:grid-cols-2">
-              {/* 2. Cliente */}
+              {/* Cliente */}
               <FormField
                 control={form.control}
                 name="clientId"
@@ -108,7 +112,10 @@ export default function CreateLinkForm() {
                     <FormLabel>Cliente</FormLabel>
                     <div className="flex gap-1">
                       <Select
-                        onValueChange={field.onChange}
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          form.setValue("campaignId", "");
+                        }}
                         defaultValue={field.value}
                       >
                         <FormControl>
@@ -134,7 +141,7 @@ export default function CreateLinkForm() {
                 )}
               />
 
-              {/* 3. Campanha */}
+              {/* Campanha */}
               <FormField
                 control={form.control}
                 name="campaignId"
@@ -144,19 +151,32 @@ export default function CreateLinkForm() {
                     <div className="flex gap-1">
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
+                        disabled={!selectedClientId || isLoadingCampaigns}
                       >
                         <FormControl>
                           <SelectTrigger className="h-11 w-full">
-                            <SelectValue placeholder="Selecione..." />
+                            <SelectValue
+                              placeholder={
+                                !selectedClientId
+                                  ? "Selecione primeiro um cliente"
+                                  : "Selecione a campanha"
+                              }
+                            />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {campaigns?.map((campaign) => (
-                            <SelectItem key={campaign.id} value={campaign.id}>
-                              {campaign.name}
-                            </SelectItem>
-                          ))}
+                          {campaigns?.length === 0 ? (
+                            <div className="text-muted-foreground p-2 text-center text-sm">
+                              Nenhuma campanha encontrada.
+                            </div>
+                          ) : (
+                            campaigns?.map((campaign) => (
+                              <SelectItem key={campaign.id} value={campaign.id}>
+                                {campaign.name}
+                              </SelectItem>
+                            ))
+                          )}
                         </SelectContent>
                       </Select>
                       <CreateCampaignDialog

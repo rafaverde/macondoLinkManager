@@ -6,13 +6,16 @@ export interface Campaign {
   name: string;
 }
 
-export function useCampaigns() {
+export function useCampaigns(clientId?: string) {
   return useQuery({
-    queryKey: ["campaigns"],
+    queryKey: ["campaigns", { clientId }],
     queryFn: async () => {
-      const { data } = await api.get<Campaign[]>("/campaigns");
+      const { data } = await api.get<Campaign[]>("/campaigns", {
+        params: { clientId },
+      });
       return data;
     },
+    enabled: !!clientId,
     staleTime: 1000 * 60 * 5,
   });
 }
