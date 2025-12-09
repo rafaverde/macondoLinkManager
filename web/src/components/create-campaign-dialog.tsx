@@ -23,7 +23,7 @@ interface CreateCampaignDialogProps {
   onSelectNew: (id: string) => void;
 }
 
-export default function CreateCampaignDialogProps({
+export default function CreateCampaignDialog({
   clientId,
   onSelectNew,
 }: CreateCampaignDialogProps) {
@@ -79,7 +79,7 @@ export default function CreateCampaignDialogProps({
             </div>
           </div>
           <DialogFooter>
-            <DialogClose>
+            <DialogClose asChild>
               <Button variant="outline">Cancelar</Button>
             </DialogClose>
             <Button type="submit" disabled={isPending}>

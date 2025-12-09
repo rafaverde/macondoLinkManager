@@ -28,6 +28,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import CreateClientDialog from "./create-client-dialog";
+import CreateCampaignDialog from "./create-campaign-dialog";
 
 const createLinkSchema = z.object({
   originalUrl: z.url("Insira uma URL válida, ex.: 'https://...'"),
@@ -110,23 +112,29 @@ export default function CreateLinkForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Cliente</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="h-11 w-full">
-                          <SelectValue placeholder="Selecione..." />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {clients?.map((client) => (
-                          <SelectItem key={client.id} value={client.id}>
-                            {client.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <div className="flex gap-1">
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="h-11 w-full">
+                            <SelectValue placeholder="Selecione..." />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {clients?.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>
+                              {client.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      <CreateClientDialog
+                        onSelectNew={(id) => field.onChange(id)}
+                      />
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -139,23 +147,30 @@ export default function CreateLinkForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Campanha</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="h-11 w-full">
-                          <SelectValue placeholder="Selecione..." />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {campaigns?.map((campaign) => (
-                          <SelectItem key={campaign.id} value={campaign.id}>
-                            {campaign.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <div className="flex gap-1">
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="h-11 w-full">
+                            <SelectValue placeholder="Selecione..." />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {campaigns?.map((campaign) => (
+                            <SelectItem key={campaign.id} value={campaign.id}>
+                              {campaign.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <CreateCampaignDialog
+                        clientId={form.watch("clientId")}
+                        onSelectNew={(id) => field.onChange(id)}
+                      />
+                    </div>
+
                     <FormMessage />
                   </FormItem>
                 )}

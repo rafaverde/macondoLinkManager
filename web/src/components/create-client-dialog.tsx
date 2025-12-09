@@ -74,7 +74,7 @@ export default function CreateClientDialog({
           </div>
 
           <DialogFooter>
-            <DialogClose>
+            <DialogClose asChild>
               <Button variant="outline">Cancelar</Button>
             </DialogClose>
             <Button type="submit" disabled={isPending}>
