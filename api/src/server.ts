@@ -38,6 +38,7 @@ const start = async () => {
       origin: [env.FRONTEND_URL, "http:/localhost:3000"],
       // Permite que cookies sejam enviados/recebidos
       credentials: true,
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     })
     // Registra o Swagger
     await app.register(swagger, {

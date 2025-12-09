@@ -9,6 +9,7 @@ import {
   RiDeleteBinLine,
   RiExternalLinkLine,
   RiFileCopyLine,
+  RiLoader4Line,
   RiMoreFill,
   RiPencilLine,
   RiShareLine,
@@ -20,12 +21,27 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { useState } from "react";
+import { useDeleteLink } from "@/hooks/use-delete-links";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogContent,
+} from "./ui/alert-dialog";
 
 interface LinkCardProps {
   link: Link;
 }
 
 export default function LinkCard({ link }: LinkCardProps) {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const { mutate: deleteLink, isPending: isDeleting } = useDeleteLink();
+
   const initials = createInitials(link.client?.name);
 
   const handleCopyLink: any = () => {
@@ -33,6 +49,12 @@ export default function LinkCard({ link }: LinkCardProps) {
     const shortUrl = formatLink(link.shortCode);
     navigator.clipboard.writeText(shortUrl);
     toast.success("Link copiado para a área de transferência.");
+  };
+
+  const handleDelete = () => {
+    deleteLink(link.id, {
+      onSuccess: () => setIsDeleteDialogOpen(false),
+    });
   };
 
   return (
@@ -116,8 +138,12 @@ export default function LinkCard({ link }: LinkCardProps) {
                   <RiBarChartFill />
                   Estatísticas
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <RiDeleteBinLine />
+
+                <DropdownMenuItem
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                  className="hover:text-destructive! cursor-pointer"
+                >
+                  <RiDeleteBinLine className="hover:text-destructive!" />
                   Deletar
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -125,6 +151,42 @@ export default function LinkCard({ link }: LinkCardProps) {
           </div>
         </CardContent>
       </Card>
+
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Tem certeza que vai deletar o link?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Essa ação não pode ser desfeita! O link{" "}
+              <strong>{formatLink(link.shortCode)}</strong> deixará de funcionar
+              imediatamente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleDelete();
+              }}
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <RiLoader4Line className="size-4 animate-spin" />
+              ) : (
+                "Sim, deletar!"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
