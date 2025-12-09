@@ -16,6 +16,7 @@ import { RiLogoutBoxLine } from "@remixicon/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import ModeToggle from "./ui/mode-toggle";
+import { createInitials } from "@/lib/utils";
 
 export default function AppHeader() {
   const router = useRouter();
@@ -38,12 +39,7 @@ export default function AppHeader() {
     }
   }
 
-  const initials = user?.name
-    .split(" ")
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+  const initials = createInitials(user?.name);
 
   return (
     <header className="bg-background shadow-b-sm sticky top-0 z-10 flex h-20 items-center justify-between border-b px-4">

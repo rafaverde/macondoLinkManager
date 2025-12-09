@@ -10,7 +10,7 @@ export interface CreateCampaignDTO {
 // Interface que define as obrigações do repositório de Campanhas
 export interface CampaignsRepository {
   create(data: CreateCampaignDTO): Promise<Campaign>;
-  findMany(): Promise<Campaign[]>;
+  findMany(clientId?: string): Promise<Campaign[]>;
   findByNameAndClientId(
     name: string,
     clientId: string

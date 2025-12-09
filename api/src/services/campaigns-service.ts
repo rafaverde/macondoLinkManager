@@ -1,7 +1,7 @@
 import { CampaignsRepository } from "../repositories/campaigns-repository";
 import { ClientsRepository } from "../repositories/clients-repository";
 import { CampaignAlreadyExistsError } from "./errors/campaign-already-exists-error";
-import { ClientNotFoundError } from "./errors/link-not-found-error";
+import { LinkNotFoundError } from "./errors/link-not-found-error";
 
 interface CreateCampaignRequest {
   name: string;
@@ -16,8 +16,8 @@ export class CampaignsService {
   ) {}
 
   // Serviço para listar
-  async listCampaigns() {
-    const campaigns = await this.campaignsRepository.findMany();
+  async listCampaigns(clientId?: string) {
+    const campaigns = await this.campaignsRepository.findMany(clientId);
     return campaigns;
   }
 
@@ -26,7 +26,7 @@ export class CampaignsService {
     // Regra de negócio 1: O cliente deve existir
     const client = await this.clientsRepository.findById(clientId);
     if (!client) {
-      throw new ClientNotFoundError();
+      throw new LinkNotFoundError();
     }
 
     // Regra de negócio 2: A camapnha não pode ser duplicada para o cliente

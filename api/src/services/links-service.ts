@@ -75,6 +75,7 @@ export class LinksService {
     userId: string;
     clientId?: string;
     campaignId?: string;
+    search?: string
   }) {
     const links = await this.linksRepository.findMany(filters);
     return links;

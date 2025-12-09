@@ -1,0 +1,28 @@
+import { api } from "@/lib/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+interface CreateCampaignArgs {
+  name: string;
+  clientId: string;
+}
+
+export function useCreateCampaign(onSuccessCallback?: (newId: string) => void) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: CreateCampaignArgs) => {
+      const response = await api.post("/campaigns", data);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      toast.success(`Campanha ${data.name} criada com sucesso!`);
+      queryClient.invalidateQueries({ queryKey: ["campaigns"] });
+      if (onSuccessCallback) {
+        onSuccessCallback(data.id);
+      }
+    },
+    onError: () =>
+      toast.error("Erro ao criar campanha. Tente novamente mais tarde."),
+  });
+}

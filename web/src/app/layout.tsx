@@ -3,6 +3,7 @@ import { Onest, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { TanstackProvider } from "@/providers/tanstack-provider";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "sonner";
 
 const onest = Onest({
   variable: "--font-onest",
@@ -33,7 +34,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <TanstackProvider>{children}</TanstackProvider>
+          <TanstackProvider>
+            {children}
+            <Toaster />
+          </TanstackProvider>
         </ThemeProvider>
       </body>
     </html>
