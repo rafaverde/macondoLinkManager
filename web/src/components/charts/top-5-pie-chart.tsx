@@ -21,25 +21,27 @@ import { Skeleton } from "../ui/skeleton";
 import { RiEmotionUnhappyLine, RiLineChartLine } from "@remixicon/react";
 import { Cell, Label, Pie, PieChart } from "recharts";
 
-interface GenericPieChartProps extends React.ComponentProps<typeof Card> {
+interface Top5PieChartProps extends React.ComponentProps<typeof Card> {
   data: any[] | undefined;
   dataKey: string; //Ex.: "count"
   nameKey: string; //Ex.: "browser" or "ip"
   title: string;
   description?: string;
+  centerLabel?: string;
   isLoading?: boolean;
 }
 
-export function GenericPieChart({
+export function Top5PieChart({
   data,
   dataKey,
   nameKey,
   title,
   description,
+  centerLabel = "Total",
   isLoading,
   className,
   ...props
-}: GenericPieChartProps) {
+}: Top5PieChartProps) {
   // Processa dados
   const processedData = React.useMemo(() => {
     if (!data) return [];
@@ -139,7 +141,7 @@ export function GenericPieChart({
                             y={(viewBox.cy || 0) + 24}
                             className="fill-muted-foreground"
                           >
-                            Cliques
+                            {centerLabel}
                           </tspan>
                         </text>
                       );

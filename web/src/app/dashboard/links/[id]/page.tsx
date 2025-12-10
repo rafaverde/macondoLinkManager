@@ -11,7 +11,7 @@ import { useLink } from "@/hooks/use-link";
 import CardNumbers from "@/components/card-numbers";
 import { useLinkMetrics } from "@/hooks/use-link-metrics";
 import { ClicksAreaChart } from "@/components/charts/clicks-area-chart";
-import { GenericPieChart } from "@/components/charts/generic-pie-chart";
+import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
 
 export default function LinkDetailsPage() {
   const params = useParams();
@@ -115,8 +115,8 @@ export default function LinkDetailsPage() {
         {/* Gráficos secundários (Pizza) */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {/* Gráfico navegadores */}
-          <GenericPieChart
-            title="Top Navegadores"
+          <Top5PieChart
+            title="Top 5 Navegadores"
             description="Navegadores mais utilizados"
             data={metrics?.topBrowsers}
             dataKey="count"
@@ -125,8 +125,8 @@ export default function LinkDetailsPage() {
           />
 
           {/* Gráfico localizações */}
-          <GenericPieChart
-            title="Top Localizações"
+          <Top5PieChart
+            title="Top 5 Localizações"
             description="Regiões com mais acessos (IP)"
             data={metrics?.topLocations}
             dataKey="count"
