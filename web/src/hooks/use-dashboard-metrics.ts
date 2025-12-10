@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import { GeneralMetrics, TopClient } from "@/types";
+import { GeneralMetrics, OverviewMetrics, TopClient } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
 export function useDashboardMetrics() {
@@ -21,10 +21,24 @@ export function useDashboardMetrics() {
     },
   });
 
+  // Overview (Linhas gerais)
+  const overviewQuery = useQuery({
+    queryKey: ["metrics", "overview"],
+    queryFn: async () => {
+      const { data } = await api.get<OverviewMetrics>("/metrics/overview");
+      return data;
+    },
+  });
+
   return {
     general: generalQuery,
     topClients: topClientsQuery,
-    isLoading: generalQuery.isLoading || topClientsQuery.isLoading,
-    isError: generalQuery.isError || topClientsQuery.isError,
+    overview: overviewQuery,
+    isLoading:
+      generalQuery.isLoading ||
+      topClientsQuery.isLoading ||
+      overviewQuery.isLoading,
+    isError:
+      generalQuery.isError || topClientsQuery.isError || overviewQuery.isError,
   };
 }

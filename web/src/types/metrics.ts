@@ -13,3 +13,5 @@ export interface LinkMetrics {
   topBrowsers: { browser: string; count: number }[];
   topLocations: { ip: string; count: number }[];
 }
+
+export type OverviewMetrics = LinkMetrics;

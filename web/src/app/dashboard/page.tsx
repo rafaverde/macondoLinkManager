@@ -5,20 +5,25 @@ import { Button } from "@/components/ui/button";
 import CardNumbers from "@/components/card-numbers";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDashboardMetrics } from "@/hooks/use-dashboard-metrics";
-import { RiArrowRightLine } from "@remixicon/react";
+import { RiArrowRightLine, RiLinkUnlink } from "@remixicon/react";
 import Link from "next/link";
+import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
 
 export default function DashboardPage() {
-  const { general, topClients, isLoading } = useDashboardMetrics();
+  const { general, topClients, overview, isLoading } = useDashboardMetrics();
 
-  // Dados fictícios para o Skeleton não quebrar o layout visualmente
   if (isLoading) {
     return <DashboardSkeleton />;
   }
 
   // Se der erro, mostra algo simples (pode melhorar depois)
-  if (general.isError || topClients.isError) {
-    return <div className="text-destructive">Erro ao carregar dados.</div>;
+  if (general.isError || topClients.isError || overview.isError) {
+    return (
+      <div className="text-foreground flex h-full w-full flex-col items-center justify-center gap-4">
+        <RiLinkUnlink className="text-primary size-12" />
+        Erro ao carregar dados. Tente novamente mais tarde.
+      </div>
+    );
   }
 
   return (
@@ -33,7 +38,7 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 grid-rows-2 space-y-4 py-8 lg:grid-cols-3 lg:gap-4 lg:space-y-0">
+      <div className="grid grid-cols-1 grid-rows-2 space-y-4 py-8 lg:grid-cols-3 lg:grid-rows-1 lg:gap-4 lg:space-y-0">
         <div className="flex w-full flex-col gap-4 lg:col-span-1">
           <CardNumbers
             title="Total de Cliques"
@@ -43,6 +48,28 @@ export default function DashboardPage() {
         </div>
 
         <TopClientsChart data={topClients.data} className="col-span-2" />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Top5PieChart
+          title="Top 5 Navegadores"
+          description="Navegadores mais utilizados nos últimos 30 dias em todos os links."
+          data={overview?.data?.topBrowsers}
+          dataKey="count"
+          nameKey="browser"
+          centerLabel="Cliques"
+          isLoading={isLoading}
+        />
+
+        <Top5PieChart
+          title="Top 5 Localizações"
+          description="Origem de todos os cliques."
+          data={overview?.data?.topLocations}
+          dataKey="count"
+          nameKey="ip"
+          centerLabel="Cliques"
+          isLoading={isLoading}
+        />
       </div>
     </>
   );
