@@ -11,6 +11,7 @@ import { useLink } from "@/hooks/use-link";
 import CardNumbers from "@/components/card-numbers";
 import { useLinkMetrics } from "@/hooks/use-link-metrics";
 import { ClicksAreaChart } from "@/components/charts/clicks-area-chart";
+import { GenericPieChart } from "@/components/charts/generic-pie-chart";
 
 export default function LinkDetailsPage() {
   const params = useParams();
@@ -25,6 +26,8 @@ export default function LinkDetailsPage() {
 
   // Busca métricas do link
   const { data: metrics, isLoading: isLoadingMetrics } = useLinkMetrics(linkId);
+
+  console.log(metrics);
 
   // Cliques de hoje
   const todayDate = new Date().toISOString().split("T")[0];
@@ -79,6 +82,7 @@ export default function LinkDetailsPage() {
           </div>
         )}
 
+        {/* Cards totais */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <CardNumbers
             title="Total de cliques"
@@ -100,10 +104,33 @@ export default function LinkDetailsPage() {
           />
         </div>
 
+        {/* Gráfico últimos 30 dias */}
         <div>
           <ClicksAreaChart
             data={metrics?.clicksByDate}
             isLoading={isLoadingMetrics}
+          />
+        </div>
+
+        {/* Gráficos secundários (Pizza) */}
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          {/* Gráfico navegadores */}
+          <GenericPieChart
+            title="Top Navegadores"
+            description="Navegadores mais utilizados"
+            data={metrics?.topBrowsers}
+            dataKey="count"
+            nameKey="browser"
+            isLoading={isLoadingMetrics}
+          />
+
+          {/* Gráfico localizações */}
+          <GenericPieChart
+            title="Top Localizações"
+            description="Regiões com mais acessos (IP)"
+            data={metrics?.topLocations}
+            dataKey="count"
+            nameKey="ip"
           />
         </div>
       </div>
