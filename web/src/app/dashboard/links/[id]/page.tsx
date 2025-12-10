@@ -10,6 +10,7 @@ import { useParams } from "next/navigation";
 import { useLink } from "@/hooks/use-link";
 import CardNumbers from "@/components/card-numbers";
 import { useLinkMetrics } from "@/hooks/use-link-metrics";
+import { ClicksAreaChart } from "@/components/charts/clicks-area-chart";
 
 export default function LinkDetailsPage() {
   const params = useParams();
@@ -54,48 +55,57 @@ export default function LinkDetailsPage() {
         </Link>
       </div>
 
-      {isLoadingLink ? (
-        <div className="flex flex-col gap-4 pt-8 pb-4">
-          <LinkCardSkeleton />
-        </div>
-      ) : isLinkError || !link ? (
-        <div className="flex h-full flex-col items-center justify-center py-10 text-center">
-          <RiLinkUnlink className="text-primary mb-6 size-16" />
-          <h2 className="text-destructive text-xl font-bold">
-            Erro ao carregar link
-          </h2>
-          <p className="text-muted-foreground mb-4">
-            O link pode ter sido removido ou você não tem permissão.
-          </p>
-          <Button asChild variant="outline">
-            <Link href="/dashboard/links">Voltar para lista</Link>
-          </Button>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-4 pt-8 pb-4">
-          <LinkCard link={link} />
-        </div>
-      )}
+      <div className="flex flex-col gap-4">
+        {isLoadingLink ? (
+          <div className="flex flex-col gap-4 pt-8">
+            <LinkCardSkeleton />
+          </div>
+        ) : isLinkError || !link ? (
+          <div className="flex h-full flex-col items-center justify-center py-10 text-center">
+            <RiLinkUnlink className="text-primary mb-6 size-16" />
+            <h2 className="text-destructive text-xl font-bold">
+              Erro ao carregar link
+            </h2>
+            <p className="text-muted-foreground mb-4">
+              O link pode ter sido removido ou você não tem permissão.
+            </p>
+            <Button asChild variant="outline">
+              <Link href="/dashboard/links">Voltar para lista</Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4 pt-8">
+            <LinkCard link={link} />
+          </div>
+        )}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <CardNumbers
-          title="Total de cliques"
-          description="clique(s) em todo o período"
-          value={link?._count?.clicks}
-          isLoading={isLoadingLink}
-        />
-        <CardNumbers
-          title="Cliques de hoje"
-          description="clique(s) no período do dia atual"
-          value={todayClicks}
-          isLoading={isLoadingLink}
-        />
-        <CardNumbers
-          title="Últimos 7 dias"
-          description="clique(s) nos últimos 7 dias"
-          value={last7DaysClicks}
-          isLoading={isLoadingLink}
-        />
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <CardNumbers
+            title="Total de cliques"
+            description="clique(s) em todo o período"
+            value={link?._count?.clicks}
+            isLoading={isLoadingLink}
+          />
+          <CardNumbers
+            title="Cliques de hoje"
+            description="clique(s) no período do dia atual"
+            value={todayClicks}
+            isLoading={isLoadingLink}
+          />
+          <CardNumbers
+            title="Últimos 7 dias"
+            description="clique(s) nos últimos 7 dias"
+            value={last7DaysClicks}
+            isLoading={isLoadingLink}
+          />
+        </div>
+
+        <div>
+          <ClicksAreaChart
+            data={metrics?.clicksByDate}
+            isLoading={isLoadingMetrics}
+          />
+        </div>
       </div>
     </>
   );
