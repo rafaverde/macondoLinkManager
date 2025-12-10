@@ -70,7 +70,7 @@ export default function AppSidebar({
                   asChild
                   isActive={isActive}
                   tooltip={item.label}
-                  className="data-[active=true]:border-macondo-gray-300 hover:bg-macondo-gray-100 p-4 data-[active=true]:border"
+                  className="data-[active=true]:border-macondo-gray-300 hover:bg-macondo-gray-100 dark:hover:bg-macondo-gray-800 p-4 data-[active=true]:border"
                 >
                   <Link
                     href={item.href}

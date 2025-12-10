@@ -70,11 +70,13 @@ export default function LinkCard({ link }: LinkCardProps) {
 
           <div className="flex-1">
             <div>
-              <h2 className="text-2xl leading-tight">{link.client?.name}</h2>
+              <Link href={`/dashboard/links/${link.id}`}>
+                <h2 className="text-2xl leading-tight">{link.client?.name}</h2>
 
-              <h3 className="text-muted-foreground">
-                {link.campaign?.name || "Nomeia a campanha"}
-              </h3>
+                <h3 className="text-muted-foreground">
+                  {link.campaign?.name || "Nomeia a campanha"}
+                </h3>
+              </Link>
 
               <button onClick={handleCopyLink}>
                 <div className="text-muted-foreground group/link flex cursor-pointer gap-1 py-1 select-none">
