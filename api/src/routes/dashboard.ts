@@ -20,6 +20,27 @@ const topClientsSchema = z.array(
   })
 );
 
+const analyticsOverviewSchema = z.object({
+clicksByDate: z.array(
+    z.object({
+      date: z.string(),
+      count: z.number(),
+    })
+  ),
+  topBrowsers: z.array(
+    z.object({
+      browser: z.string(),
+      count: z.number(),
+    })
+  ),
+  topLocations: z.array(
+    z.object({
+      ip: z.string(),
+      count: z.number(),
+    })
+  ),
+})
+
 export async function dashboardRoutes(app: FastifyInstance) {
   // Rota GET métricas gerais
   app.withTypeProvider<ZodTypeProvider>().get(
@@ -72,4 +93,30 @@ export async function dashboardRoutes(app: FastifyInstance) {
       return reply.send(topClients);
     }
   );
+
+  // Rota GET Overview
+  app.withTypeProvider<ZodTypeProvider>().get(
+    "/metrics/overview",
+    {
+      onRequest: [authHook],
+      schema: {
+        tags: ["Analytics"],
+        summary: "Obtém métricas agregadas de todos os links do usuários (últimos 30 dias)",
+        response: {
+          200: analyticsOverviewSchema,
+        }
+      }
+    },
+    async (request, reply) => {
+      const userId = request.user.sub
+
+      const clicksRepo = new PrismaClicksRepository();
+      const linksRepo = new PrismaLinksRepository();
+      const clientsRepo = new PrismaClientsRepository();
+      const service = new DashboardService(clicksRepo, linksRepo, clientsRepo);
+
+      const metrics = await service.getAnalyticsOverview(userId);
+      return reply.send(metrics);
+    }
+  )
 }

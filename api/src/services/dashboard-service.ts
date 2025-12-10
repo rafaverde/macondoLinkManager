@@ -31,4 +31,10 @@ export class DashboardService {
       clicks: client._count,
     }));
   }
+
+  async getAnalyticsOverview(userId: string) {
+    // Visão geral com padrão para 30 dias
+    const metrics = await this.clicksRepository.getMetricsByUserId(userId, 30)
+    return metrics
+  }
 }
