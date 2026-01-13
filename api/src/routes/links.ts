@@ -8,6 +8,7 @@ import { LinksService, NotAllowedError } from "../services/links-service";
 import { LinkNotFoundError } from "../services/errors/link-not-found-error";
 import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
 import { ClientNotFoundError } from "../services/errors/client-not-found-error copy";
+import { requireLinkOwner } from "../middlewares/require-link-owner";
 
 const linkSchema = z.object({
   id: z.uuid(),
@@ -138,7 +139,7 @@ export async function linksRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
     "/links/:id",
     {
-      onRequest: [authHook],
+      onRequest: [authHook, requireLinkOwner],
       schema: {
         tags: ["Links"],
         summary: "Obtém detalhes de um link.",
@@ -176,7 +177,7 @@ export async function linksRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().put(
     "/links/:id",
     {
-      onRequest: [authHook],
+      onRequest: [authHook, requireLinkOwner],
       schema: {
         tags: ["Links"],
         summary: "Atualiza informações de um link.",
@@ -229,7 +230,7 @@ export async function linksRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().delete(
     "/links/:id",
     {
-      onRequest: [authHook],
+      onRequest: [authHook, requireLinkOwner],
       schema: {
         tags: ["Links"],
         summary: "Deleta um link.",
@@ -267,7 +268,7 @@ export async function linksRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
     "/links/:id/metrics",
     {
-      onRequest: [authHook],
+      onRequest: [authHook, requireLinkOwner],
       schema: {
         tags: ["Analytics"],
         summary: "Obtém estatísticas de acesso do link.",

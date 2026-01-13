@@ -15,7 +15,7 @@ interface CreateLinkRequest {
 
 export class NotAllowedError extends Error {
   constructor() {
-    super("Você não tem permissão para alterar este link.");
+    super("Você não tem permissão para acessar este link.");
   }
 }
 
