@@ -5,8 +5,8 @@ import { authHook } from "../hooks/auth";
 import { PrismaCampaignsRepository } from "../repositories/prisma/prisma-campaign-repository";
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { CampaignsService } from "../services/campaigns-service";
-import { LinkNotFoundError } from "../services/errors/link-not-found-error";
 import { CampaignAlreadyExistsError } from "../services/errors/campaign-already-exists-error";
+import { ClientNotFoundError } from "../services/errors/client-not-found-error copy";
 
 const campaignSchema = z.object({
   id: z.uuid(),
@@ -76,7 +76,7 @@ export async function campaignsRoutes(app: FastifyInstance) {
         return reply.status(201).send(campaign);
       } catch (err) {
         // Lida com nossos erros customizados
-        if (err instanceof LinkNotFoundError) {
+        if (err instanceof ClientNotFoundError) {
           return reply.status(404).send({ message: err.message });
         }
         if (err instanceof CampaignAlreadyExistsError) {
