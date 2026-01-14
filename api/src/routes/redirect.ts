@@ -57,6 +57,14 @@ export async function redirectRoutes(app: FastifyInstance) {
 
       await service.trackClick(link.id, ip, userAgent);
 
+      request.log.debug(
+        {
+          shortCode,
+          ip,
+        },
+        "Click tracked",
+      );
+
       // Redireciona para a URL original
       return reply.redirect(link.originalUrl);
     },

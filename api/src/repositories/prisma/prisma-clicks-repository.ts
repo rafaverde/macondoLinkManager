@@ -7,12 +7,20 @@ import {
 } from "../clicks-repository";
 
 export class PrismaClicksRepository implements ClicksRepository {
-  async create({ linkId, ipAddress, userAgent }: CreateClickDTO) {
+  async create({
+    linkId,
+    ipAddress,
+    userAgent,
+    country,
+    city,
+  }: CreateClickDTO) {
     const click = await prisma.click.create({
       data: {
         linkId,
         ipAddress,
         userAgent,
+        country,
+        city,
       },
     });
 
@@ -112,8 +120,11 @@ export class PrismaClicksRepository implements ClicksRepository {
     return count;
   }
 
-  async getMetricsByUserId(userId: string, days: number): Promise<MetricsResult> {
-    const startDate = subDays(new Date(), days)
+  async getMetricsByUserId(
+    userId: string,
+    days: number,
+  ): Promise<MetricsResult> {
+    const startDate = subDays(new Date(), days);
 
     // Busca todos os cliques do user
     const clicks = await prisma.click.findMany({
@@ -126,27 +137,27 @@ export class PrismaClicksRepository implements ClicksRepository {
         },
       },
       orderBy: {
-        timestamp: "asc"
-      }
-    })
-    
+        timestamp: "asc",
+      },
+    });
+
     // Agrupar por data
     const clicksByDateMap = new Map<string, number>();
     for (let i = 0; i <= days; i++) {
-      const date = subDays(new Date(), i)
-      const dateString = format(date, "yyyy-MM-dd")
-      clicksByDateMap.set(dateString, 0)
+      const date = subDays(new Date(), i);
+      const dateString = format(date, "yyyy-MM-dd");
+      clicksByDateMap.set(dateString, 0);
     }
 
     clicks.forEach((click) => {
-      const dateString = format(click.timestamp, "yyyy-MM-dd")
-      const currentCount = clicksByDateMap.get(dateString) ?? 0
-      clicksByDateMap.set(dateString, currentCount + 1)
-    })
+      const dateString = format(click.timestamp, "yyyy-MM-dd");
+      const currentCount = clicksByDateMap.get(dateString) ?? 0;
+      clicksByDateMap.set(dateString, currentCount + 1);
+    });
 
     const clicksByDate = Array.from(clicksByDateMap.entries())
-    .map(([date, count]) => ({date, count}))
-    .sort((a, b) => a.date.localeCompare(b.date))
+      .map(([date, count]) => ({ date, count }))
+      .sort((a, b) => a.date.localeCompare(b.date));
 
     // Agrupar por Browser
     const browserMap = new Map<string, number>();
@@ -157,7 +168,7 @@ export class PrismaClicksRepository implements ClicksRepository {
       else if (ua.includes("Firefox")) browser = "Firefox";
       else if (ua.includes("Safari")) browser = "Safari";
       else if (ua.includes("Edge")) browser = "Edge";
-      
+
       browserMap.set(browser, (browserMap.get(browser) ?? 0) + 1);
     });
     const topBrowsers = Array.from(browserMap.entries())

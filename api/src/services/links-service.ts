@@ -2,6 +2,7 @@ import { ClicksRepository } from "../repositories/clicks-repository";
 import { ClientsRepository } from "../repositories/clients-repository";
 import { LinksRepository } from "../repositories/links-repository";
 import { generateShortCode } from "../utils/generate-short-code";
+import { resolveGeoLocation } from "../utils/geoip";
 import { ClientNotFoundError } from "./errors/client-not-found-error";
 import { LinkNotFoundError } from "./errors/link-not-found-error";
 
@@ -109,10 +110,14 @@ export class LinksService {
   }
 
   async trackClick(linkId: string, ipAddress?: string, userAgent?: string) {
+    const { city, country } = resolveGeoLocation(ipAddress);
+
     await this.clicksRepository.create({
       linkId,
       ipAddress: ipAddress ?? null,
       userAgent: userAgent ?? null,
+      country,
+      city,
     });
   }
 
