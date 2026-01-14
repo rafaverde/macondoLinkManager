@@ -37,7 +37,7 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
       // Busca os dados do usuário no Google
       const response = await fetch(
         "https://www.googleapis.com/oauth2/v2/userinfo",
-        { headers: { Authorization: `Bearer ${token.access_token}` } }
+        { headers: { Authorization: `Bearer ${token.access_token}` } },
       );
 
       const googleUser = await response.json();
@@ -64,7 +64,7 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
         },
         {
           expiresIn: "7d",
-        }
+        },
       );
 
       // Envia resposta  HTTP (Cookie e redirecionamento)
@@ -79,7 +79,9 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
     } catch (err) {
       // Lida com erros
       if (err instanceof DomainNotAllowedError) {
-        return reply.status(403).send({ message: err.message });
+        return reply
+          .status(403)
+          .send({ code: "DOMAIN_NOT_ALLOWED", message: err.message });
       }
 
       // Loga o erro real e envia uma resposta genérica
@@ -94,9 +96,12 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
     reply.clearCookie("macondo.token", {
       path: "/",
       httpOnly: true,
-      sameSite: "lax"
-    })
+      sameSite: "lax",
+    });
 
-    return reply.status(200).send({message: "Logout realizado com sucesso."})
-  })
+    return reply.status(200).send({
+      code: "LOGOUT_SUCESS",
+      message: "Logout realizado com sucesso.",
+    });
+  });
 });
