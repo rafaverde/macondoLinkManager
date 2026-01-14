@@ -4,7 +4,7 @@ import { z } from "zod";
 import { authHook } from "../hooks/auth";
 import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repository";
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
-import { LinksService, NotAllowedError } from "../services/links-service";
+import { LinksService } from "../services/links-service";
 import { LinkNotFoundError } from "../services/errors/link-not-found-error";
 import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
 import { ClientNotFoundError } from "../services/errors/client-not-found-error copy";
@@ -153,7 +153,6 @@ export async function linksRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const userId = request.user.sub;
 
       const linksRepo = new PrismaLinksRepository();
       const clientsRepo = new PrismaClientsRepository();
@@ -161,13 +160,13 @@ export async function linksRoutes(app: FastifyInstance) {
       const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
 
       try {
-        const link = await service.getLink(id, userId);
+        const link = await service.getLink(id);
         if (!link)
           return reply.status(404).send({ message: "Link não encontrado." });
         return reply.send(link);
       } catch (err) {
-        if (err instanceof NotAllowedError)
-          return reply.status(403).send({ message: err.message });
+        if (err)
+          return reply.status(403).send({ message: "Você não tem permissão para acessar esse link." });
         throw err;
       }
     }
@@ -199,7 +198,6 @@ export async function linksRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = request.params;
       const { originalUrl, clientId, campaignId } = request.body;
-      const userId = request.user.sub;
 
       const linksRepo = new PrismaLinksRepository();
       const clientsRepo = new PrismaClientsRepository();
@@ -207,7 +205,7 @@ export async function linksRoutes(app: FastifyInstance) {
       const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
 
       try {
-        const updatedLink = await service.updateLink(id, userId, {
+        const updatedLink = await service.updateLink(id, {
           originalUrl,
           clientId,
           campaignId,
@@ -215,8 +213,8 @@ export async function linksRoutes(app: FastifyInstance) {
 
         return reply.status(200).send(updatedLink);
       } catch (err) {
-        if (err instanceof NotAllowedError) {
-          return reply.status(403).send({ message: err.message });
+        if (err) {
+          return reply.status(403).send({ message: "Você não tem permissão para acessar esse link." });
         }
         if (err instanceof ClientNotFoundError) {
           return reply.status(404).send({ message: err.message });
@@ -252,11 +250,11 @@ export async function linksRoutes(app: FastifyInstance) {
       const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
 
       try {
-        await service.deleteLink(id, userId);
+        await service.deleteLink(id);
         return reply.status(204).send();
       } catch (err) {
-        if (err instanceof NotAllowedError)
-          return reply.status(403).send({ message: err.message });
+        if (err)
+          return reply.status(403).send({ message: "Você não tem permissão para acessar esse link." });
         if (err instanceof LinkNotFoundError)
           return reply.status(404).send({ message: err.message });
         throw err;
@@ -296,11 +294,11 @@ export async function linksRoutes(app: FastifyInstance) {
       const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
 
       try {
-        const metrics = await service.getLinkMetrics(id, userId, days);
+        const metrics = await service.getLinkMetrics(id, days);
         return reply.status(200).send(metrics);
       } catch (err) {
-        if (err instanceof NotAllowedError) {
-          return reply.status(403).send({ message: err.message });
+        if (err) {
+          return reply.status(403).send({ message: "Você não tem permissão para acessar esse link." });
         }
         if (err instanceof LinkNotFoundError) {
           return reply.status(404).send({ message: err.message });

@@ -13,12 +13,6 @@ interface CreateLinkRequest {
   tags?: string[];
 }
 
-export class NotAllowedError extends Error {
-  constructor() {
-    super("Você não tem permissão para acessar este link.");
-  }
-}
-
 export class LinksService {
   constructor(
     private linksRepository: LinksRepository,
@@ -81,15 +75,11 @@ export class LinksService {
     return links;
   }
 
-  async getLink(id: string, userId: string) {
+  async getLink(id: string) {
     const link = await this.linksRepository.findById(id);
 
     if (!link) {
-      return null;
-    }
-
-    if (link.userId !== userId) {
-      throw new NotAllowedError();
+      throw new LinkNotFoundError()
     }
 
     return link;
@@ -97,18 +87,13 @@ export class LinksService {
 
   async updateLink(
     id: string,
-    userId: string,
     data: {
       originalUrl?: string;
       clientId?: string;
       campaignId?: string | null;
     }
   ) {
-    const link = await this.getLink(id, userId);
-
-    if (!link) {
-      throw new LinkNotFoundError();
-    }
+    await this.getLink(id);
 
     if (data.clientId) {
       const client = await this.clientsRepository.findById(data.clientId);
@@ -119,13 +104,8 @@ export class LinksService {
     return updatedLink;
   }
 
-  async deleteLink(id: string, userId: string) {
-    const link = await this.getLink(id, userId);
-
-    if (!link) {
-      throw new LinkNotFoundError();
-    }
-
+  async deleteLink(id: string) {
+    await this.getLink(id);
     await this.linksRepository.delete(id);
   }
 
@@ -137,10 +117,9 @@ export class LinksService {
     });
   }
 
-  async getLinkMetrics(id: string, userId: string, days: number = 30) {
-    // Segurança: Verifica se o link existe e se pertence ao usuário
-    // O método getLink já lança NotAllowedErro se não for do usuário
-    const link = await this.getLink(id, userId);
+  async getLinkMetrics(id: string, days: number = 30) {
+    // Apenas garante que o link existe
+    const link = await this.getLink(id);
 
     if (!link) {
       throw new LinkNotFoundError();
