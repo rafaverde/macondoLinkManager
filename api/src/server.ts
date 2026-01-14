@@ -1,5 +1,5 @@
 import Fastify from "fastify";
-import cors from "@fastify/cors"
+import cors from "@fastify/cors";
 import fastifyCookie from "@fastify/cookie";
 import { prisma } from "./lib/prisma"; // Importamos nossa instância do Prisma
 import { env } from "./env";
@@ -19,6 +19,7 @@ import { campaignsRoutes } from "./routes/campaigns";
 import { linksRoutes } from "./routes/links";
 import { redirectRoutes } from "./routes/redirect";
 import { dashboardRoutes } from "./routes/dashboard";
+import { errorHandler } from "./errors/error-handler";
 
 // Inicializa o Fastify
 const app = Fastify({
@@ -38,8 +39,8 @@ const start = async () => {
       origin: [env.FRONTEND_URL, "http:/localhost:3000"],
       // Permite que cookies sejam enviados/recebidos
       credentials: true,
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-    })
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    });
     // Registra o Swagger
     await app.register(swagger, {
       openapi: {
@@ -81,6 +82,8 @@ const start = async () => {
     await app.register(linksRoutes);
     await app.register(redirectRoutes);
     await app.register(dashboardRoutes);
+
+    app.setErrorHandler(errorHandler);
 
     // Criação da Rota "Health Check"
     // Esta rota é essencial para sabermos se a API está online

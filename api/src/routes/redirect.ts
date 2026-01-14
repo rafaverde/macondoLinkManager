@@ -46,6 +46,6 @@ export async function redirectRoutes(app: FastifyInstance) {
 
       // Redireciona para a URL original
       return reply.redirect(link.originalUrl);
-    }
+    },
   );
 }

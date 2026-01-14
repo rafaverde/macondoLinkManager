@@ -17,7 +17,7 @@ export class LinksService {
   constructor(
     private linksRepository: LinksRepository,
     private clientsRepository: ClientsRepository,
-    private clicksRepository: ClicksRepository
+    private clicksRepository: ClicksRepository,
   ) {}
 
   // Método público que busca por ShortCode (usado no redirecionamento)
@@ -42,9 +42,8 @@ export class LinksService {
     // Gera um shortcode único
     let shortCode = generateShortCode();
 
-    let linkAlreadyExists = await this.linksRepository.findByShortCode(
-      shortCode
-    );
+    let linkAlreadyExists =
+      await this.linksRepository.findByShortCode(shortCode);
 
     // Retry logic, tenta maus uma vez se colidir
     while (linkAlreadyExists) {
@@ -69,7 +68,7 @@ export class LinksService {
     userId: string;
     clientId?: string;
     campaignId?: string;
-    search?: string
+    search?: string;
   }) {
     const links = await this.linksRepository.findMany(filters);
     return links;
@@ -79,7 +78,7 @@ export class LinksService {
     const link = await this.linksRepository.findById(id);
 
     if (!link) {
-      throw new LinkNotFoundError()
+      throw new LinkNotFoundError();
     }
 
     return link;
@@ -91,7 +90,7 @@ export class LinksService {
       originalUrl?: string;
       clientId?: string;
       campaignId?: string | null;
-    }
+    },
   ) {
     await this.getLink(id);
 
@@ -119,7 +118,7 @@ export class LinksService {
 
   async getLinkMetrics(id: string, days: number = 30) {
     // Apenas garante que o link existe
-  await this.getLink(id);
+    await this.getLink(id);
 
     // Busca dados agragados
     const metrics = await this.clicksRepository.getMetrics(id, days);

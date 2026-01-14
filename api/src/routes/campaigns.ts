@@ -6,7 +6,6 @@ import { PrismaCampaignsRepository } from "../repositories/prisma/prisma-campaig
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { CampaignsService } from "../services/campaigns-service";
 import { CampaignAlreadyExistsError } from "../services/errors/campaign-already-exists-error";
-import { ClientNotFoundError } from "../services/errors/client-not-found-error";
 
 const campaignSchema = z.object({
   id: z.uuid(),
@@ -26,7 +25,7 @@ export async function campaignsRoutes(app: FastifyInstance) {
         tags: ["Management"],
         summary: "Lista todas as campanhas.",
         querystring: z.object({
-          clientId: z.uuid().optional()
+          clientId: z.uuid().optional(),
         }),
         response: {
           200: z.array(campaignSchema), // Retorna um array de campanhas
@@ -35,14 +34,14 @@ export async function campaignsRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { clientId } = request.query;
-      
+
       const campaignsRepo = new PrismaCampaignsRepository();
       const clientsRepo = new PrismaClientsRepository();
       const service = new CampaignsService(campaignsRepo, clientsRepo);
 
       const campaigns = await service.listCampaigns(clientId);
       return reply.status(200).send(campaigns);
-    }
+    },
   );
 
   // Rota POST /campaigns
@@ -76,15 +75,12 @@ export async function campaignsRoutes(app: FastifyInstance) {
         return reply.status(201).send(campaign);
       } catch (err) {
         // Lida com nossos erros customizados
-        if (err instanceof ClientNotFoundError) {
-          return reply.status(404).send({ message: err.message });
-        }
         if (err instanceof CampaignAlreadyExistsError) {
           return reply.status(409).send({ message: err.message });
         }
 
         throw err; // Fastify lida com outros erros
       }
-    }
+    },
   );
 }

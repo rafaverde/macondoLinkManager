@@ -24,6 +24,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "prisma": "^6.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
