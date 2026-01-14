@@ -3,7 +3,7 @@ import { FastifyInstance } from "fastify";
 import { env } from "../env";
 import { PrismaUsersRepository } from "../repositories/prisma/prisma-users-repository";
 import { AuthService } from "../services/auth-service";
-import { z } from "zod";
+import { email, z } from "zod";
 import { DomainNotAllowedError } from "../services/errors/domain-not-allowed-error";
 import fp from "fastify-plugin";
 
@@ -67,6 +67,14 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
         },
       );
 
+      request.log.info(
+        {
+          email: user.email,
+          provider: "google",
+        },
+        "User logged in",
+      );
+
       // Envia resposta  HTTP (Cookie e redirecionamento)
       return reply
         .setCookie("macondo.token", jwtToken, {
@@ -79,13 +87,25 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
     } catch (err) {
       // Lida com erros
       if (err instanceof DomainNotAllowedError) {
+        request.log.warn(
+          {
+            email: err.email,
+            provider: "google",
+          },
+          "User not allowed to access domain",
+        );
         return reply
           .status(403)
           .send({ code: "DOMAIN_NOT_ALLOWED", message: err.message });
       }
 
       // Loga o erro real e envia uma resposta genérica
-      console.error(err);
+      request.log.error(
+        {
+          err,
+        },
+        "Unexpected error during Google authentication",
+      );
       return reply.status(500).send({ message: "Erro interno no login." });
     }
   });
@@ -98,6 +118,13 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
       httpOnly: true,
       sameSite: "lax",
     });
+
+    request.log.info(
+      {
+        userId: request.user?.sub,
+      },
+      "User logged out",
+    );
 
     return reply.status(200).send({
       code: "LOGOUT_SUCESS",

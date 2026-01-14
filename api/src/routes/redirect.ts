@@ -40,7 +40,14 @@ export async function redirectRoutes(app: FastifyInstance) {
         if (!frontendUrl) {
           return reply.status(404).send({ message: "Link não encontrado." });
         }
-
+        request.log.info(
+          {
+            shortCode,
+            ip: request.ip,
+            userAgent: request.headers["user-agent"],
+          },
+          "Invalid short link access",
+        );
         return reply.redirect(`${frontendUrl}/link-not-found`);
       }
 

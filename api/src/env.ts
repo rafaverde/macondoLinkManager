@@ -3,11 +3,11 @@ import { z } from "zod";
 
 // Define o schema das nossas variáveis de ambiente
 const envSchema = z.object({
-  DATABASE_URL: z.string().url(),
+  DATABASE_URL: z.url(),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
   JWT_SECRET: z.string(),
-  FRONTEND_URL: z.string().url(),
+  FRONTEND_URL: z.url(),
   PORT: z.coerce.number().default(3333),
 });
 

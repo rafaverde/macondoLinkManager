@@ -23,8 +23,14 @@ import { errorHandler } from "./errors/error-handler";
 
 // Inicializa o Fastify
 const app = Fastify({
-  logger: true, // Habilita o logger do Fastify (ótimo para dev)
+  logger: {
+    level: process.env.NODE_ENV === "production" ? "info" : "debug",
+  },
 }).withTypeProvider<ZodTypeProvider>(); // "Ensina" o Fastify a entender os tipos do Zod.
+
+app.addHook("onRequest", async (request, reply) => {
+  reply.header("x-request-id", request.id);
+});
 
 // Configura compiladores do Zod
 app.setValidatorCompiler(validatorCompiler);
@@ -36,7 +42,7 @@ const start = async () => {
     // Registra CORS
     await app.register(cors, {
       // Limita acesso pelo front-end
-      origin: [env.FRONTEND_URL, "http:/localhost:3000"],
+      origin: [env.FRONTEND_URL, "http://localhost:3000"],
       // Permite que cookies sejam enviados/recebidos
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -92,11 +98,13 @@ const start = async () => {
       app.get("/health", async (request, reply) => {
         try {
           await prisma.$queryRaw`SELECT 1`;
+          request.log.debug("Health check OK");
+
           return reply
             .status(200)
             .send({ status: "ok", dbConnection: "healthy" });
         } catch (error) {
-          console.error("Falha na conexão com o banco:", error);
+          request.log.error({ err: error }, "Database health check failed");
           return reply
             .status(503)
             .send({ status: "error", dbConnection: "unhealthy" });
