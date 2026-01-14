@@ -2,7 +2,7 @@ import { ClicksRepository } from "../repositories/clicks-repository";
 import { ClientsRepository } from "../repositories/clients-repository";
 import { LinksRepository } from "../repositories/links-repository";
 import { generateShortCode } from "../utils/generate-short-code";
-import { ClientNotFoundError } from "./errors/client-not-found-error copy";
+import { ClientNotFoundError } from "./errors/client-not-found-error";
 import { LinkNotFoundError } from "./errors/link-not-found-error";
 
 interface CreateLinkRequest {
@@ -119,11 +119,7 @@ export class LinksService {
 
   async getLinkMetrics(id: string, days: number = 30) {
     // Apenas garante que o link existe
-    const link = await this.getLink(id);
-
-    if (!link) {
-      throw new LinkNotFoundError();
-    }
+  await this.getLink(id);
 
     // Busca dados agragados
     const metrics = await this.clicksRepository.getMetrics(id, days);

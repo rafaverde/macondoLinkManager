@@ -6,7 +6,7 @@ import { PrismaCampaignsRepository } from "../repositories/prisma/prisma-campaig
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { CampaignsService } from "../services/campaigns-service";
 import { CampaignAlreadyExistsError } from "../services/errors/campaign-already-exists-error";
-import { ClientNotFoundError } from "../services/errors/client-not-found-error copy";
+import { ClientNotFoundError } from "../services/errors/client-not-found-error";
 
 const campaignSchema = z.object({
   id: z.uuid(),

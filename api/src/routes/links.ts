@@ -7,7 +7,7 @@ import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-r
 import { LinksService } from "../services/links-service";
 import { LinkNotFoundError } from "../services/errors/link-not-found-error";
 import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
-import { ClientNotFoundError } from "../services/errors/client-not-found-error copy";
+import { ClientNotFoundError } from "../services/errors/client-not-found-error";
 import { requireLinkOwner } from "../middlewares/require-link-owner";
 
 const linkSchema = z.object({
@@ -146,7 +146,6 @@ export async function linksRoutes(app: FastifyInstance) {
         params: z.object({ id: z.uuid() }),
         response: {
           200: linkSchema,
-          403: z.object({ message: z.string() }),
           404: z.object({ message: z.string() }),
         },
       },
@@ -161,12 +160,11 @@ export async function linksRoutes(app: FastifyInstance) {
 
       try {
         const link = await service.getLink(id);
-        if (!link)
-          return reply.status(404).send({ message: "Link não encontrado." });
         return reply.send(link);
       } catch (err) {
-        if (err)
-          return reply.status(403).send({ message: "Você não tem permissão para acessar esse link." });
+        if (err instanceof LinkNotFoundError) {
+          return reply.status(404).send({ message: err.message });
+        }
         throw err;
       }
     }
@@ -190,7 +188,6 @@ export async function linksRoutes(app: FastifyInstance) {
         }),
         response: {
           200: linkSchema,
-          403: z.object({ message: z.string() }),
           404: z.object({ message: z.string() }),
         },
       },
@@ -213,9 +210,6 @@ export async function linksRoutes(app: FastifyInstance) {
 
         return reply.status(200).send(updatedLink);
       } catch (err) {
-        if (err) {
-          return reply.status(403).send({ message: "Você não tem permissão para acessar esse link." });
-        }
         if (err instanceof ClientNotFoundError) {
           return reply.status(404).send({ message: err.message });
         }
@@ -235,14 +229,12 @@ export async function linksRoutes(app: FastifyInstance) {
         params: z.object({ id: z.uuid() }),
         response: {
           204: z.null(),
-          403: z.object({ message: z.string() }),
           404: z.object({ message: z.string() }),
         },
       },
     },
     async (request, reply) => {
       const { id } = request.params;
-      const userId = request.user.sub;
 
       const linksRepo = new PrismaLinksRepository();
       const clientsRepo = new PrismaClientsRepository();
@@ -253,8 +245,6 @@ export async function linksRoutes(app: FastifyInstance) {
         await service.deleteLink(id);
         return reply.status(204).send();
       } catch (err) {
-        if (err)
-          return reply.status(403).send({ message: "Você não tem permissão para acessar esse link." });
         if (err instanceof LinkNotFoundError)
           return reply.status(404).send({ message: err.message });
         throw err;
@@ -278,7 +268,6 @@ export async function linksRoutes(app: FastifyInstance) {
         }),
         response: {
           200: metricsSchema,
-          403: z.object({ message: z.string() }),
           404: z.object({ message: z.string() }),
         },
       },
@@ -286,7 +275,6 @@ export async function linksRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = request.params;
       const { days } = request.query;
-      const userId = request.user.sub;
 
       const linksRepo = new PrismaLinksRepository();
       const clientsRepo = new PrismaClientsRepository();
@@ -297,9 +285,6 @@ export async function linksRoutes(app: FastifyInstance) {
         const metrics = await service.getLinkMetrics(id, days);
         return reply.status(200).send(metrics);
       } catch (err) {
-        if (err) {
-          return reply.status(403).send({ message: "Você não tem permissão para acessar esse link." });
-        }
         if (err instanceof LinkNotFoundError) {
           return reply.status(404).send({ message: err.message });
         }
