@@ -5,6 +5,7 @@ import {
   CreateClickDTO,
   MetricsResult,
 } from "../clicks-repository";
+import { parseUserAgent } from "../../utils/parse-user-agent";
 
 export class PrismaClicksRepository implements ClicksRepository {
   async create({
@@ -71,14 +72,7 @@ export class PrismaClicksRepository implements ClicksRepository {
     // Agrupar por Browser (Simplificado do UserAgent)
     const browserMap = new Map<string, number>();
     clicks.forEach((click) => {
-      const ua = click.userAgent || "Desconhecido";
-
-      let browser = "Outros";
-      if (ua.includes("Chrome")) browser = "Chrome";
-      else if (ua.includes("Firefox")) browser = "Firefox";
-      else if (ua.includes("Safari")) browser = "Safari";
-      else if (ua.includes("Edge")) browser = "Edge";
-
+      const browser = parseUserAgent(click.userAgent);
       browserMap.set(browser, (browserMap.get(browser) ?? 0) + 1);
     });
 
