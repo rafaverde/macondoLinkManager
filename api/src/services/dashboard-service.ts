@@ -6,7 +6,7 @@ export class DashboardService {
   constructor(
     private clicksRepository: ClicksRepository,
     private linksRepository: LinksRepository,
-    private clientsRepository: ClientsRepository
+    private clientsRepository: ClientsRepository,
   ) {}
 
   async getGeneralMetrics(userId: string) {
@@ -34,7 +34,33 @@ export class DashboardService {
 
   async getAnalyticsOverview(userId: string) {
     // Visão geral com padrão para 30 dias
-    const metrics = await this.clicksRepository.getMetricsByUserId(userId, 30)
-    return metrics
+    const metrics = await this.clicksRepository.getMetricsByUserId(userId, 30);
+    return metrics;
+  }
+
+  async getOverview(userId: string) {
+    const [general, analytics] = await Promise.all([
+      this.getGeneralMetrics(userId),
+      this.getAnalyticsOverview(userId),
+    ]);
+
+    const hasData = general.totalClicks > 0;
+
+    return {
+      summary: {
+        totalClicks: general.totalClicks,
+        activeLinks: general.activeLinks,
+        period: "30d",
+      },
+      charts: {
+        clicksByDate: analytics.clicksByDate,
+        topBrowsers: analytics.topBrowsers,
+        topCountries: analytics.topCountries,
+        topCities: analytics.topCities,
+      },
+      meta: {
+        hasData,
+      },
+    };
   }
 }
