@@ -99,10 +99,24 @@ export class PrismaClicksRepository implements ClicksRepository {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
+    // Agrupar por cidade
+    const cityMap = new Map<string, number>();
+
+    clicks.forEach((click) => {
+      const city = click.city || "Desconhecida";
+      cityMap.set(city, (cityMap.get(city) ?? 0) + 1);
+    });
+
+    const topCities = Array.from(cityMap.entries())
+      .map(([city, count]) => ({ city, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
     return {
       clicksByDate,
       topBrowsers,
       topCountries,
+      topCities,
     };
   }
 
@@ -187,10 +201,24 @@ export class PrismaClicksRepository implements ClicksRepository {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
+    // Agrupar por cidade
+    const cityMap = new Map<string, number>();
+
+    clicks.forEach((click) => {
+      const city = click.city || "Desconhecida";
+      cityMap.set(city, (cityMap.get(city) ?? 0) + 1);
+    });
+
+    const topCities = Array.from(cityMap.entries())
+      .map(([city, count]) => ({ city, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
     return {
       clicksByDate,
       topBrowsers,
       topCountries,
+      topCities,
     };
   }
 }

@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { z } from "zod";
+import { string, z } from "zod";
 import { authHook } from "../hooks/auth";
 import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repository";
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
@@ -39,6 +39,12 @@ const metricsSchema = z.object({
   topCountries: z.array(
     z.object({
       country: z.string(),
+      count: z.number(),
+    }),
+  ),
+  topCities: z.array(
+    z.object({
+      city: z.string(),
       count: z.number(),
     }),
   ),
