@@ -86,25 +86,23 @@ export class PrismaClicksRepository implements ClicksRepository {
       .map(([browser, count]) => ({ browser, count }))
       .sort((a, b) => b.count - a.count); // Maior para menor
 
-    // Agrupar por IP (Localização provisória)
-    const ipMap = new Map<string, number>();
+    // Agrupar por País
+    const countryMap = new Map<string, number>();
+
     clicks.forEach((click) => {
-      const ip = click.ipAddress || "Desconhecido";
-      ipMap.set(ip, (ipMap.get(ip) ?? 0) + 1);
+      const country = click.country || "Desconhecido";
+      countryMap.set(country, (countryMap.get(country) ?? 0) + 1);
     });
 
-    const topLocations = Array.from(ipMap.entries())
-      .map(([ip, count]) => ({
-        ip,
-        count,
-      }))
+    const topCountries = Array.from(countryMap.entries())
+      .map(([country, count]) => ({ country, count }))
       .sort((a, b) => b.count - a.count)
-      .slice(0, 5); // Pega os top 5
+      .slice(0, 5);
 
     return {
       clicksByDate,
       topBrowsers,
-      topLocations,
+      topCountries,
     };
   }
 
@@ -176,21 +174,23 @@ export class PrismaClicksRepository implements ClicksRepository {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5); // Top 5
 
-    // 3. Agrupar por IP (Locations)
-    const ipMap = new Map<string, number>();
+    // 3. Agrupar por País
+    const countryMap = new Map<string, number>();
+
     clicks.forEach((click) => {
-      const ip = click.ipAddress || "Desconhecido";
-      ipMap.set(ip, (ipMap.get(ip) ?? 0) + 1);
+      const country = click.country || "Desconhecido";
+      countryMap.set(country, (countryMap.get(country) ?? 0) + 1);
     });
-    const topLocations = Array.from(ipMap.entries())
-      .map(([ip, count]) => ({ ip, count }))
+
+    const topCountries = Array.from(countryMap.entries())
+      .map(([country, count]) => ({ country, count }))
       .sort((a, b) => b.count - a.count)
-      .slice(0, 5); // Top 5
+      .slice(0, 5);
 
     return {
       clicksByDate,
       topBrowsers,
-      topLocations,
+      topCountries,
     };
   }
 }

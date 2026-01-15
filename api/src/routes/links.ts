@@ -36,9 +36,9 @@ const metricsSchema = z.object({
       count: z.number(),
     }),
   ),
-  topLocations: z.array(
+  topCountries: z.array(
     z.object({
-      ip: z.string(),
+      country: z.string(),
       count: z.number(),
     }),
   ),
