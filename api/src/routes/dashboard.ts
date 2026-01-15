@@ -8,11 +8,6 @@ import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-r
 import { DashboardService } from "../services/dashboard-service";
 
 // Schemas
-const generalMetricsSchema = z.object({
-  totalClicks: z.number(),
-  activeLinks: z.number(),
-});
-
 const topClientsSchema = z.array(
   z.object({
     name: z.string(),
@@ -58,32 +53,6 @@ const analyticsOverviewSchema = z.object({
 });
 
 export async function dashboardRoutes(app: FastifyInstance) {
-  // Rota GET métricas gerais
-  app.withTypeProvider<ZodTypeProvider>().get(
-    "/metrics/general",
-    {
-      onRequest: [authHook],
-      schema: {
-        tags: ["Analytics"],
-        summary: "Obtém as métricas gerais (Total cliques, LinksA Ativos)",
-        response: {
-          200: generalMetricsSchema,
-        },
-      },
-    },
-    async (request, reply) => {
-      const userId = request.user.sub;
-
-      const clicksRepo = new PrismaClicksRepository();
-      const linksRepo = new PrismaLinksRepository();
-      const clientsRepo = new PrismaClientsRepository();
-      const service = new DashboardService(clicksRepo, linksRepo, clientsRepo);
-
-      const metrics = await service.getGeneralMetrics(userId);
-      return reply.send(metrics);
-    },
-  );
-
   // Rota GET Top 5 Clientes
   app.withTypeProvider<ZodTypeProvider>().get(
     "/metrics/top-clients",
