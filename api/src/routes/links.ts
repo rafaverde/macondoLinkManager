@@ -1,13 +1,12 @@
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { z } from "zod";
+import { string, z } from "zod";
 import { authHook } from "../hooks/auth";
 import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repository";
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
-import { LinksService, NotAllowedError } from "../services/links-service";
-import { LinkNotFoundError } from "../services/errors/link-not-found-error";
+import { LinksService } from "../services/links-service";
 import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
-import { ClientNotFoundError } from "../services/errors/client-not-found-error copy";
+import { requireLinkOwner } from "../middlewares/require-link-owner";
 
 const linkSchema = z.object({
   id: z.uuid(),
@@ -29,19 +28,25 @@ const metricsSchema = z.object({
     z.object({
       date: z.string(),
       count: z.number(),
-    })
+    }),
   ),
   topBrowsers: z.array(
     z.object({
       browser: z.string(),
       count: z.number(),
-    })
+    }),
   ),
-  topLocations: z.array(
+  topCountries: z.array(
     z.object({
-      ip: z.string(),
+      country: z.string(),
       count: z.number(),
-    })
+    }),
+  ),
+  topCities: z.array(
+    z.object({
+      city: z.string(),
+      count: z.number(),
+    }),
   ),
 });
 
@@ -76,23 +81,16 @@ export async function linksRoutes(app: FastifyInstance) {
       const clicksRepo = new PrismaClicksRepository();
       const service = new LinksService(linkRepo, clientsRepo, clicksRepo);
 
-      try {
-        const link = await service.createLink({
-          originalUrl,
-          userId,
-          clientId,
-          campaignId,
-          tags,
-        });
+      const link = await service.createLink({
+        originalUrl,
+        userId,
+        clientId,
+        campaignId,
+        tags,
+      });
 
-        return reply.status(201).send(link);
-      } catch (err) {
-        if (err instanceof ClientNotFoundError) {
-          return reply.status(404).send({ message: err.message });
-        }
-        throw err;
-      }
-    }
+      return reply.status(201).send(link);
+    },
   );
 
   // Rota GET mostra todos os links
@@ -131,52 +129,42 @@ export async function linksRoutes(app: FastifyInstance) {
       });
 
       return reply.status(200).send(links);
-    }
+    },
   );
 
   // Rota GET mostra link por id
   app.withTypeProvider<ZodTypeProvider>().get(
     "/links/:id",
     {
-      onRequest: [authHook],
+      onRequest: [authHook, requireLinkOwner],
       schema: {
         tags: ["Links"],
         summary: "Obtém detalhes de um link.",
         params: z.object({ id: z.uuid() }),
         response: {
           200: linkSchema,
-          403: z.object({ message: z.string() }),
           404: z.object({ message: z.string() }),
         },
       },
     },
     async (request, reply) => {
       const { id } = request.params;
-      const userId = request.user.sub;
 
       const linksRepo = new PrismaLinksRepository();
       const clientsRepo = new PrismaClientsRepository();
       const clicksRepo = new PrismaClicksRepository();
       const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
 
-      try {
-        const link = await service.getLink(id, userId);
-        if (!link)
-          return reply.status(404).send({ message: "Link não encontrado." });
-        return reply.send(link);
-      } catch (err) {
-        if (err instanceof NotAllowedError)
-          return reply.status(403).send({ message: err.message });
-        throw err;
-      }
-    }
+      const link = await service.getLink(id);
+      return reply.send(link);
+    },
   );
 
   // Rota PUT faz update do link
   app.withTypeProvider<ZodTypeProvider>().put(
     "/links/:id",
     {
-      onRequest: [authHook],
+      onRequest: [authHook, requireLinkOwner],
       schema: {
         tags: ["Links"],
         summary: "Atualiza informações de um link.",
@@ -190,7 +178,6 @@ export async function linksRoutes(app: FastifyInstance) {
         }),
         response: {
           200: linkSchema,
-          403: z.object({ message: z.string() }),
           404: z.object({ message: z.string() }),
         },
       },
@@ -198,76 +185,55 @@ export async function linksRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = request.params;
       const { originalUrl, clientId, campaignId } = request.body;
-      const userId = request.user.sub;
 
       const linksRepo = new PrismaLinksRepository();
       const clientsRepo = new PrismaClientsRepository();
       const clicksRepo = new PrismaClicksRepository();
       const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
 
-      try {
-        const updatedLink = await service.updateLink(id, userId, {
-          originalUrl,
-          clientId,
-          campaignId,
-        });
+      const updatedLink = await service.updateLink(id, {
+        originalUrl,
+        clientId,
+        campaignId,
+      });
 
-        return reply.status(200).send(updatedLink);
-      } catch (err) {
-        if (err instanceof NotAllowedError) {
-          return reply.status(403).send({ message: err.message });
-        }
-        if (err instanceof ClientNotFoundError) {
-          return reply.status(404).send({ message: err.message });
-        }
-        throw err;
-      }
-    }
+      return reply.status(200).send(updatedLink);
+    },
   );
 
   // Rota DELETE apaga um link
   app.withTypeProvider<ZodTypeProvider>().delete(
     "/links/:id",
     {
-      onRequest: [authHook],
+      onRequest: [authHook, requireLinkOwner],
       schema: {
         tags: ["Links"],
         summary: "Deleta um link.",
         params: z.object({ id: z.uuid() }),
         response: {
           204: z.null(),
-          403: z.object({ message: z.string() }),
           404: z.object({ message: z.string() }),
         },
       },
     },
     async (request, reply) => {
       const { id } = request.params;
-      const userId = request.user.sub;
 
       const linksRepo = new PrismaLinksRepository();
       const clientsRepo = new PrismaClientsRepository();
       const clicksRepo = new PrismaClicksRepository();
       const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
 
-      try {
-        await service.deleteLink(id, userId);
-        return reply.status(204).send();
-      } catch (err) {
-        if (err instanceof NotAllowedError)
-          return reply.status(403).send({ message: err.message });
-        if (err instanceof LinkNotFoundError)
-          return reply.status(404).send({ message: err.message });
-        throw err;
-      }
-    }
+      await service.deleteLink(id);
+      return reply.status(204).send();
+    },
   );
 
   // Rota GET Metrics
   app.withTypeProvider<ZodTypeProvider>().get(
     "/links/:id/metrics",
     {
-      onRequest: [authHook],
+      onRequest: [authHook, requireLinkOwner],
       schema: {
         tags: ["Analytics"],
         summary: "Obtém estatísticas de acesso do link.",
@@ -279,7 +245,6 @@ export async function linksRoutes(app: FastifyInstance) {
         }),
         response: {
           200: metricsSchema,
-          403: z.object({ message: z.string() }),
           404: z.object({ message: z.string() }),
         },
       },
@@ -287,25 +252,14 @@ export async function linksRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = request.params;
       const { days } = request.query;
-      const userId = request.user.sub;
 
       const linksRepo = new PrismaLinksRepository();
       const clientsRepo = new PrismaClientsRepository();
       const clicksRepo = new PrismaClicksRepository();
       const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
 
-      try {
-        const metrics = await service.getLinkMetrics(id, userId, days);
-        return reply.status(200).send(metrics);
-      } catch (err) {
-        if (err instanceof NotAllowedError) {
-          return reply.status(403).send({ message: err.message });
-        }
-        if (err instanceof LinkNotFoundError) {
-          return reply.status(404).send({ message: err.message });
-        }
-        throw err;
-      }
-    }
+      const metrics = await service.getLinkMetrics(id, days);
+      return reply.status(200).send(metrics);
+    },
   );
 }

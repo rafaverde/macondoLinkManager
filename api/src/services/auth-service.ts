@@ -22,7 +22,7 @@ export class AuthService {
     const userDomain = userInfo.email.split("@")[1];
     if (!ALLOWED_DOMAINS.includes(userDomain)) {
       // Se não for um email permitido, lança o erro customizado
-      throw new DomainNotAllowedError();
+      throw new DomainNotAllowedError(userInfo.email);
     }
 
     // 2. Busca usuário no banco

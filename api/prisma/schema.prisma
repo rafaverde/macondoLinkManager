@@ -113,6 +113,8 @@ model Click {
   timestamp DateTime @default(now()) // Registra data e hora do clique
   ipAddress String?  @map("ip_address") // IP do clique (opcional)
   userAgent String?  @map("user_agent") @db.Text // Browser (opcional)
+  country   String? // País do clique (opcional)
+  city      String? // Cidade do clique (opcional)
 
   link Link @relation(fields: [linkId], references: [id], onDelete: Cascade) // Deleta os cliques do link apagado
 

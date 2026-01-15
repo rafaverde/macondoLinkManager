@@ -1,7 +1,7 @@
 // Um erro customizado para quando a regra de negócio falhar
 export class DomainNotAllowedError extends Error {
-  constructor() {
-    super("Access denied. This email does not belongs to the Organization.");
+  constructor(public readonly email: string) {
+    super("Acesso negado. Esse email não faz parte dessa organização.");
     this.name = "DomainNotAllowedError";
   }
 }

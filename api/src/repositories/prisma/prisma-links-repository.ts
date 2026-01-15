@@ -85,6 +85,23 @@ export class PrismaLinksRepository implements LinksRepository {
     const link = await prisma.link.findUnique({
       where: { id },
       include: {
+        client: {
+          select: {
+            id: true,
+            name: true,
+          }
+        },
+        campaign: {
+          select: {
+            id: true,
+            name: true,
+          }
+        },
+        _count: {
+          select: {
+            clicks: true
+          }
+        },
         tags: {
           include: {
             tag: true,

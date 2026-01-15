@@ -10,6 +10,8 @@ export interface TopClient {
 
 export interface LinkMetrics {
   clicksByDate: { date: string; count: number }[];
-  topBrowser: { browser: string; count: number }[];
+  topBrowsers: { browser: string; count: number }[];
   topLocations: { ip: string; count: number }[];
 }
+
+export type OverviewMetrics = LinkMetrics;

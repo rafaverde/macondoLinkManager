@@ -2,7 +2,8 @@ import { ClicksRepository } from "../repositories/clicks-repository";
 import { ClientsRepository } from "../repositories/clients-repository";
 import { LinksRepository } from "../repositories/links-repository";
 import { generateShortCode } from "../utils/generate-short-code";
-import { ClientNotFoundError } from "./errors/client-not-found-error copy";
+import { resolveGeoLocation } from "../utils/geoip";
+import { ClientNotFoundError } from "./errors/client-not-found-error";
 import { LinkNotFoundError } from "./errors/link-not-found-error";
 
 interface CreateLinkRequest {
@@ -13,17 +14,11 @@ interface CreateLinkRequest {
   tags?: string[];
 }
 
-export class NotAllowedError extends Error {
-  constructor() {
-    super("Você não tem permissão para alterar este link.");
-  }
-}
-
 export class LinksService {
   constructor(
     private linksRepository: LinksRepository,
     private clientsRepository: ClientsRepository,
-    private clicksRepository: ClicksRepository
+    private clicksRepository: ClicksRepository,
   ) {}
 
   // Método público que busca por ShortCode (usado no redirecionamento)
@@ -48,9 +43,8 @@ export class LinksService {
     // Gera um shortcode único
     let shortCode = generateShortCode();
 
-    let linkAlreadyExists = await this.linksRepository.findByShortCode(
-      shortCode
-    );
+    let linkAlreadyExists =
+      await this.linksRepository.findByShortCode(shortCode);
 
     // Retry logic, tenta maus uma vez se colidir
     while (linkAlreadyExists) {
@@ -75,21 +69,17 @@ export class LinksService {
     userId: string;
     clientId?: string;
     campaignId?: string;
-    search?: string
+    search?: string;
   }) {
     const links = await this.linksRepository.findMany(filters);
     return links;
   }
 
-  async getLink(id: string, userId: string) {
+  async getLink(id: string) {
     const link = await this.linksRepository.findById(id);
 
     if (!link) {
-      return null;
-    }
-
-    if (link.userId !== userId) {
-      throw new NotAllowedError();
+      throw new LinkNotFoundError();
     }
 
     return link;
@@ -97,18 +87,13 @@ export class LinksService {
 
   async updateLink(
     id: string,
-    userId: string,
     data: {
       originalUrl?: string;
       clientId?: string;
       campaignId?: string | null;
-    }
+    },
   ) {
-    const link = await this.getLink(id, userId);
-
-    if (!link) {
-      throw new LinkNotFoundError();
-    }
+    await this.getLink(id);
 
     if (data.clientId) {
       const client = await this.clientsRepository.findById(data.clientId);
@@ -119,32 +104,26 @@ export class LinksService {
     return updatedLink;
   }
 
-  async deleteLink(id: string, userId: string) {
-    const link = await this.getLink(id, userId);
-
-    if (!link) {
-      throw new LinkNotFoundError();
-    }
-
+  async deleteLink(id: string) {
+    await this.getLink(id);
     await this.linksRepository.delete(id);
   }
 
   async trackClick(linkId: string, ipAddress?: string, userAgent?: string) {
+    const { city, country } = resolveGeoLocation(ipAddress);
+
     await this.clicksRepository.create({
       linkId,
       ipAddress: ipAddress ?? null,
       userAgent: userAgent ?? null,
+      country,
+      city,
     });
   }
 
-  async getLinkMetrics(id: string, userId: string, days: number = 30) {
-    // Segurança: Verifica se o link existe e se pertence ao usuário
-    // O método getLink já lança NotAllowedErro se não for do usuário
-    const link = await this.getLink(id, userId);
-
-    if (!link) {
-      throw new LinkNotFoundError();
-    }
+  async getLinkMetrics(id: string, days: number = 30) {
+    // Apenas garante que o link existe
+    await this.getLink(id);
 
     // Busca dados agragados
     const metrics = await this.clicksRepository.getMetrics(id, days);

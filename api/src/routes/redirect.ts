@@ -35,7 +35,20 @@ export async function redirectRoutes(app: FastifyInstance) {
 
       // Se não existe, 404
       if (!link) {
-        return reply.status(404).send({ message: "Link não encontrado." });
+        const frontendUrl = process.env.FRONTEND_URL;
+
+        if (!frontendUrl) {
+          return reply.status(404).send({ message: "Link não encontrado." });
+        }
+        request.log.info(
+          {
+            shortCode,
+            ip: request.ip,
+            userAgent: request.headers["user-agent"],
+          },
+          "Invalid short link access",
+        );
+        return reply.redirect(`${frontendUrl}/link-not-found`);
       }
 
       // Registra o clique
@@ -44,8 +57,16 @@ export async function redirectRoutes(app: FastifyInstance) {
 
       await service.trackClick(link.id, ip, userAgent);
 
+      request.log.debug(
+        {
+          shortCode,
+          ip,
+        },
+        "Click tracked",
+      );
+
       // Redireciona para a URL original
       return reply.redirect(link.originalUrl);
-    }
+    },
   );
 }
