@@ -1,4 +1,5 @@
-// components/app-breadcrumbs.tsx
+"use client";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,14 +8,14 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { RiArrowRightSLine } from "@remixicon/react";
+import { getBreadcrumbsFromPath } from "@/lib/get-breadcrumbs-from-path";
+import { usePathname } from "next/navigation";
 
-export interface BreadcrumbItemData {
-  label: string;
-  href?: string;
-}
+export function AppBreadcrumbs() {
+  const pathname = usePathname();
 
-export function AppBreadcrumbs({ items }: { items: BreadcrumbItemData[] }) {
+  const items = getBreadcrumbsFromPath(pathname);
+
   return (
     <Breadcrumb>
       <BreadcrumbList>
@@ -25,12 +26,7 @@ export function AppBreadcrumbs({ items }: { items: BreadcrumbItemData[] }) {
             ) : (
               <BreadcrumbPage>{item.label}</BreadcrumbPage>
             )}
-
-            {index < items.length - 1 && (
-              <BreadcrumbSeparator>
-                <RiArrowRightSLine className="size-4" />
-              </BreadcrumbSeparator>
-            )}
+            {index < items.length - 1 && <BreadcrumbSeparator />}
           </BreadcrumbItem>
         ))}
       </BreadcrumbList>

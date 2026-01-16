@@ -1,3 +1,4 @@
+import { AppBreadcrumbs } from "@/components/app-breadcrumb";
 import AppHeader from "@/components/app-header";
 import AppSidebar from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -15,6 +16,10 @@ export default function DashboardLayout({
         <AppHeader />
 
         <main className="mx-auto w-full max-w-7xl flex-1 p-4 md:p-8">
+          <div className="mb-6">
+            <AppBreadcrumbs />
+          </div>
+
           {children}
         </main>
       </SidebarInset>
