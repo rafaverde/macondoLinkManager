@@ -1,10 +1,5 @@
-import { Client } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
-import {
-  ClientsRepository,
-  ClientsWithClicks,
-  CreateClientDTO,
-} from "../clients-repository";
+import { ClientsRepository, CreateClientDTO } from "../clients-repository";
 
 export class PrismaClientsRepository implements ClientsRepository {
   async create(data: CreateClientDTO) {
@@ -56,7 +51,7 @@ export class PrismaClientsRepository implements ClientsRepository {
     const clientsWithTotal = clients.map((client) => {
       const totalClicks = client.links.reduce(
         (acc, link) => acc + link._count.clicks,
-        0
+        0,
       );
       return {
         name: client.name,

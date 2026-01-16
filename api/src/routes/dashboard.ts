@@ -6,8 +6,14 @@ import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-rep
 import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repository";
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { DashboardService } from "../services/dashboard-service";
+import { PrismaCampaignsRepository } from "../repositories/prisma/prisma-campaign-repository";
+import { CampaignNotAllowedError } from "../services/errors/campaign-not-allowed-error";
 
 // Schemas
+const errorSchema = z.object({
+  message: z.string(),
+});
+
 const topClientsSchema = z.array(
   z.object({
     name: z.string(),
@@ -69,10 +75,12 @@ export async function dashboardRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const userId = request.user.sub;
 
-      const clicksRepo = new PrismaClicksRepository();
-      const linksRepo = new PrismaLinksRepository();
-      const clientsRepo = new PrismaClientsRepository();
-      const service = new DashboardService(clicksRepo, linksRepo, clientsRepo);
+      const service = new DashboardService(
+        new PrismaClicksRepository(),
+        new PrismaLinksRepository(),
+        new PrismaClientsRepository(),
+        new PrismaCampaignsRepository(),
+      );
 
       const topClients = await service.getTopClients(userId);
       return reply.send(topClients);
@@ -100,6 +108,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
         new PrismaClicksRepository(),
         new PrismaLinksRepository(),
         new PrismaClientsRepository(),
+        new PrismaCampaignsRepository(),
       );
 
       const overview = await service.getOverview(userId);
@@ -131,6 +140,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
         new PrismaClicksRepository(),
         new PrismaLinksRepository(),
         new PrismaClientsRepository(),
+        new PrismaCampaignsRepository(),
       );
 
       const overview = await service.getClientOverview(userId, clientId);
@@ -151,6 +161,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
         }),
         response: {
           200: analyticsOverviewSchema,
+          403: errorSchema,
         },
       },
     },
@@ -162,10 +173,18 @@ export async function dashboardRoutes(app: FastifyInstance) {
         new PrismaClicksRepository(),
         new PrismaLinksRepository(),
         new PrismaClientsRepository(),
+        new PrismaCampaignsRepository(),
       );
 
-      const overview = await service.getCampaignOverview(userId, campaignId);
-      return reply.send(overview);
+      try {
+        const overview = await service.getCampaignOverview(userId, campaignId);
+        return reply.send(overview);
+      } catch (err) {
+        if (err instanceof CampaignNotAllowedError) {
+          return reply.status(403).send({ message: err.message });
+        }
+        throw err;
+      }
     },
   );
 }
