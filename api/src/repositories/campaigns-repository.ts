@@ -13,6 +13,10 @@ export interface CampaignsRepository {
   findMany(clientId?: string): Promise<Campaign[]>;
   findByNameAndClientId(
     name: string,
-    clientId: string
+    clientId: string,
   ): Promise<Campaign | null>;
+  findByIdAndUserId(
+    campaignId: string,
+    userId: string,
+  ): Promise<{ id: string } | null>;
 }

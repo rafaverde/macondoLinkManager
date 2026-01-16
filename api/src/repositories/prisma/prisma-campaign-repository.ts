@@ -24,7 +24,7 @@ export class PrismaCampaignsRepository implements CampaignsRepository {
       where: {
         clientId,
       },
-      orderBy: {name: "asc"}
+      orderBy: { name: "asc" },
     });
     return campaigns;
   }
@@ -38,5 +38,26 @@ export class PrismaCampaignsRepository implements CampaignsRepository {
     });
 
     return campaign;
+  }
+
+  async findByIdAndUserId(
+    campaignId: string,
+    userId: string,
+  ): Promise<{ id: string } | null> {
+    return prisma.campaign.findFirst({
+      where: {
+        id: campaignId,
+        client: {
+          links: {
+            some: {
+              userId,
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
   }
 }
