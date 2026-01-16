@@ -106,4 +106,35 @@ export async function dashboardRoutes(app: FastifyInstance) {
       return reply.send(overview);
     },
   );
+
+  // Rota Campaigns Overview
+  app.withTypeProvider<ZodTypeProvider>().get(
+    "/campaigns/:campaignId/overview",
+    {
+      onRequest: [authHook],
+      schema: {
+        tags: ["Analytics"],
+        summary: "Obtém o dashboard de uma campanha.",
+        params: z.object({
+          campaignId: z.uuid(),
+        }),
+        response: {
+          200: analyticsOverviewSchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { campaignId } = request.params;
+      const userId = request.user.sub;
+
+      const service = new DashboardService(
+        new PrismaClicksRepository(),
+        new PrismaLinksRepository(),
+        new PrismaClientsRepository(),
+      );
+
+      const overview = await service.getCampaignOverview(userId, campaignId);
+      return reply.send(overview);
+    },
+  );
 }

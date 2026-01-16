@@ -72,6 +72,17 @@ export class PrismaClicksRepository implements ClicksRepository {
     });
   }
 
+  async countByCampaign(userId: string, campaignId: string): Promise<number> {
+    return prisma.click.count({
+      where: {
+        link: {
+          userId,
+          campaignId,
+        },
+      },
+    });
+  }
+
   async getMetricsByUserId(
     userId: string,
     days: number,
@@ -108,6 +119,31 @@ export class PrismaClicksRepository implements ClicksRepository {
         link: {
           userId,
           clientId,
+        },
+        timestamp: {
+          gte: startDate,
+        },
+      },
+      orderBy: {
+        timestamp: "asc",
+      },
+    });
+
+    return aggregateClickMetrics(clicks, days);
+  }
+
+  async getMetricsByCampaignId(
+    userId: string,
+    campaignId: string,
+    days: number,
+  ): Promise<MetricsResult> {
+    const startDate = subDays(new Date(), days);
+
+    const clicks = await prisma.click.findMany({
+      where: {
+        link: {
+          userId,
+          campaignId,
         },
         timestamp: {
           gte: startDate,

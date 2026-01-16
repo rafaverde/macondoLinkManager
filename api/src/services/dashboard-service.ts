@@ -31,6 +31,15 @@ export class DashboardService {
     return { totalClicks, activeLinks };
   }
 
+  async getCampaignGeneralMetrics(userId: string, campaignId: string) {
+    const [totalClicks, activeLinks] = await Promise.all([
+      this.clicksRepository.countByCampaign(userId, campaignId),
+      this.linksRepository.count({ userId, campaignId }),
+    ]);
+
+    return { totalClicks, activeLinks };
+  }
+
   async getTopClients(userId: string) {
     const topClients = await this.clientsRepository.findTopClients(userId);
 
@@ -49,6 +58,10 @@ export class DashboardService {
 
   async getClientAnalyticsOverview(userId: string, clientId: string) {
     return this.clicksRepository.getMetricsByClientId(userId, clientId, 30);
+  }
+
+  async getCampaignAnalyticsOverview(userId: string, campaignId: string) {
+    return this.clicksRepository.getMetricsByCampaignId(userId, campaignId, 30);
   }
 
   async getOverview(userId: string) {
@@ -81,6 +94,25 @@ export class DashboardService {
     const [general, analytics] = await Promise.all([
       this.getClientGeneralMetrics(userId, clientId),
       this.getClientAnalyticsOverview(userId, clientId),
+    ]);
+
+    const hasData = general.totalClicks > 0;
+
+    return {
+      summary: {
+        totalClicks: general.totalClicks,
+        activeLinks: general.activeLinks,
+        period: "30d",
+      },
+      charts: analytics,
+      meta: { hasData },
+    };
+  }
+
+  async getCampaignOverview(userId: string, campaignId: string) {
+    const [general, analytics] = await Promise.all([
+      this.getCampaignGeneralMetrics(userId, campaignId),
+      this.getCampaignAnalyticsOverview(userId, campaignId),
     ]);
 
     const hasData = general.totalClicks > 0;
