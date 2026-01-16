@@ -71,8 +71,6 @@ export function Top5PieChart({
     return config;
   }, [processedData, dataKey, nameKey]);
 
-  console.log(processedData);
-
   // Cálculo do total para exibir no centro (Donut)
   const total = React.useMemo(() => {
     return processedData.reduce((acc, curr) => acc + (curr[dataKey] || 0), 0);
