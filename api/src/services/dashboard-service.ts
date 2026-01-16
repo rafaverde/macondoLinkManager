@@ -22,6 +22,15 @@ export class DashboardService {
     };
   }
 
+  async getClientGeneralMetrics(userId: string, clientId: string) {
+    const [totalClicks, activeLinks] = await Promise.all([
+      this.clicksRepository.countByClient(userId, clientId),
+      this.linksRepository.count({ userId, clientId }),
+    ]);
+
+    return { totalClicks, activeLinks };
+  }
+
   async getTopClients(userId: string) {
     const topClients = await this.clientsRepository.findTopClients(userId);
 
@@ -36,6 +45,10 @@ export class DashboardService {
     // Visão geral com padrão para 30 dias
     const metrics = await this.clicksRepository.getMetricsByUserId(userId, 30);
     return metrics;
+  }
+
+  async getClientAnalyticsOverview(userId: string, clientId: string) {
+    return this.clicksRepository.getMetricsByClientId(userId, clientId, 30);
   }
 
   async getOverview(userId: string) {
@@ -61,6 +74,25 @@ export class DashboardService {
       meta: {
         hasData,
       },
+    };
+  }
+
+  async getClientOverview(userId: string, clientId: string) {
+    const [general, analytics] = await Promise.all([
+      this.getClientGeneralMetrics(userId, clientId),
+      this.getClientAnalyticsOverview(userId, clientId),
+    ]);
+
+    const hasData = general.totalClicks > 0;
+
+    return {
+      summary: {
+        totalClicks: general.totalClicks,
+        activeLinks: general.activeLinks,
+        period: "30d",
+      },
+      charts: analytics,
+      meta: { hasData },
     };
   }
 }

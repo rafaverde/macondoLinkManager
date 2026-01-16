@@ -126,6 +126,17 @@ export class PrismaClicksRepository implements ClicksRepository {
     return count;
   }
 
+  async countByClient(userId: string, clientId: string) {
+    return prisma.click.count({
+      where: {
+        link: {
+          userId,
+          clientId,
+        },
+      },
+    });
+  }
+
   async getMetricsByUserId(
     userId: string,
     days: number,
@@ -165,22 +176,101 @@ export class PrismaClicksRepository implements ClicksRepository {
       .map(([date, count]) => ({ date, count }))
       .sort((a, b) => a.date.localeCompare(b.date));
 
-    // Agrupar por Browser
+    // Agrupar por Browser (Simplificado do UserAgent)
     const browserMap = new Map<string, number>();
     clicks.forEach((click) => {
-      const ua = click.userAgent || "Desconhecido";
-      let browser = "Outros";
-      if (ua.includes("Chrome")) browser = "Chrome";
-      else if (ua.includes("Firefox")) browser = "Firefox";
-      else if (ua.includes("Safari")) browser = "Safari";
-      else if (ua.includes("Edge")) browser = "Edge";
-
+      const browser = parseUserAgent(click.userAgent);
       browserMap.set(browser, (browserMap.get(browser) ?? 0) + 1);
     });
+
     const topBrowsers = Array.from(browserMap.entries())
       .map(([browser, count]) => ({ browser, count }))
+      .sort((a, b) => b.count - a.count); // Maior para menor
+
+    // 3. Agrupar por País
+    const countryMap = new Map<string, number>();
+
+    clicks.forEach((click) => {
+      const country = click.country || "Desconhecido";
+      countryMap.set(country, (countryMap.get(country) ?? 0) + 1);
+    });
+
+    const topCountries = Array.from(countryMap.entries())
+      .map(([country, count]) => ({ country, count }))
       .sort((a, b) => b.count - a.count)
-      .slice(0, 5); // Top 5
+      .slice(0, 5);
+
+    // Agrupar por cidade
+    const cityMap = new Map<string, number>();
+
+    clicks.forEach((click) => {
+      const city = click.city || "Desconhecida";
+      cityMap.set(city, (cityMap.get(city) ?? 0) + 1);
+    });
+
+    const topCities = Array.from(cityMap.entries())
+      .map(([city, count]) => ({ city, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    return {
+      clicksByDate,
+      topBrowsers,
+      topCountries,
+      topCities,
+    };
+  }
+
+  async getMetricsByClientId(
+    userId: string,
+    clientId: string,
+    days: number,
+  ): Promise<MetricsResult> {
+    const startDate = subDays(new Date(), days);
+
+    const clicks = await prisma.click.findMany({
+      where: {
+        link: {
+          userId,
+          clientId,
+        },
+        timestamp: {
+          gte: startDate,
+        },
+      },
+      orderBy: {
+        timestamp: "asc",
+      },
+    });
+
+    // Agrupar por data
+    const clicksByDateMap = new Map<string, number>();
+    for (let i = 0; i <= days; i++) {
+      const date = subDays(new Date(), i);
+      const dateString = format(date, "yyyy-MM-dd");
+      clicksByDateMap.set(dateString, 0);
+    }
+
+    clicks.forEach((click) => {
+      const dateString = format(click.timestamp, "yyyy-MM-dd");
+      const currentCount = clicksByDateMap.get(dateString) ?? 0;
+      clicksByDateMap.set(dateString, currentCount + 1);
+    });
+
+    const clicksByDate = Array.from(clicksByDateMap.entries())
+      .map(([date, count]) => ({ date, count }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    // Agrupar por Browser (Simplificado do UserAgent)
+    const browserMap = new Map<string, number>();
+    clicks.forEach((click) => {
+      const browser = parseUserAgent(click.userAgent);
+      browserMap.set(browser, (browserMap.get(browser) ?? 0) + 1);
+    });
+
+    const topBrowsers = Array.from(browserMap.entries())
+      .map(([browser, count]) => ({ browser, count }))
+      .sort((a, b) => b.count - a.count); // Maior para menor
 
     // 3. Agrupar por País
     const countryMap = new Map<string, number>();
