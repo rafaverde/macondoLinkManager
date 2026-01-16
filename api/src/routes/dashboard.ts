@@ -55,7 +55,7 @@ const analyticsOverviewSchema = z.object({
 export async function dashboardRoutes(app: FastifyInstance) {
   // Rota GET Top 5 Clientes
   app.withTypeProvider<ZodTypeProvider>().get(
-    "/metrics/top-clients",
+    "/dashboard/top-clients",
     {
       onRequest: [authHook],
       schema: {
@@ -81,7 +81,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
 
   // Rota GET Overview
   app.withTypeProvider<ZodTypeProvider>().get(
-    "/metrics/overview",
+    "/dashboard/overview",
     {
       onRequest: [authHook],
       schema: {
@@ -107,9 +107,40 @@ export async function dashboardRoutes(app: FastifyInstance) {
     },
   );
 
+  // Rota Clients Overview
+  app.withTypeProvider<ZodTypeProvider>().get(
+    "/dashboard/clients/:clientId/overview",
+    {
+      onRequest: [authHook],
+      schema: {
+        tags: ["Analytics"],
+        summary: "Obtém o dashboard de um cliente.",
+        params: z.object({
+          clientId: z.uuid(),
+        }),
+        response: {
+          200: analyticsOverviewSchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { clientId } = request.params;
+      const userId = request.user.sub;
+
+      const service = new DashboardService(
+        new PrismaClicksRepository(),
+        new PrismaLinksRepository(),
+        new PrismaClientsRepository(),
+      );
+
+      const overview = await service.getClientOverview(userId, clientId);
+      return reply.send(overview);
+    },
+  );
+
   // Rota Campaigns Overview
   app.withTypeProvider<ZodTypeProvider>().get(
-    "/campaigns/:campaignId/overview",
+    "/dashboard/campaigns/:campaignId/overview",
     {
       onRequest: [authHook],
       schema: {
