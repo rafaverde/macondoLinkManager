@@ -54,6 +54,8 @@ export default function LinksPage() {
     setSelectedCampaign("all");
   };
 
+  console.log(links);
+
   return (
     <>
       <div className="flex items-center justify-between border-b pb-8">

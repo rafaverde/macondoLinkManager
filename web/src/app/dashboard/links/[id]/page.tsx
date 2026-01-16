@@ -27,8 +27,6 @@ export default function LinkDetailsPage() {
   // Busca métricas do link
   const { data: metrics, isLoading: isLoadingMetrics } = useLinkMetrics(linkId);
 
-  console.log(metrics);
-
   // Cliques de hoje
   const todayDate = new Date().toISOString().split("T")[0];
   const todayClicks =
@@ -124,13 +122,23 @@ export default function LinkDetailsPage() {
             isLoading={isLoadingMetrics}
           />
 
-          {/* Gráfico localizações */}
+          {/* Gráfico Países */}
           <Top5PieChart
             title="Top 5 Países"
             description="Países com mais acessos"
             data={metrics?.topCountries}
             dataKey="count"
             nameKey="country"
+            isLoading={isLoadingMetrics}
+          />
+
+          {/* Gráfico Cidades */}
+          <Top5PieChart
+            title="Top 5 Cidades"
+            description="Países com mais acessos"
+            data={metrics?.topCities}
+            dataKey="count"
+            nameKey="city"
             isLoading={isLoadingMetrics}
           />
         </div>
