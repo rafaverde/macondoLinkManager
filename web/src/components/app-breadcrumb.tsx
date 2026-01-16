@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { getBreadcrumbsFromPath } from "@/lib/get-breadcrumbs-from-path";
 import { usePathname } from "next/navigation";
+import { Fragment } from "react/jsx-runtime";
 
 export function AppBreadcrumbs() {
   const pathname = usePathname();
@@ -20,14 +21,17 @@ export function AppBreadcrumbs() {
     <Breadcrumb>
       <BreadcrumbList>
         {items.map((item, index) => (
-          <BreadcrumbItem key={index}>
-            {item.href ? (
-              <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
-            ) : (
-              <BreadcrumbPage>{item.label}</BreadcrumbPage>
-            )}
+          <Fragment key={index}>
+            <BreadcrumbItem>
+              {item.href ? (
+                <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
+              ) : (
+                <BreadcrumbPage>{item.label}</BreadcrumbPage>
+              )}
+            </BreadcrumbItem>
+
             {index < items.length - 1 && <BreadcrumbSeparator />}
-          </BreadcrumbItem>
+          </Fragment>
         ))}
       </BreadcrumbList>
     </Breadcrumb>
