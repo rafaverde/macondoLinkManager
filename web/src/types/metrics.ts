@@ -41,6 +41,13 @@ export interface OverviewMetrics {
   meta: OverviewMeta;
 }
 
+export interface LinkMetrics {
+  clicksByDate: ClicksByDate[];
+  topBrowsers: TopBrowser[];
+  topCountries: TopCountry[];
+  topCities: TopCity[];
+}
+
 // Deprecated - Mantemos separado (por enquanto)
 export interface TopClient {
   name: string;

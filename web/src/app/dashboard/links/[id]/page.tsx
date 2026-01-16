@@ -126,11 +126,12 @@ export default function LinkDetailsPage() {
 
           {/* Gráfico localizações */}
           <Top5PieChart
-            title="Top 5 Localizações"
-            description="Regiões com mais acessos (IP)"
-            data={metrics?.topLocations}
+            title="Top 5 Países"
+            description="Países com mais acessos"
+            data={metrics?.topCountries}
             dataKey="count"
-            nameKey="ip"
+            nameKey="country"
+            isLoading={isLoadingMetrics}
           />
         </div>
       </div>
