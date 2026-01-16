@@ -12,6 +12,7 @@ import CardNumbers from "@/components/card-numbers";
 import { useLinkMetrics } from "@/hooks/use-link-metrics";
 import { ClicksAreaChart } from "@/components/charts/clicks-area-chart";
 import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
+import { sumLastDays } from "@/lib/utils";
 
 export default function LinkDetailsPage() {
   const params = useParams();
@@ -34,15 +35,7 @@ export default function LinkDetailsPage() {
       ?.count || 0;
 
   // Cliques 7 dias
-  const last7DaysClicks =
-    metrics?.clicksByDate
-      .filter((item) => {
-        const itemDate = new Date(item.date);
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        return itemDate >= sevenDaysAgo;
-      })
-      .reduce((acc, item) => acc + item.count, 0) || 0;
+  const last7DaysClicks = metrics ? sumLastDays(metrics.clicksByDate, 7) : 0;
 
   return (
     <>

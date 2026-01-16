@@ -5,6 +5,7 @@ import { ClicksAreaChart } from "@/components/charts/clicks-area-chart";
 import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCampaignDashboard } from "@/hooks/use-campaign-dashboard";
+import { sumLastDays } from "@/lib/utils";
 import { RiLinkUnlink } from "@remixicon/react";
 import { useParams } from "next/navigation";
 
@@ -13,15 +14,7 @@ export default function CampaignDashboardPage() {
   const { data, isLoading, isError } = useCampaignDashboard(campaignId);
 
   // Cliques 7 dias
-  const last7DaysClicks =
-    data?.charts.clicksByDate
-      .filter((item) => {
-        const itemDate = new Date(item.date);
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        return itemDate >= sevenDaysAgo;
-      })
-      .reduce((acc, item) => acc + item.count, 0) || 0;
+  const last7DaysClicks = data ? sumLastDays(data.charts.clicksByDate, 7) : 0;
 
   if (isLoading) {
     return <DashboardSkeleton />;

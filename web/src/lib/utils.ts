@@ -34,3 +34,16 @@ export function formatLink(link: string | undefined) {
   const formattedLink = `${process.env.NEXT_PUBLIC_API_URL?.replace(/^https?:\/\//, "")}/${link}`;
   return formattedLink;
 }
+
+// Calcula últimos 7 dias com base em uma data
+export function sumLastDays(
+  data: { date: string; count: number }[],
+  days: number,
+) {
+  const from = new Date();
+  from.setDate(from.getDate() - days);
+
+  return data
+    .filter((item) => new Date(item.date) >= from)
+    .reduce((acc, item) => acc + item.count, 0);
+}
