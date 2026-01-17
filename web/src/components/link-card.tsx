@@ -2,12 +2,13 @@ import { Link as LinkType } from "@/types";
 import { toast } from "sonner";
 import { Card, CardContent } from "./ui/card";
 import { Avatar, AvatarFallback } from "./ui/avatar";
-import { createInitials, formatDate, formatLink } from "@/lib/utils";
+import { cn, createInitials, formatDate, formatLink } from "@/lib/utils";
 import {
   RiBarChartFill,
   RiCalendarLine,
   RiDeleteBinLine,
   RiExternalLinkLine,
+  RiEyeLine,
   RiFileCopyLine,
   RiLoader4Line,
   RiMoreFill,
@@ -34,17 +35,15 @@ import {
   AlertDialogContent,
 } from "./ui/alert-dialog";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 interface LinkCardProps {
   link: LinkType;
+  isDetails?: boolean;
 }
 
-export default function LinkCard({ link }: LinkCardProps) {
+export default function LinkCard({ link, isDetails }: LinkCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { mutate: deleteLink, isPending: isDeleting } = useDeleteLink();
-
-  const router = useRouter();
 
   const initials = createInitials(link.client?.name);
 
@@ -111,7 +110,10 @@ export default function LinkCard({ link }: LinkCardProps) {
             </div>
 
             <div className="mt-6 flex flex-col gap-2 text-sm md:flex-row md:gap-8">
-              <Link href={`/dashboard/links/${link.id}`}>
+              <Link
+                href={`/dashboard/links/${link.id}`}
+                className={cn("", isDetails && "pointer-events-none")}
+              >
                 <div className="text-primary flex items-start gap-1 font-bold opacity-100 transition-opacity duration-300 hover:opacity-80 md:items-center">
                   <RiBarChartFill className="size-4" />
                   {link._count?.clicks}{" "}
@@ -127,12 +129,21 @@ export default function LinkCard({ link }: LinkCardProps) {
           </div>
 
           <div className="space-x-2">
+            {!isDetails && (
+              <Link href={`/dashboard/links/${link.id}`}>
+                <Button variant="outline">
+                  <RiEyeLine />
+                  Detalhes
+                </Button>
+              </Link>
+            )}
+
             <Button onClick={handleCopyLink}>
               <RiFileCopyLine />
               Copiar
             </Button>
 
-            <Button variant="outline">
+            <Button variant="outline" disabled>
               <RiShareLine />
               Compartilhar
             </Button>

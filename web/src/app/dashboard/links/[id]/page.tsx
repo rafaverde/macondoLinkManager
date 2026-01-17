@@ -82,7 +82,7 @@ export default function LinkDetailsPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-4 pt-8">
-            <LinkCard link={link} />
+            <LinkCard link={link} isDetails />
           </div>
         )}
 
