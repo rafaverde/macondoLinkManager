@@ -8,16 +8,24 @@ import { useDashboardMetrics } from "@/hooks/use-dashboard-metrics";
 import { RiArrowRightLine, RiLinkUnlink } from "@remixicon/react";
 import Link from "next/link";
 import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
+import { useBreadcrumb } from "@/contexts/breadcrumb-context";
+import { useEffect } from "react";
 
 export default function DashboardPage() {
-  const { general, topClients, overview, isLoading } = useDashboardMetrics();
+  const { setItems } = useBreadcrumb();
+  const { topClients, overview, isLoading, isError } = useDashboardMetrics();
+
+  // Gera breadcrumb
+  useEffect(() => {
+    setItems([{ label: "Dashboard", href: "/dashboard" }]);
+  }, [setItems]);
 
   if (isLoading) {
     return <DashboardSkeleton />;
   }
 
   // Se der erro, mostra algo simples (pode melhorar depois)
-  if (general.isError || topClients.isError || overview.isError) {
+  if (isError) {
     return (
       <div className="text-foreground flex h-full w-full flex-col items-center justify-center gap-4">
         <RiLinkUnlink className="text-primary size-12" />
@@ -42,9 +50,12 @@ export default function DashboardPage() {
         <div className="flex w-full flex-col gap-4 lg:col-span-1">
           <CardNumbers
             title="Total de Cliques"
-            value={general.data?.totalClicks}
+            value={overview.data?.summary.totalClicks}
           />
-          <CardNumbers title="Links Ativos" value={general.data?.activeLinks} />
+          <CardNumbers
+            title="Links Ativos"
+            value={overview.data?.summary.activeLinks}
+          />
         </div>
 
         <TopClientsChart data={topClients.data} className="col-span-2" />
@@ -54,7 +65,7 @@ export default function DashboardPage() {
         <Top5PieChart
           title="Top 5 Navegadores"
           description="Navegadores mais utilizados nos últimos 30 dias em todos os links."
-          data={overview?.data?.topBrowsers}
+          data={overview?.data?.charts.topBrowsers}
           dataKey="count"
           nameKey="browser"
           centerLabel="Cliques"
@@ -64,9 +75,9 @@ export default function DashboardPage() {
         <Top5PieChart
           title="Top 5 Localizações"
           description="Origem de todos os cliques."
-          data={overview?.data?.topLocations}
+          data={overview?.data?.charts.topCountries}
           dataKey="count"
-          nameKey="ip"
+          nameKey="country"
           centerLabel="Cliques"
           isLoading={isLoading}
         />

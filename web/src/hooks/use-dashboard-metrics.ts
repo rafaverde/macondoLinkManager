@@ -1,13 +1,13 @@
 import { api } from "@/lib/api";
-import { GeneralMetrics, OverviewMetrics, TopClient } from "@/types";
+import { OverviewMetrics, TopClient } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
 export function useDashboardMetrics() {
-  // Métricas gerais
-  const generalQuery = useQuery({
-    queryKey: ["metrics", "general"],
+  // Overview (Linhas gerais)
+  const overviewQuery = useQuery({
+    queryKey: ["dashboard", "overview"],
     queryFn: async () => {
-      const { data } = await api.get<GeneralMetrics>("/metrics/general");
+      const { data } = await api.get<OverviewMetrics>("/dashboard/overview");
       return data;
     },
   });
@@ -16,29 +16,15 @@ export function useDashboardMetrics() {
   const topClientsQuery = useQuery({
     queryKey: ["metrics", "top-clients"],
     queryFn: async () => {
-      const { data } = await api.get<TopClient[]>("/metrics/top-clients");
-      return data;
-    },
-  });
-
-  // Overview (Linhas gerais)
-  const overviewQuery = useQuery({
-    queryKey: ["metrics", "overview"],
-    queryFn: async () => {
-      const { data } = await api.get<OverviewMetrics>("/metrics/overview");
+      const { data } = await api.get<TopClient[]>("/dashboard/top-clients");
       return data;
     },
   });
 
   return {
-    general: generalQuery,
     topClients: topClientsQuery,
     overview: overviewQuery,
-    isLoading:
-      generalQuery.isLoading ||
-      topClientsQuery.isLoading ||
-      overviewQuery.isLoading,
-    isError:
-      generalQuery.isError || topClientsQuery.isError || overviewQuery.isError,
+    isLoading: topClientsQuery.isLoading || overviewQuery.isLoading,
+    isError: topClientsQuery.isError || overviewQuery.isError,
   };
 }

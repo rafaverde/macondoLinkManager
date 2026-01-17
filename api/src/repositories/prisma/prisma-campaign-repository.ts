@@ -1,3 +1,4 @@
+import { Campaign } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import {
   CampaignsRepository,
@@ -57,6 +58,14 @@ export class PrismaCampaignsRepository implements CampaignsRepository {
       },
       select: {
         id: true,
+      },
+    });
+  }
+
+  async findById(campaignId: string): Promise<Campaign | null> {
+    return prisma.campaign.findUnique({
+      where: {
+        id: campaignId,
       },
     });
   }

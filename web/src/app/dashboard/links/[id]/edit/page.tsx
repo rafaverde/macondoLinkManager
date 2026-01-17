@@ -2,17 +2,31 @@
 
 import LinkForm from "@/components/link-form";
 import { Button } from "@/components/ui/button";
+import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useLink } from "@/hooks/use-link";
 import { formatLink } from "@/lib/utils";
 import { RiArrowLeftLine, RiLinkUnlink, RiLoader4Line } from "@remixicon/react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function EditLinkPage() {
   const params = useParams();
   const linkId = params.id as string;
+  const { setItems } = useBreadcrumb();
 
   const { data: link, isLoading, isError } = useLink(linkId);
+
+  useEffect(() => {
+    if (!link) return;
+
+    setItems([
+      { label: "Dashboard", href: "/dashboard" },
+      { label: "Links", href: "/dashboard/links" },
+      { label: "Editar" },
+      { label: `ShortCode: ${link.shortCode}` },
+    ]);
+  }, [link, setItems]);
 
   if (isLoading) {
     return (

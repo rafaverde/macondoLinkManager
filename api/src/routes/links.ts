@@ -116,10 +116,11 @@ export async function linksRoutes(app: FastifyInstance) {
       const { clientId, campaignId, search } = request.query;
       const userId = request.user.sub; // Filtra pelo usuário logado
 
-      const linksRepo = new PrismaLinksRepository();
-      const clientsRepo = new PrismaClientsRepository();
-      const clicksRepo = new PrismaClicksRepository();
-      const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
+      const service = new LinksService(
+        new PrismaLinksRepository(),
+        new PrismaClientsRepository(),
+        new PrismaClicksRepository(),
+      );
 
       const links = await service.listLinks({
         userId,
@@ -150,10 +151,11 @@ export async function linksRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = request.params;
 
-      const linksRepo = new PrismaLinksRepository();
-      const clientsRepo = new PrismaClientsRepository();
-      const clicksRepo = new PrismaClicksRepository();
-      const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
+      const service = new LinksService(
+        new PrismaLinksRepository(),
+        new PrismaClientsRepository(),
+        new PrismaClicksRepository(),
+      );
 
       const link = await service.getLink(id);
       return reply.send(link);
@@ -186,10 +188,11 @@ export async function linksRoutes(app: FastifyInstance) {
       const { id } = request.params;
       const { originalUrl, clientId, campaignId } = request.body;
 
-      const linksRepo = new PrismaLinksRepository();
-      const clientsRepo = new PrismaClientsRepository();
-      const clicksRepo = new PrismaClicksRepository();
-      const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
+      const service = new LinksService(
+        new PrismaLinksRepository(),
+        new PrismaClientsRepository(),
+        new PrismaClicksRepository(),
+      );
 
       const updatedLink = await service.updateLink(id, {
         originalUrl,
@@ -219,10 +222,11 @@ export async function linksRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = request.params;
 
-      const linksRepo = new PrismaLinksRepository();
-      const clientsRepo = new PrismaClientsRepository();
-      const clicksRepo = new PrismaClicksRepository();
-      const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
+      const service = new LinksService(
+        new PrismaLinksRepository(),
+        new PrismaClientsRepository(),
+        new PrismaClicksRepository(),
+      );
 
       await service.deleteLink(id);
       return reply.status(204).send();
@@ -253,10 +257,11 @@ export async function linksRoutes(app: FastifyInstance) {
       const { id } = request.params;
       const { days } = request.query;
 
-      const linksRepo = new PrismaLinksRepository();
-      const clientsRepo = new PrismaClientsRepository();
-      const clicksRepo = new PrismaClicksRepository();
-      const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
+      const service = new LinksService(
+        new PrismaLinksRepository(),
+        new PrismaClientsRepository(),
+        new PrismaClicksRepository(),
+      );
 
       const metrics = await service.getLinkMetrics(id, days);
       return reply.status(200).send(metrics);

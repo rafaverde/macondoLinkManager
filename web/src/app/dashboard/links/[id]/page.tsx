@@ -12,10 +12,14 @@ import CardNumbers from "@/components/card-numbers";
 import { useLinkMetrics } from "@/hooks/use-link-metrics";
 import { ClicksAreaChart } from "@/components/charts/clicks-area-chart";
 import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
+import { sumLastDays } from "@/lib/utils";
+import { useBreadcrumb } from "@/contexts/breadcrumb-context";
+import { useEffect } from "react";
 
 export default function LinkDetailsPage() {
   const params = useParams();
   const linkId = params.id as string;
+  const { setItems } = useBreadcrumb();
 
   // Busca dados do link
   const {
@@ -27,8 +31,6 @@ export default function LinkDetailsPage() {
   // Busca métricas do link
   const { data: metrics, isLoading: isLoadingMetrics } = useLinkMetrics(linkId);
 
-  console.log(metrics);
-
   // Cliques de hoje
   const todayDate = new Date().toISOString().split("T")[0];
   const todayClicks =
@@ -36,15 +38,17 @@ export default function LinkDetailsPage() {
       ?.count || 0;
 
   // Cliques 7 dias
-  const last7DaysClicks =
-    metrics?.clicksByDate
-      .filter((item) => {
-        const itemDate = new Date(item.date);
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        return itemDate >= sevenDaysAgo;
-      })
-      .reduce((acc, item) => acc + item.count, 0) || 0;
+  const last7DaysClicks = metrics ? sumLastDays(metrics.clicksByDate, 7) : 0;
+
+  useEffect(() => {
+    if (!link) return;
+
+    setItems([
+      { label: "Dashboard", href: "/dashboard" },
+      { label: "Links", href: "/dashboard/links" },
+      { label: `ShortCode: ${link.shortCode}` },
+    ]);
+  }, [link, setItems]);
 
   return (
     <>
@@ -124,13 +128,24 @@ export default function LinkDetailsPage() {
             isLoading={isLoadingMetrics}
           />
 
-          {/* Gráfico localizações */}
+          {/* Gráfico Países */}
           <Top5PieChart
-            title="Top 5 Localizações"
-            description="Regiões com mais acessos (IP)"
-            data={metrics?.topLocations}
+            title="Top 5 Países"
+            description="Países com mais acessos"
+            data={metrics?.topCountries}
             dataKey="count"
-            nameKey="ip"
+            nameKey="country"
+            isLoading={isLoadingMetrics}
+          />
+
+          {/* Gráfico Cidades */}
+          <Top5PieChart
+            title="Top 5 Cidades"
+            description="Países com mais acessos"
+            data={metrics?.topCities}
+            dataKey="count"
+            nameKey="city"
+            isLoading={isLoadingMetrics}
           />
         </div>
       </div>

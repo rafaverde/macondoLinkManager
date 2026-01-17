@@ -28,10 +28,12 @@ import { useCampaigns } from "@/hooks/use-campaigns";
 import { useClients } from "@/hooks/use-clients";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLinks } from "@/hooks/use-links";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 
 export default function LinksPage() {
+  const { setItems } = useBreadcrumb();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClient, setSelectedClient] = useState<string>("all");
   const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
@@ -53,6 +55,11 @@ export default function LinksPage() {
     setSelectedClient("all");
     setSelectedCampaign("all");
   };
+
+  // Gera breadcrumb
+  useEffect(() => {
+    setItems([{ label: "Dashboard", href: "/dashboard" }, { label: "Links" }]);
+  }, [setItems]);
 
   return (
     <>

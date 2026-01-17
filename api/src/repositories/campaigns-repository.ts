@@ -19,4 +19,5 @@ export interface CampaignsRepository {
     campaignId: string,
     userId: string,
   ): Promise<{ id: string } | null>;
+  findById(campaignId: string): Promise<Campaign | null>;
 }

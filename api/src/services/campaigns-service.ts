@@ -1,6 +1,7 @@
 import { CampaignsRepository } from "../repositories/campaigns-repository";
 import { ClientsRepository } from "../repositories/clients-repository";
 import { CampaignAlreadyExistsError } from "./errors/campaign-already-exists-error";
+import { CampaignNotFoundError } from "./errors/campaign-not-found.error";
 import { ClientNotFoundError } from "./errors/client-not-found-error";
 
 interface CreateCampaignRequest {
@@ -12,7 +13,7 @@ export class CampaignsService {
   // O serviço de campanha precisa de ambos os repositórios
   constructor(
     private campaignsRepository: CampaignsRepository,
-    private clientsRepository: ClientsRepository
+    private clientsRepository: ClientsRepository,
   ) {}
 
   // Serviço para listar
@@ -38,6 +39,16 @@ export class CampaignsService {
     }
 
     const campaign = await this.campaignsRepository.create({ name, clientId });
+    return campaign;
+  }
+
+  async getCampaignById(userId: string, campaignId: string) {
+    const campaign = await this.campaignsRepository.findById(campaignId);
+
+    if (!campaign) {
+      throw new CampaignNotFoundError();
+    }
+
     return campaign;
   }
 }

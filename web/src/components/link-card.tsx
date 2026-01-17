@@ -34,6 +34,7 @@ import {
   AlertDialogContent,
 } from "./ui/alert-dialog";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface LinkCardProps {
   link: LinkType;
@@ -42,6 +43,8 @@ interface LinkCardProps {
 export default function LinkCard({ link }: LinkCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { mutate: deleteLink, isPending: isDeleting } = useDeleteLink();
+
+  const router = useRouter();
 
   const initials = createInitials(link.client?.name);
 
@@ -60,7 +63,7 @@ export default function LinkCard({ link }: LinkCardProps) {
 
   return (
     <>
-      <Card className="group flex shadow-xs transition-all duration-200 hover:shadow-sm">
+      <Card className="hover:border-macondo-gray-500/20 flex shadow-xs transition-all duration-200 hover:border hover:shadow-sm">
         <CardContent className="flex flex-col gap-6 lg:flex-row">
           <Avatar className="size-12">
             <AvatarFallback className="text-background bg-macondo-gray-200 flex w-full items-center justify-center text-center font-bold">
@@ -70,13 +73,27 @@ export default function LinkCard({ link }: LinkCardProps) {
 
           <div className="flex-1">
             <div>
-              <Link href={`/dashboard/links/${link.id}`}>
-                <h2 className="text-2xl leading-tight">{link.client?.name}</h2>
-
-                <h3 className="text-muted-foreground">
-                  {link.campaign?.name || "Nomeia a campanha"}
-                </h3>
+              <Link href={`/dashboard/clients/${link.clientId}`}>
+                <div className="group flex items-center-safe gap-1">
+                  <h2 className="text-2xl leading-tight transition-opacity duration-300 group-hover:opacity-75">
+                    {link.client?.name}
+                  </h2>
+                  <RiBarChartFill className="size-4 opacity-0 transition-opacity duration-500 group-hover:opacity-50" />
+                </div>
               </Link>
+
+              {link.campaign?.name ? (
+                <Link href={`/dashboard/campaigns/${link.campaignId}`}>
+                  <div className="group flex items-center-safe gap-1">
+                    <h3 className="text-muted-foreground transition-opacity duration-300 hover:opacity-75">
+                      {link.campaign?.name}
+                    </h3>
+                    <RiBarChartFill className="size-3 opacity-0 transition-opacity duration-500 group-hover:opacity-50" />
+                  </div>
+                </Link>
+              ) : (
+                <h3 className="text-muted-foreground">Sem campanha</h3>
+              )}
 
               <button onClick={handleCopyLink}>
                 <div className="text-muted-foreground group/link flex cursor-pointer gap-1 py-1 select-none">
@@ -94,11 +111,13 @@ export default function LinkCard({ link }: LinkCardProps) {
             </div>
 
             <div className="mt-6 flex flex-col gap-2 text-sm md:flex-row md:gap-8">
-              <div className="text-primary flex items-start gap-1 font-bold md:items-center">
-                <RiBarChartFill className="size-4" />
-                {link._count?.clicks}{" "}
-                {link._count?.clicks === 1 ? "clique" : "cliques"}
-              </div>
+              <Link href={`/dashboard/links/${link.id}`}>
+                <div className="text-primary flex items-start gap-1 font-bold opacity-100 transition-opacity duration-300 hover:opacity-80 md:items-center">
+                  <RiBarChartFill className="size-4" />
+                  {link._count?.clicks}{" "}
+                  {link._count?.clicks === 1 ? "clique" : "cliques"}
+                </div>
+              </Link>
 
               <div className="text-macondo-gray-400 flex items-center gap-1">
                 <RiCalendarLine className="size-4" />
@@ -146,10 +165,12 @@ export default function LinkCard({ link }: LinkCardProps) {
                     Editar
                   </DropdownMenuItem>
                 </Link>
-                <DropdownMenuItem>
-                  <RiBarChartFill />
-                  Estatísticas
-                </DropdownMenuItem>
+                <Link href={`/dashboard/links/${link.id}`}>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <RiBarChartFill />
+                    Estatísticas
+                  </DropdownMenuItem>
+                </Link>
 
                 <DropdownMenuItem
                   onClick={() => setIsDeleteDialogOpen(true)}
