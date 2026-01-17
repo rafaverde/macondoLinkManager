@@ -8,9 +8,17 @@ import { useDashboardMetrics } from "@/hooks/use-dashboard-metrics";
 import { RiArrowRightLine, RiLinkUnlink } from "@remixicon/react";
 import Link from "next/link";
 import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
+import { useBreadcrumb } from "@/contexts/breadcrumb-context";
+import { useEffect } from "react";
 
 export default function DashboardPage() {
+  const { setItems } = useBreadcrumb();
   const { topClients, overview, isLoading, isError } = useDashboardMetrics();
+
+  // Gera breadcrumb
+  useEffect(() => {
+    setItems([{ label: "Dashboard", href: "/dashboard" }]);
+  }, [setItems]);
 
   if (isLoading) {
     return <DashboardSkeleton />;

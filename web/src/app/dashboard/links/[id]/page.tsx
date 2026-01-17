@@ -13,10 +13,13 @@ import { useLinkMetrics } from "@/hooks/use-link-metrics";
 import { ClicksAreaChart } from "@/components/charts/clicks-area-chart";
 import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
 import { sumLastDays } from "@/lib/utils";
+import { useBreadcrumb } from "@/contexts/breadcrumb-context";
+import { useEffect } from "react";
 
 export default function LinkDetailsPage() {
   const params = useParams();
   const linkId = params.id as string;
+  const { setItems } = useBreadcrumb();
 
   // Busca dados do link
   const {
@@ -36,6 +39,16 @@ export default function LinkDetailsPage() {
 
   // Cliques 7 dias
   const last7DaysClicks = metrics ? sumLastDays(metrics.clicksByDate, 7) : 0;
+
+  useEffect(() => {
+    if (!link) return;
+
+    setItems([
+      { label: "Dashboard", href: "/dashboard" },
+      { label: "Links", href: "/dashboard/links" },
+      { label: `ShortCode: ${link.shortCode}` },
+    ]);
+  }, [link, setItems]);
 
   return (
     <>
