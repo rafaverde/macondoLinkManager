@@ -101,7 +101,7 @@ export async function campaignsRoutes(app: FastifyInstance) {
             name: z.string(),
             clientId: z.uuid(),
             createdAt: z.date(),
-          }).nullable,
+          }),
           404: z.object({ message: z.string() }),
         },
       },

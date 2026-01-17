@@ -96,7 +96,7 @@ export async function clientsRoutes(app: FastifyInstance) {
             id: z.uuid(),
             name: z.string(),
             createdAt: z.date(),
-          }).nullable,
+          }),
           404: z.object({ message: z.string() }),
         },
       },

@@ -25,7 +25,7 @@ export class ClientsService {
 
   // Serviço para listar um cliente
   async getClientById(userId: string, clientId: string) {
-    const client = this.clientsRepository.findById(clientId);
+    const client = await this.clientsRepository.findById(clientId);
 
     if (!client) {
       throw new ClientNotFoundError();
