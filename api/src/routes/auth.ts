@@ -94,9 +94,7 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
           },
           "User not allowed to access domain",
         );
-        return reply
-          .status(403)
-          .send({ code: "DOMAIN_NOT_ALLOWED", message: err.message });
+        return reply.redirect(`${env.FRONTEND_URL}/?error=DOMAIN_NOT_ALLOWED`);
       }
 
       // Loga o erro real e envia uma resposta genérica
@@ -127,7 +125,7 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
     );
 
     return reply.status(200).send({
-      code: "LOGOUT_SUCESS",
+      code: "LOGOUT_SUCCESS",
       message: "Logout realizado com sucesso.",
     });
   });

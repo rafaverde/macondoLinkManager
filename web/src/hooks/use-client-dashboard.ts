@@ -12,5 +12,8 @@ export function useClientDashboard(clientId: string) {
       return data;
     },
     enabled: !!clientId,
+    staleTime: 1000 * 60 * 1,
+    gcTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 }

@@ -11,11 +11,24 @@ export function useCreateLink(onSuccessCallback?: () => void) {
       const response = await api.post("/links", data);
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       toast.success("Link criado com sucesso.");
 
       // Força o React Query a buscar a lista de links atualizada.
       queryClient.invalidateQueries({ queryKey: ["links"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+
+      if (variables.clientId) {
+        queryClient.invalidateQueries({
+          queryKey: ["dashboard", "client", variables.clientId],
+        });
+      }
+
+      if (variables.campaignId) {
+        queryClient.invalidateQueries({
+          queryKey: ["dashboard", "campaign", variables.campaignId],
+        });
+      }
 
       // Executa função extra
       if (onSuccessCallback) {

@@ -13,5 +13,8 @@ export function useCampaignDashboard(campaignId: string) {
       return data;
     },
     enabled: !!campaignId,
+    staleTime: 1000 * 60 * 1,
+    gcTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 }

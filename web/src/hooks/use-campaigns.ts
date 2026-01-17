@@ -8,7 +8,7 @@ export interface Campaign {
 
 export function useCampaigns(clientId?: string) {
   return useQuery({
-    queryKey: ["campaigns", { clientId }],
+    queryKey: ["campaigns"],
     queryFn: async () => {
       const { data } = await api.get<Campaign[]>("/campaigns", {
         params: { clientId },
