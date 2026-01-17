@@ -4,7 +4,6 @@
  * Apenas autenticação é necessária.
  */
 
-
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
@@ -12,6 +11,7 @@ import { authHook } from "../hooks/auth";
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { ClientsService } from "../services/clients-service";
 import { ClientAlreadyExistsError } from "../services/errors/client-already-exists-error";
+import { ClientNotFoundError } from "../services/errors/client-not-found-error";
 
 // Define a forma de um cliente para a API
 const clientSchema = z.object({
@@ -41,7 +41,7 @@ export async function clientsRoutes(app: FastifyInstance) {
 
       const clients = await service.listClients();
       return reply.status(200).send(clients);
-    }
+    },
   );
 
   // Rota POST /clients
@@ -77,6 +77,38 @@ export async function clientsRoutes(app: FastifyInstance) {
         }
         throw err; // Deixa o Fastify lidar com outros erros
       }
-    }
+    },
+  );
+
+  // Rota GET clients by id
+  app.withTypeProvider<ZodTypeProvider>().get(
+    "/clients/:id",
+    {
+      onRequest: [authHook],
+      schema: {
+        tags: ["Management"],
+        summary: "Obtém um cliente pelo Id",
+        params: z.object({
+          id: z.uuid(),
+        }),
+        response: {
+          200: z.object({
+            id: z.uuid(),
+            name: z.string(),
+            createdAt: z.date(),
+          }).nullable,
+          404: z.object({ message: z.string() }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const userId = request.user.sub;
+
+      const service = new ClientsService(new PrismaClientsRepository());
+
+      const client = await service.getClientById(userId, id);
+      return reply.send(client);
+    },
   );
 }

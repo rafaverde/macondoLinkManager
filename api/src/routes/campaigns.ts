@@ -83,4 +83,40 @@ export async function campaignsRoutes(app: FastifyInstance) {
       }
     },
   );
+
+  // Rota GET campaign by id
+  app.withTypeProvider<ZodTypeProvider>().get(
+    "/campaigns/:id",
+    {
+      onRequest: [authHook],
+      schema: {
+        tags: ["Management"],
+        summary: "Obtém uma campanha pelo id",
+        params: z.object({
+          id: z.uuid(),
+        }),
+        response: {
+          200: z.object({
+            id: z.uuid(),
+            name: z.string(),
+            clientId: z.uuid(),
+            createdAt: z.date(),
+          }).nullable,
+          404: z.object({ message: z.string() }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const userId = request.user.sub;
+
+      const service = new CampaignsService(
+        new PrismaCampaignsRepository(),
+        new PrismaClientsRepository(),
+      );
+
+      const campaign = await service.getCampaignById(userId, id);
+      return reply.send(campaign);
+    },
+  );
 }
