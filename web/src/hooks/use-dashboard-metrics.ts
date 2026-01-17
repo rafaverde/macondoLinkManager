@@ -10,15 +10,21 @@ export function useDashboardMetrics() {
       const { data } = await api.get<OverviewMetrics>("/dashboard/overview");
       return data;
     },
+    staleTime: 1000 * 60 * 1,
+    gcTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 
   // Top Clients
   const topClientsQuery = useQuery({
-    queryKey: ["metrics", "top-clients"],
+    queryKey: ["dashboard", "top-clients"],
     queryFn: async () => {
       const { data } = await api.get<TopClient[]>("/dashboard/top-clients");
       return data;
     },
+    staleTime: 1000 * 60 * 1,
+    gcTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 
   return {

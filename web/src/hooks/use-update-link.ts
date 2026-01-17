@@ -1,6 +1,5 @@
 import { api } from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { error } from "console";
 import { toast } from "sonner";
 
 // DTO para atualização parcial
@@ -20,9 +19,24 @@ export function useUpdateLink(onSuccessCallback?: () => void) {
       const response = await api.put(`/links/${id}`, body);
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       toast.success("Link atualizado com sucesso");
+
       queryClient.invalidateQueries({ queryKey: ["links"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+
+      if (variables.clientId) {
+        queryClient.invalidateQueries({
+          queryKey: ["dashboard", "client", variables.clientId],
+        });
+      }
+
+      if (variables.campaignId) {
+        queryClient.invalidateQueries({
+          queryKey: ["dashboard", "campaign", variables.campaignId],
+        });
+      }
+
       if (onSuccessCallback) onSuccessCallback();
     },
     onError: (error: any) => {

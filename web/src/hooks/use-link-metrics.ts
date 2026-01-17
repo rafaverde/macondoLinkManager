@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export function useLinkMetrics(linkId: string) {
   return useQuery({
-    queryKey: ["link-metrics", linkId],
+    queryKey: ["dashboard", "link", linkId],
     queryFn: async () => {
       const { data } = await api.get<LinkMetrics>(`/links/${linkId}/metrics`);
       return data;
