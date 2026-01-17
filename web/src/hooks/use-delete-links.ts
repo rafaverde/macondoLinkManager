@@ -6,15 +6,7 @@ export function useDeleteLink() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      clientId,
-      campaignId,
-    }: {
-      id: string;
-      clientId?: string;
-      campaignId?: string;
-    }) => {
+    mutationFn: async (id: string) => {
       await api.delete(`/links/${id}`);
     },
     onSuccess: (_data, variables) => {
@@ -22,18 +14,6 @@ export function useDeleteLink() {
 
       queryClient.invalidateQueries({ queryKey: ["links"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-
-      if (variables.clientId) {
-        queryClient.invalidateQueries({
-          queryKey: ["dashboard", "client", variables.clientId],
-        });
-      }
-
-      if (variables.campaignId) {
-        queryClient.invalidateQueries({
-          queryKey: ["dashboard", "campaign", variables.campaignId],
-        });
-      }
     },
     onError: () => {
       toast.error("Erro ao remover o link. Tente novamente mais tarde.");

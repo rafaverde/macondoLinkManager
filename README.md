@@ -1,129 +1,139 @@
-# 🔗 Macondo Link Manager (API)
+# Macondo Link Manager
 
-> **Uma plataforma robusta de gerenciamento e encurtamento de links com analytics integrado.**
+Plataforma interna de gerenciamento de links, métricas e campanhas da **Macondo Propaganda**.
 
-O **Macondo Link Manager** é uma solução interna desenvolvida para a agência _Macondo Propaganda_, permitindo que a equipe crie links curtos personalizados, gerencie campanhas de marketing e acompanhe métricas de engajamento em tempo real.
-
-Este repositório contém o **Back-end (API RESTful)** da aplicação, construído com foco em performance, tipagem estrita e escalabilidade.
+Este repositório contém **backend (API)** e **frontend (Web)** organizados em um **monorepo**, facilitando o desenvolvimento, versionamento e deploy.
 
 ---
 
-## 🚀 Tecnologias & Ferramentas
+## 📦 Estrutura do Repositório
+```
+/
+├── api/ # Backend (Fastify + Prisma)
+│ ├── src/
+│ ├── prisma/
+│ └── Dockerfile
+│
+├── web/ # Frontend (Next.js 14 + App Router)
+│ ├── src/
+│ └── next.config.ts
+│
+└── README.md
+```
 
-O projeto foi desenvolvido utilizando as melhores práticas do ecossistema Node.js moderno:
-
-- **Runtime:** [Node.js](https://nodejs.org/) (LTS)
-- **Linguagem:** [TypeScript](https://www.typescriptlang.org/) (Strict mode)
-- **Framework:** [Fastify](https://www.fastify.io/) (Alta performance e baixo overhead)
-- **ORM:** [Prisma](https://www.prisma.io/) (PostgreSQL)
-- **Banco de Dados:** [PostgreSQL](https://www.postgresql.org/)
-- **Infraestrutura:** [Docker](https://www.docker.com/) & Docker Compose
-- **Validação:** [Zod](https://zod.dev/) (Schema validation & Type inference)
-- **Documentação:** [Swagger / OpenAPI](https://swagger.io/) (Gerada automaticamente via Zod)
-- **Autenticação:** OAuth 2.0 (Google) & JWT (Cookies httpOnly)
-
----
-
-## 🏛️ Arquitetura & Design Patterns
-
-A aplicação segue uma arquitetura limpa e desacoplada para garantir manutenibilidade e testabilidade:
-
-- **Repository Pattern:** Abstração da camada de dados (Prisma), permitindo a troca de ORM ou banco de dados com impacto mínimo.
-- **Service Pattern:** Isolamento total das regras de negócio (Business Logic), independente de rotas ou frameworks HTTP.
-- **Dependency Injection:** Injeção de dependências nos serviços para facilitar testes unitários.
-- **SOLID:** Aplicação dos princípios, especialmente _Single Responsibility_ e _Dependency Inversion_.
-- **Type Safety:** Tipagem estática de ponta a ponta, do banco de dados (Prisma) à validação de entrada (Zod) e resposta da API.
+> ℹ️ **Decisão de arquitetura**  
+> O projeto utiliza **monorepo por escolha**, pois API e Web evoluem juntas, compartilham o mesmo domínio e ciclo de deploy.  
+> A separação em repositórios distintos pode ser considerada futuramente, mas **não é necessária para a v1**.
 
 ---
 
-## ✨ Funcionalidades Principais
+## 🚀 Release v1.0.0 — Primeira versão funcional
 
-### 🔐 Autenticação & Segurança
+A **v1.0.0** marca a primeira versão completa e utilizável do sistema.
 
-- Login via **Google OAuth 2.0** (Restrito aos domínios da organização).
-- Gestão de sessão via **JWT** armazenado em cookies seguros (`httpOnly`, `Secure`, `SameSite`).
-- **Hooks de Proteção** globais para rotas privadas.
+### ✅ Autenticação
+- Login via **Google OAuth**
+- Restrição de acesso por domínio
+- JWT armazenado em cookie httpOnly
+- Logout seguro
 
-### 🔗 Gerenciamento de Links
+### 🔗 Gestão de Links
+- Criar, listar, editar e deletar links
+- Associação com **clientes** e **campanhas**
+- Redirecionamento público por short URL
+- Registro de cliques em tempo real
 
-- Criação de links encurtados com **ShortCode** único (geração automática e colisão tratada).
-- Associação de links a **Clientes** e **Campanhas**.
-- Sistema de **Tags** (Relacionamento N-N).
-- CRUD completo (Criar, Listar, Editar, Deletar) com verificação de propriedade (usuário dono).
+### 📊 Analytics & Dashboards
+- Dashboard geral do usuário
+- Dashboard por campanha
+- Métricas por link
+- Métricas agregadas:
+  - Cliques por data
+  - Top navegadores
+  - Top países
+  - Top cidades
 
-### 📊 Analytics & Dashboard
-
-- **Rastreamento de Cliques:** Captura de Timestamp, IP e User Agent no momento do redirecionamento.
-- **Dashboard Executivo:** Métricas gerais (Total de Cliques, Links Ativos, Top Clientes).
-- **Métricas Detalhadas por Link:**
-  - Histograma de cliques (últimos 30 dias).
-  - Ranking de Navegadores/Dispositivos.
-  - Ranking de Localização (agrupamento por IP).
-
----
-
-## 🛠️ Como Rodar o Projeto
-
-Graças ao Docker, o ambiente é padronizado e simples de iniciar.
-
-### Pré-requisitos
-
-- Docker e Docker Compose instalados.
-- Credenciais do Google Cloud Platform (Client ID e Secret).
-
-### Passo a Passo
-
-1.  **Clone o repositório:**
-
-    ```bash
-    git clone [https://github.com/seu-usuario/macondo-link-manager.git](https://github.com/seu-usuario/macondo-link-manager.git)
-    cd macondo-link-manager
-    ```
-
-2.  **Configure as Variáveis de Ambiente:**
-    Crie um arquivo `.env` na raiz baseado no exemplo:
-
-    ```bash
-    cp .env.example .env
-    ```
-
-    _Preencha o `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` e `JWT_SECRET`._
-
-3.  **Suba o Ambiente:**
-
-    ```bash
-    docker-compose up -d
-    ```
-
-    _Isso iniciará o container do PostgreSQL e da API._
-
-4.  **Acesse a Documentação:**
-    Abra seu navegador em: `http://localhost:3333/docs`
-    _O Swagger UI estará disponível com todos os endpoints documentados e prontos para teste._
+### 🧠 Arquitetura
+- Clean Architecture (Services + Repositories)
+- Fastify + Zod
+- Prisma ORM + PostgreSQL
+- Error handling centralizado
+- Controle de acesso por ownership
+- Documentação via Swagger
 
 ---
 
-## 📚 Documentação da API (Swagger)
+## ✨ Release v1.0.1 — UX & Polimento
 
-A API é auto-documentada utilizando OpenAPI 3.0. Ao rodar o projeto, você tem acesso a schemas detalhados de requisição e resposta.
+A **v1.0.1** foca em melhorias visuais e de experiência do usuário.
 
-| Recurso                  | Descrição                                        |
-| :----------------------- | :----------------------------------------------- |
-| `POST /auth/google`      | Inicia o fluxo de login OAuth.                   |
-| `GET /links`             | Lista links com filtros (Cliente, Campanha).     |
-| `POST /links`            | Cria um novo link encurtado.                     |
-| `GET /:shortCode`        | Rota pública de redirecionamento (com tracking). |
-| `GET /links/:id/metrics` | Retorna dados agregados para gráficos.           |
+### Melhorias incluídas
+- Ajustes de layout nos dashboards
+- Melhoria no **Link Card**
+  - Remoção de ações sem uso
+  - Novo botão “Detalhes”
+  - Comportamento condicional com `isDetails`
+- Navegação mais clara entre páginas
 
----
-
-## 🛣️ Próximos Passos (Roadmap)
-
-- [ ] Desenvolvimento do Front-end (React/Next.js).
-- [ ] Implementação de testes unitários e de integração (Vitest).
-- [ ] Integração com serviço de GeoIP para localização precisa.
-- [ ] Pipeline de CI/CD.
+> Esta versão existe para **documentar melhorias incrementais**, mantendo histórico claro de evolução.
 
 ---
 
-Developed with 💜 by [Rafael Valverde](https://github.com/rafaverde)
+## 🖥️ Stack Tecnológica
+
+### Backend (API)
+- Node.js
+- Fastify
+- Prisma ORM
+- PostgreSQL
+- Zod
+- JWT
+- Swagger (OpenAPI)
+- Docker
+
+### Frontend (Web)
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS
+- Shadcn/UI
+- Recharts
+- TanStack Query
+- Axios
+- Sonner (toasts)
+
+---
+
+## ⚠️ Limitações conhecidas (Backlog)
+
+Funcionalidades planejadas, mas fora do escopo da v1:
+
+- Feedback visual completo para erros de OAuth (`DOMAIN_NOT_ALLOWED`)
+- Compartilhamento de links
+- Geração de QR Code
+- CRUD completo de clientes e campanhas
+- Testes automatizados
+
+Esses pontos estão documentados para próximas sprints.
+
+---
+
+## 🧪 Status de Qualidade
+
+- ✅ Testes manuais end-to-end
+- ⏳ Testes automatizados planejados
+- 🔍 Logs básicos implementados
+
+---
+
+## 🏷️ Versionamento
+
+O projeto segue **Semantic Versioning (SemVer)**:
+
+- `v1.0.0` — Primeira versão funcional
+- `v1.0.1` — Ajustes de UX e layout
+
+---
+
+## 👥 Autoria
+
+Projeto interno desenvolvido pela **Macondo Propaganda**, com foco em evolução contínua e possível produto futuro.
