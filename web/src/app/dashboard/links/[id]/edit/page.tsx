@@ -23,7 +23,7 @@ export default function EditLinkPage() {
     setItems([
       { label: "Dashboard", href: "/dashboard" },
       { label: "Links", href: "/dashboard/links" },
-      { label: "Edit" },
+      { label: "Editar" },
       { label: `ShortCode: ${link.shortCode}` },
     ]);
   }, [link, setItems]);

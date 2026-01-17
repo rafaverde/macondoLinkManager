@@ -5,6 +5,7 @@ import { ClicksAreaChart } from "@/components/charts/clicks-area-chart";
 import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
+import { useClient } from "@/hooks/use-client";
 import { useClientDashboard } from "@/hooks/use-client-dashboard";
 import { sumLastDays } from "@/lib/utils";
 import { RiLinkUnlink } from "@remixicon/react";
@@ -14,17 +15,22 @@ import { useEffect } from "react";
 export default function ClientDashboardPage() {
   const { clientId } = useParams<{ clientId: string }>();
   const { data, isLoading, isError } = useClientDashboard(clientId);
+  const { data: client } = useClient(clientId);
   const { setItems } = useBreadcrumb();
 
   // Cliques 7 dias
   const last7DaysClicks = data ? sumLastDays(data.charts.clicksByDate, 7) : 0;
 
   useEffect(() => {
+    if (!client) return;
+
     setItems([
       { label: "Dashboard", href: "/dashboard" },
-      { label: "Resultado do Cliente" },
+      { label: "Links", href: "/dashboard/links" },
+      { label: "Cliente" },
+      { label: client.name },
     ]);
-  }, [setItems]);
+  }, [client, setItems]);
 
   if (isLoading) {
     return <DashboardSkeleton />;
@@ -43,7 +49,7 @@ export default function ClientDashboardPage() {
   return (
     <>
       <div className="flex items-center justify-between border-b pb-8">
-        <h2 className="text-4xl font-bold">Resultados do cliente</h2>
+        <h2 className="text-4xl font-bold">{client?.name}</h2>
       </div>
 
       <div className="grid grid-cols-1 gap-4 py-8 lg:grid-cols-3">

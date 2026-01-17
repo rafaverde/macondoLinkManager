@@ -1,20 +1,21 @@
+import { api } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 
 export interface Campaign {
   id: string;
   name: string;
   clientId: string;
-  client?: {
-    id: string;
-    name: string;
-  };
+  createdAt: string;
+  updatedAt: string;
 }
 
 export function useCampaign(campaignId: string) {
   return useQuery({
     queryKey: ["campaign", campaignId],
     queryFn: async () => {
-      const { data } = await api.get(``);
+      const { data } = await api.get<Campaign>(`/campaigns/${campaignId}`);
+      return data;
     },
+    enabled: !!campaignId,
   });
 }

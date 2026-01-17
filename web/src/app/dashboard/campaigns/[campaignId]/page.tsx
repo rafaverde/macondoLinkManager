@@ -5,6 +5,7 @@ import { ClicksAreaChart } from "@/components/charts/clicks-area-chart";
 import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
+import { useCampaign } from "@/hooks/use-campaign";
 import { useCampaignDashboard } from "@/hooks/use-campaign-dashboard";
 import { sumLastDays } from "@/lib/utils";
 import { RiLinkUnlink } from "@remixicon/react";
@@ -14,17 +15,22 @@ import { useEffect } from "react";
 export default function CampaignDashboardPage() {
   const { campaignId } = useParams<{ campaignId: string }>();
   const { data, isLoading, isError } = useCampaignDashboard(campaignId);
+  const { data: campaign } = useCampaign(campaignId);
   const { setItems } = useBreadcrumb();
 
   // Cliques 7 dias
   const last7DaysClicks = data ? sumLastDays(data.charts.clicksByDate, 7) : 0;
 
   useEffect(() => {
+    if (!campaign) return;
+
     setItems([
       { label: "Dashboard", href: "/dashboard" },
-      { label: "Resultado do Cliente" },
+      { label: "Links", href: "/dashboard/links" },
+      { label: "Campanha" },
+      { label: campaign.name },
     ]);
-  }, [setItems]);
+  }, [campaign, setItems]);
 
   if (isLoading) {
     return <DashboardSkeleton />;
@@ -43,7 +49,7 @@ export default function CampaignDashboardPage() {
   return (
     <>
       <div className="flex items-center justify-between border-b pb-8">
-        <h2 className="text-4xl font-bold">Resultados da campanha</h2>
+        <h2 className="text-4xl font-bold">{campaign?.name}</h2>
       </div>
 
       <div className="grid grid-cols-1 gap-4 py-8 lg:grid-cols-3">

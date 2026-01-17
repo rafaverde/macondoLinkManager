@@ -15,7 +15,7 @@ export default function CreateLinkPage() {
     setItems([
       { label: "Dashboard", href: "/dashboard" },
       { label: "Link" },
-      { label: "Create" },
+      { label: "Novo" },
     ]);
   }, [setItems]);
 
