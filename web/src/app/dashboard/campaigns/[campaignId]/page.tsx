@@ -4,17 +4,27 @@ import CardNumbers from "@/components/card-numbers";
 import { ClicksAreaChart } from "@/components/charts/clicks-area-chart";
 import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useCampaignDashboard } from "@/hooks/use-campaign-dashboard";
 import { sumLastDays } from "@/lib/utils";
 import { RiLinkUnlink } from "@remixicon/react";
 import { useParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function CampaignDashboardPage() {
   const { campaignId } = useParams<{ campaignId: string }>();
   const { data, isLoading, isError } = useCampaignDashboard(campaignId);
+  const { setItems } = useBreadcrumb();
 
   // Cliques 7 dias
   const last7DaysClicks = data ? sumLastDays(data.charts.clicksByDate, 7) : 0;
+
+  useEffect(() => {
+    setItems([
+      { label: "Dashboard", href: "/dashboard" },
+      { label: "Resultado do Cliente" },
+    ]);
+  }, [setItems]);
 
   if (isLoading) {
     return <DashboardSkeleton />;
