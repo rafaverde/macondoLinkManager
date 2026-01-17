@@ -54,14 +54,14 @@ export default function ClientDashboardPage() {
 
       <div className="grid grid-cols-1 gap-4 py-8 lg:grid-cols-3">
         <CardNumbers
+          title="Links Ativos"
+          value={data.summary.activeLinks}
+          description="do cliente"
+        />
+        <CardNumbers
           title="Total de Cliques"
           value={data.summary.totalClicks}
           description="clique(s) em todo o período"
-        />
-        <CardNumbers
-          title="Links Ativos"
-          value={data.summary.activeLinks}
-          description="de toda a campanha"
         />
         <CardNumbers
           title="Cliques"
