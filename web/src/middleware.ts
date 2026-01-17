@@ -3,10 +3,20 @@ import { NextResponse, type NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   // Tenta pegar o token de autenticação
   const token = request.cookies.get("macondo.token")?.value;
+  // Pega url para tratar erros de login
+  const { pathname, searchParams } = request.nextUrl;
+
+  // Constate se há erro no url
+  const authError = searchParams.get("error");
 
   // Define quais rotas são protegidas
   const isDashboardRoute = request.nextUrl.pathname.startsWith("/dashboard");
-  const isLoginRout = request.nextUrl.pathname === "/";
+  const isLoginRoute = request.nextUrl.pathname === "/";
+
+  // Sempre permite a home quando houver erro de auth
+  if (isLoginRoute && authError) {
+    return NextResponse.next();
+  }
 
   // Caso tente acessar Dashboard sem token > Redireciona para login
   if (isDashboardRoute && !token) {
@@ -14,8 +24,8 @@ export function middleware(request: NextRequest) {
   }
 
   // Caso tente acessar login COM token > Redireciona para Dashboard
-  if (isLoginRout && token) {
-    return NextResponse.redirect(new URL("dashboard", request.url));
+  if (isLoginRoute && token && !authError) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   // Se nada disse acontecer, passa.

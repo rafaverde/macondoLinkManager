@@ -17,6 +17,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import ModeToggle from "./ui/mode-toggle";
 import { createInitials } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function AppHeader() {
   const router = useRouter();
@@ -30,7 +31,9 @@ export default function AppHeader() {
       await api.post("/auth/logout");
       // Limpa cache do ReactQuery
       queryClient.clear();
-      // Redireciona para o login
+
+      // Avisa sucesso e redireciona para o login
+      toast.success("Logout realizado com sucesso.");
       router.push("/");
     } catch (error) {
       console.error("Erro ao fazer logout", error);

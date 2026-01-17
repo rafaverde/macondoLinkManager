@@ -2,27 +2,32 @@
 
 import { api } from "@/lib/api";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import { useUser } from "@/hooks/use-user";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 
 import macondoLogo from "@/assets/macondo-logo.svg";
 import googleLogo from "@/assets/google-color.svg";
-import { useUser } from "@/hooks/use-user";
 
 export default function LoginPage() {
+  const params = useSearchParams();
   const router = useRouter();
+
+  const error = params.get("error");
+  const hasAuthError = error === "DOMAIN_NOT_ALLOWED";
 
   // Busca usuário atual (/me)
   const { data: user, isLoading } = useUser();
 
   // Se o usuário existe e faz login, redireciona para o Dashboard
   useEffect(() => {
-    if (user) {
+    if (user && !hasAuthError) {
       router.push("/dashboard");
     }
-  }, [user, router]);
+  }, [user, hasAuthError, router]);
 
   function handleLogin() {
     window.location.href = `${api.defaults.baseURL}/auth/google`;
