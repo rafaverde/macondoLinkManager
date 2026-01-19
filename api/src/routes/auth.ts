@@ -102,7 +102,7 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
   });
 
   // Cria sessão (Cookie) via XHR
-  app.post("auth/session", async (request, reply) => {
+  app.post("/auth/session", async (request, reply) => {
     const bodySchema = z.object({
       token: z.string(),
     });
