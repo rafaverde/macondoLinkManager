@@ -59,7 +59,7 @@ A **v1.0.0** marca a primeira versão completa e utilizável do sistema.
 - Prisma ORM + PostgreSQL
 - Error handling centralizado
 - Controle de acesso por ownership
-- Documentação via Swagger
+- Documentação via Swagger 
 
 ---
 
