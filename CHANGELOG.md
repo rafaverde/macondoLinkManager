@@ -1,43 +1,52 @@
 # Changelog
 
-Todas as mudanças relevantes deste projeto serão documentadas neste arquivo.
+Todas as mudanças relevantes deste projeto serão documentadas aqui.
 
-O formato segue o padrão [Keep a Changelog](https://keepachangelog.com/)
-e o versionamento segue [Semantic Versioning](https://semver.org/).
+O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
+e o versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
-## [1.0.1] - 2026-01-XX
+## [1.0.2] - 2026-01-19
 
 ### Added
-- Botão “Detalhes” no card de link
-- Prop `isDetails` para controle de ações no Link Card
+- Deploy em produção (Frontend na Vercel, Backend no Railway)
+- Domínios personalizados:
+  - Frontend: `li.mcd.ppg.br`
+  - API: `api.mcd.ppg.br`
+- Autenticação via Google OAuth em produção
+- Dashboards de campanha e cliente
+- Breadcrumbs dinâmicos
+- Página de health check da API
+
+### Changed
+- Fluxo de autenticação baseado em cookie httpOnly
+- Estrutura de layouts do App Router
+- UX do Link Card (ações contextuais e botão de detalhes)
+- Organização de cache e invalidação no React Query
+
+### Fixed
+- Redirecionamento pós-login para `/dashboard`
+- Problemas de CORS e cookies cross-domain
+- Erros de hidratação no App Router
+- Quebra de contexto por múltiplos `QueryClientProvider`
+- Swagger em ambiente de produção
+- Middleware causando redirects indevidos (307)
+
+---
+
+## [1.0.1] - 2026-01-18
 
 ### Changed
 - Ajustes visuais nos dashboards
-- Melhorias na UX de navegação
-- Refinamento de layout em páginas de analytics
-
-### Fixed
-- Remoção de ações redundantes ou sem uso na interface
+- Melhorias de UX no card de links
 
 ---
 
-## [1.0.0] - 2026-01-XX
+## [1.0.0] - 2026-01-17
 
 ### Added
-- Autenticação via Google OAuth
-- Restrição de acesso por domínio
-- Gestão completa de links
-- Associação de links a clientes e campanhas
-- Dashboards:
-  - Geral
-  - Por campanha
-  - Por link
-- Métricas agregadas:
-  - Cliques por data
-  - Top navegadores
-  - Top países
-  - Top cidades
-- Backend estruturado com Clean Architecture
-- API documentada via Swagger
+- Primeira versão funcional do Macondo Link Manager
+- CRUD de links
+- Dashboard geral de métricas
+- Autenticação via Google OAuth (ambiente local)

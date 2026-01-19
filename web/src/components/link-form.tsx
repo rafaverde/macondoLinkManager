@@ -143,11 +143,17 @@ export default function LinkForm({ initialData }: LinkFormProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {clients?.map((client) => (
-                            <SelectItem key={client.id} value={client.id}>
-                              {client.name}
-                            </SelectItem>
-                          ))}
+                          {clients?.length === 0 ? (
+                            <div className="text-muted-foreground p-2 text-center text-sm">
+                              Nenhum cliente encontrado.
+                            </div>
+                          ) : (
+                            clients?.map((client) => (
+                              <SelectItem key={client.id} value={client.id}>
+                                {client.name}
+                              </SelectItem>
+                            ))
+                          )}
                         </SelectContent>
                       </Select>
 
