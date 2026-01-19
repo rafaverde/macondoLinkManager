@@ -42,7 +42,7 @@ const start = async () => {
     // Registra CORS
     await app.register(cors, {
       // Limita acesso pelo front-end
-      origin: [env.FRONTEND_URL, "http://localhost:3000"],
+      origin: process.env.FRONTEND_URL,
       // Permite que cookies sejam enviados/recebidos
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],

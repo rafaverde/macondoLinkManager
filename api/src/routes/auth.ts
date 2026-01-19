@@ -83,8 +83,8 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
           path: "/",
           maxAge: 60 * 60 * 24 * 7, // 7 dias
           httpOnly: true,
-          sameSite: isProd ? "none" : "lax",
-          secure: isProd,
+          sameSite: "none",
+          secure: true,
           domain: ".up.railway.app",
         })
         .redirect(env.FRONTEND_URL);
