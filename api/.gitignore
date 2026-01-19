@@ -1,0 +1,40 @@
+# Arquivos de Sistema Operacional
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Arquivos de ambiente - NUNCA versionar segredos!
+
+.env
+.env.*
+!.env.example 
+
+# Dependências (locais)
+# Cada sub-projeto terá sua própria node_modules
+**/node_modules
+
+# Arquivos de build (compilados)
+**/dist
+.next/
+
+# Dados do Docker
+# A pasta que definimos no docker-compose para persistir o banco
+pgdata/
+
+# Arquivos do Prisma
+# O .env da API que criamos para o Prisma CLI
+api/.env
+
+# Arquivos do Editor (VS Code)
+.vscode/
+
+# Arquivos de teste
+coverage/
+
+#Docker dev
+Dockerfile.dev
+start.sh
