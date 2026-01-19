@@ -1,15 +1,8 @@
-import { NextResponse, type NextRequest } from "next/server";
+// middleware.ts
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
-  const token = request.cookies.get("macondo.token")?.value;
-  const { pathname } = request.nextUrl;
-
-  const isDashboard = pathname.startsWith("/dashboard");
-
-  if (isDashboard && !token) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
+export function middleware(_: NextRequest) {
   return NextResponse.next();
 }
 
