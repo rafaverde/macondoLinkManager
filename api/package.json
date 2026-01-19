@@ -5,9 +5,12 @@
   "author": "Rafael Valverde",
   "scripts": {
     "dev": "ts-node --transpile-only src/server.ts",
-    "build": "tsc",
+    "build": "tsup src --out-dir dist",
     "start": "node dist/server.js",
     "prisma:generate": "npx prisma generate"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
