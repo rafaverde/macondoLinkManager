@@ -3,7 +3,7 @@ import { FastifyInstance } from "fastify";
 import { env } from "../env";
 import { PrismaUsersRepository } from "../repositories/prisma/prisma-users-repository";
 import { AuthService } from "../services/auth-service";
-import { email, z } from "zod";
+import { z } from "zod";
 import { DomainNotAllowedError } from "../services/errors/domain-not-allowed-error";
 import fp from "fastify-plugin";
 
@@ -20,7 +20,7 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
       auth: fastifyOauth2.GOOGLE_CONFIGURATION,
     },
     startRedirectPath: "/auth/google",
-    callbackUri: `${env.BASE_URL}/auth/google/callback`,
+    callbackUri: `${process.env.BASE_URL}/auth/google/callback`,
   });
 
   // O Endpoint de callback (controller)
