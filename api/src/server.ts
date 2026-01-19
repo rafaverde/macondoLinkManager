@@ -72,6 +72,9 @@ const start = async () => {
       },
     });
 
+    // Registra cookies
+    await app.register(fastifyCookie);
+
     // Regista os plugins globais
     await app.register(jwt, {
       secret: env.JWT_SECRET,
@@ -80,8 +83,6 @@ const start = async () => {
         signed: false,
       },
     });
-
-    await app.register(fastifyCookie);
 
     await app.register(authRoutes);
     await app.register(usersRoutes);
