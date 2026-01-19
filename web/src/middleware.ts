@@ -1,21 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const { pathname, searchParams } = request.nextUrl;
+  const token = request.cookies.get("macondo.token")?.value;
+  const { pathname } = request.nextUrl;
 
-  const authError = searchParams.get("error");
+  const isDashboard = pathname.startsWith("/dashboard");
 
-  const isLoginRoute = pathname === "/";
-
-  // Sempre permite login com erro
-  if (isLoginRoute && authError) {
-    return NextResponse.next();
+  if (isDashboard && !token) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
-
-  /**
-   * 🔴 NÃO checar cookie aqui
-   * 🔴 NÃO redirecionar baseado em token
-   */
 
   return NextResponse.next();
 }

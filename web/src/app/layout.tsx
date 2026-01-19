@@ -25,20 +25,20 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${onest.variable} antialiased`}>
-        <TanstackProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TanstackProvider>
             <Suspense fallback={null}>
               <AuthFeedback />
             </Suspense>
             {children}
             <Toaster />
-          </ThemeProvider>
-        </TanstackProvider>
+          </TanstackProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
