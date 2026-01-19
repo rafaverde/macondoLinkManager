@@ -3,7 +3,7 @@
 import { api } from "@/lib/api";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { useUser } from "@/hooks/use-user";
 
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,13 @@ import { AuthFeedback } from "@/components/auth-feedback";
 export default function LoginPage() {
   // Busca usuário atual (/me)
   const { data: user, isLoading } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.replace("/dashboard");
+    }
+  }, [user, router]);
 
   function handleLogin() {
     window.location.href = `${api.defaults.baseURL}/auth/google`;
