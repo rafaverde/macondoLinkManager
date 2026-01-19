@@ -5,6 +5,7 @@ import { TanstackProvider } from "@/providers/tanstack-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 import { AuthFeedback } from "@/components/auth-feedback";
+import { Suspense } from "react";
 
 const onest = Onest({
   variable: "--font-onest",
@@ -36,7 +37,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TanstackProvider>
-            <AuthFeedback />
+            <Suspense fallback={null}>
+              <AuthFeedback />
+            </Suspense>
             {children}
             <Toaster />
           </TanstackProvider>
