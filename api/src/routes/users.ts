@@ -12,8 +12,10 @@ export async function usersRoutes(app: FastifyInstance) {
     },
     // Handler da rota, só será executado se passar no AuthHook
     async (request, reply) => {
+      console.log("HEADERS:", request.headers);
+      console.log("COOKIES:", request.cookies);
       // Hook disponibiliza request.user e retornamos os dados do usuário que vieram como JWT validado.
       return reply.status(200).send({ user: request.user });
-    }
+    },
   );
 }
