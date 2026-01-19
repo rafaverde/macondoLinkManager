@@ -76,15 +76,7 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
       );
 
       // Envia resposta  HTTP (Cookie e redirecionamento)
-      return reply
-        .setCookie("macondo.token", jwtToken, {
-          path: "/",
-          maxAge: 60 * 60 * 24 * 7, // 7 dias
-          httpOnly: true,
-          sameSite: "none",
-          secure: true,
-        })
-        .redirect(env.FRONTEND_URL);
+      return reply.redirect(env.FRONTEND_URL);
     } catch (err) {
       // Lida com erros
       if (err instanceof DomainNotAllowedError) {
@@ -107,6 +99,25 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
       );
       return reply.status(500).send({ message: "Erro interno no login." });
     }
+  });
+
+  // Cria sessão (Cookie) via XHR
+  app.post("auth/session", async (request, reply) => {
+    const bodySchema = z.object({
+      token: z.string(),
+    });
+
+    const { token } = bodySchema.parse(request.body);
+
+    reply.setCookie("macondo.token", token, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 dias
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+
+    return reply.status(204).send();
   });
 
   // Rota de Logout
