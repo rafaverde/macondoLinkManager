@@ -34,3 +34,7 @@ api/.env
 
 # Arquivos de teste
 coverage/
+
+#Docker dev
+Dockerfile.dev
+start.sh
