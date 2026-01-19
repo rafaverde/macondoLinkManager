@@ -8,7 +8,7 @@ const envSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string(),
   JWT_SECRET: z.string(),
   FRONTEND_URL: z.url(),
-  BASE_URL: process.env.BASE_URL!,
+  BASE_URL: z.url(),
   PORT: z.coerce.number().default(3333),
 });
 
