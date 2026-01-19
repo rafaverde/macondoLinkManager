@@ -21,119 +21,141 @@ Este repositório contém **backend (API)** e **frontend (Web)** organizados em 
 └── README.md
 ```
 
-> ℹ️ **Decisão de arquitetura**  
-> O projeto utiliza **monorepo por escolha**, pois API e Web evoluem juntas, compartilham o mesmo domínio e ciclo de deploy.  
-> A separação em repositórios distintos pode ser considerada futuramente, mas **não é necessária para a v1**.
+---
+
+## 🔗 URLs em Produção
+
+- **Frontend:** https://li.mcd.ppg.br  
+- **API:** https://api.mcd.ppg.br  
+- **Swagger (API Docs):** https://api.mcd.ppg.br/docs  
 
 ---
 
-## 🚀 Release v1.0.0 — Primeira versão funcional
+## ✨ Principais Funcionalidades
 
-A **v1.0.0** marca a primeira versão completa e utilizável do sistema.
-
-### ✅ Autenticação
+### Autenticação
 - Login via **Google OAuth**
-- Restrição de acesso por domínio
-- JWT armazenado em cookie httpOnly
-- Logout seguro
+- Restrição por domínio corporativo
+- Autenticação baseada em **JWT armazenado em cookie httpOnly**
 
-### 🔗 Gestão de Links
-- Criar, listar, editar e deletar links
+### Links
+- Criação e edição de links encurtados
 - Associação com **clientes** e **campanhas**
-- Redirecionamento público por short URL
-- Registro de cliques em tempo real
+- Contagem de cliques
+- Página de detalhes do link
 
-### 📊 Analytics & Dashboards
-- Dashboard geral do usuário
+### Dashboards
+- Dashboard geral
 - Dashboard por campanha
-- Métricas por link
-- Métricas agregadas:
-  - Cliques por data
-  - Top navegadores
-  - Top países
-  - Top cidades
+- Dashboard por cliente
+- Métricas por:
+  - Datas
+  - Navegadores
+  - Países
+  - Cidades
 
-### 🧠 Arquitetura
-- Clean Architecture (Services + Repositories)
-- Fastify + Zod
-- Prisma ORM + PostgreSQL
-- Error handling centralizado
-- Controle de acesso por ownership
-- Documentação via Swagger 
-
----
-
-## ✨ Release v1.0.1 — UX & Polimento
-
-A **v1.0.1** foca em melhorias visuais e de experiência do usuário.
-
-### Melhorias incluídas
-- Ajustes de layout nos dashboards
-- Melhoria no **Link Card**
-  - Remoção de ações sem uso
-  - Novo botão “Detalhes”
-  - Comportamento condicional com `isDetails`
-- Navegação mais clara entre páginas
-
-> Esta versão existe para **documentar melhorias incrementais**, mantendo histórico claro de evolução.
+### UX / UI
+- Sidebar colapsável
+- Breadcrumbs dinâmicos
+- Modo **Light / Dark**
+- Layout responsivo
 
 ---
 
 ## 🖥️ Stack Tecnológica
 
-### Backend (API)
-- Node.js
-- Fastify
-- Prisma ORM
-- PostgreSQL
-- Zod
-- JWT
-- Swagger (OpenAPI)
-- Docker
+### Frontend
+- **Next.js (App Router)**
+- **TypeScript**
+- **Tailwind CSS**
+- **shadcn/ui**
+- **TanStack Query**
+- **Axios**
+- **Sonner (toasts)**
 
-### Frontend (Web)
-- Next.js 14 (App Router)
-- TypeScript
-- Tailwind CSS
-- Shadcn/UI
-- Recharts
-- TanStack Query
-- Axios
-- Sonner (toasts)
+### Backend
+- **Node.js**
+- **Fastify**
+- **Prisma ORM**
+- **PostgreSQL**
+- **Zod**
+- **JWT**
+- **Google OAuth 2.0**
+
+### Infraestrutura
+- **Vercel** (Frontend)
+- **Railway** (Backend + Database)
+- **Docker**
+- **Domínios personalizados**
 
 ---
 
-## ⚠️ Limitações conhecidas (Backlog)
+## 🔐 Autenticação (Visão Geral)
 
-Funcionalidades planejadas, mas fora do escopo da v1:
+1. Usuário faz login via Google
+2. Backend valida domínio
+3. JWT é gerado
+4. Token é armazenado em cookie:
+   - `httpOnly`
+   - `secure`
+   - `sameSite=none`
+5. Frontend consome `/me` para obter o usuário autenticado
 
-- Feedback visual completo para erros de OAuth (`DOMAIN_NOT_ALLOWED`)
+---
+
+## 🧪 Health Check
+
+A API expõe um endpoint para verificação de status:
+```
+GET /health
+```
+Resposta esperada:
+```json
+{
+  "status": "ok",
+  "dbConnection": "healthy"
+}
+```
+
+---
+
+## 📦 Versões e Changelog
+
+O projeto segue Semantic Versioning (MAJOR.MINOR.PATCH).
+
+v1.0.0 – Primeira versão funcional
+
+v1.0.1 – Ajustes de layout e UX
+
+v1.0.2 – Deploy em produção, OAuth, domínios e dashboards completos
+
+📄 Consulte o histórico completo em
+➡️ [CHANGELOG.md](./CHANGELOG.md) 
+
+---
+
+## 🚧 Roadmap
+
+### As próximas evoluções estão organizadas via GitHub Milestones.
+
+Principais ideias futuras:
+- CRUD completo de clientes e campanhas
 - Compartilhamento de links
 - Geração de QR Code
-- CRUD completo de clientes e campanhas
+- Exportação de relatórios
 - Testes automatizados
-
-Esses pontos estão documentados para próximas sprints.
-
----
-
-## 🧪 Status de Qualidade
-
-- ✅ Testes manuais end-to-end
-- ⏳ Testes automatizados planejados
-- 🔍 Logs básicos implementados
-
----
-
-## 🏷️ Versionamento
-
-O projeto segue **Semantic Versioning (SemVer)**:
-
-- `v1.0.0` — Primeira versão funcional
-- `v1.0.1` — Ajustes de UX e layout
 
 ---
 
 ## 👥 Autoria
 
-Projeto interno desenvolvido pela **Macondo Propaganda**, com foco em evolução contínua e possível produto futuro.
+Projeto interno desenvolvido por **Macondo Propaganda**, com foco em evolução contínua e possível produto futuro.
+
+--- 
+
+## 📄 Licença
+
+Projeto interno – uso exclusivo da Macondo Propaganda.
+
+
+---
