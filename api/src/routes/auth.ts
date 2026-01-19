@@ -85,6 +85,7 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
           httpOnly: true,
           sameSite: isProd ? "none" : "lax",
           secure: isProd,
+          domain: ".up.railway.app",
         })
         .redirect(env.FRONTEND_URL);
     } catch (err) {
