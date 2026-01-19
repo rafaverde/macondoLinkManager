@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Onest, Geist_Mono } from "next/font/google";
+import { Onest } from "next/font/google";
 import "./globals.css";
 import { TanstackProvider } from "@/providers/tanstack-provider";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -9,11 +9,6 @@ import { Suspense } from "react";
 
 const onest = Onest({
   variable: "--font-onest",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -29,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${onest.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${onest.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
