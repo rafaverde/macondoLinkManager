@@ -8,6 +8,8 @@ import { DomainNotAllowedError } from "../services/errors/domain-not-allowed-err
 import fp from "fastify-plugin";
 
 export const authRoutes = fp(async (app: FastifyInstance) => {
+  const isProd = process.env.NODE_ENV === "production";
+
   // Registra o plugin do Google Auth
   await app.register(fastifyOauth2, {
     name: "googleOAuth2",
@@ -81,7 +83,8 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
           path: "/",
           maxAge: 60 * 60 * 24 * 7, // 7 dias
           httpOnly: true,
-          sameSite: "lax",
+          sameSite: isProd ? "none" : "lax",
+          secure: isProd,
         })
         .redirect(env.FRONTEND_URL);
     } catch (err) {
