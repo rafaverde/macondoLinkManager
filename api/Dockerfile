@@ -1,23 +1,40 @@
-# Etapa 1: imagem base
-FROM node:lts-alpine
+# ======================
+# Stage 1 - Build
+# ======================
+FROM node:20-alpine AS build
 
-# Define diretório de trabalho
 WORKDIR /app
 
-# Copia package.json e package-lock.json
+# Copia dependências
 COPY package*.json ./
-
-# Instala dependências
 RUN npm install
 
-# Copia o resto do código
+# Copia código fonte
 COPY . .
 
-# Gera o Prisma Client dentro da imagem
+# Gera Prisma Client
 RUN npx prisma generate
 
-# Expõe a porta da API
+# Build da aplicação (tsup → dist/)
+RUN npm run build
+
+# ======================
+# Stage 2 - Runtime
+# ======================
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copia apenas o necessário
+COPY package*.json ./
+RUN npm install --omit=dev
+
+# Copia build e prisma
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/prisma ./prisma
+
+# Porta da API
 EXPOSE 3333
 
-# Comando padrão (sobrescrito pelo docker-compose)
-CMD ["npm", "run", "dev"]
+# Start em produção
+CMD ["node", "dist/server.js"]
