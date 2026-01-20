@@ -5,7 +5,7 @@ import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repos
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { LinksService } from "../services/links-service";
 import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
-import { getClientIp } from "../utils/get-client-ip";
+import { getPublicClientIp } from "../utils/get-public-client-ip";
 
 export async function redirectRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
@@ -36,11 +36,6 @@ export async function redirectRoutes(app: FastifyInstance) {
 
       // Se não existe, 404
       if (!link) {
-        const frontendUrl = process.env.FRONTEND_URL;
-
-        if (!frontendUrl) {
-          return reply.status(404).send({ message: "Link não encontrado." });
-        }
         request.log.info(
           {
             shortCode,
@@ -49,12 +44,22 @@ export async function redirectRoutes(app: FastifyInstance) {
           },
           "Invalid short link access",
         );
-        return reply.redirect(`${frontendUrl}/link-not-found`);
+        return reply.redirect(`${process.env.FRONTEND_URL}/link-not-found`);
       }
 
       // Registra o clique
-      const ip = getClientIp(request);
+      const ip = getPublicClientIp(request);
       const userAgent = request.headers["user-agent"];
+
+      request.log.debug(
+        {
+          getClientIpResult: ip,
+          xForwardedFor: request.headers["x-forwarded-for"],
+          xRealIp: request.headers["x-real-ip"],
+          rawRequestIp: request.ip,
+        },
+        "IP resolution before trackClick",
+      );
 
       await service.trackClick(link.id, ip, userAgent);
 
@@ -64,15 +69,6 @@ export async function redirectRoutes(app: FastifyInstance) {
           ip,
         },
         "Click tracked",
-      );
-
-      request.log.info(
-        {
-          rawIp: request.ip,
-          forwardedFor: request.headers["x-forwarded-for"],
-          realIp: request.headers["x-real-ip"],
-        },
-        "Click IP debug",
       );
 
       // Redireciona para a URL original
