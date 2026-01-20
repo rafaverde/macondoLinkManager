@@ -5,6 +5,7 @@ import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repos
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { LinksService } from "../services/links-service";
 import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
+import { getClientIp } from "../utils/get-client-ip";
 
 export async function redirectRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
@@ -52,9 +53,7 @@ export async function redirectRoutes(app: FastifyInstance) {
       }
 
       // Registra o clique
-      const ip =
-        request.headers["x-forwarded-for"]?.toString().split(",")[0]?.trim() ??
-        request.ip;
+      const ip = getClientIp(request);
       const userAgent = request.headers["user-agent"];
 
       await service.trackClick(link.id, ip, userAgent);
