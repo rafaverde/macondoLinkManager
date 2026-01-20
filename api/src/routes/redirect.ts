@@ -65,6 +65,15 @@ export async function redirectRoutes(app: FastifyInstance) {
         "Click tracked",
       );
 
+      request.log.info(
+        {
+          rawIp: request.ip,
+          forwardedFor: request.headers["x-forwarded-for"],
+          realIp: request.headers["x-real-ip"],
+        },
+        "Click IP debug",
+      );
+
       // Redireciona para a URL original
       return reply.redirect(link.originalUrl);
     },
