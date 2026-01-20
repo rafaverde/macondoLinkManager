@@ -26,10 +26,11 @@ export async function redirectRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { shortCode } = request.params;
 
-      const linksRepo = new PrismaLinksRepository();
-      const clientsRepo = new PrismaClientsRepository();
-      const clicksRepo = new PrismaClicksRepository();
-      const service = new LinksService(linksRepo, clientsRepo, clicksRepo);
+      const service = new LinksService(
+        new PrismaLinksRepository(),
+        new PrismaClientsRepository(),
+        new PrismaClicksRepository(),
+      );
 
       // Busca o link pelo código
       const link = await service.getLinkByShortCode(shortCode);
@@ -51,7 +52,7 @@ export async function redirectRoutes(app: FastifyInstance) {
       const ip = getPublicClientIp(request);
       const userAgent = request.headers["user-agent"];
 
-      request.log.debug(
+      request.log.info(
         {
           getClientIpResult: ip,
           xForwardedFor: request.headers["x-forwarded-for"],
@@ -63,7 +64,7 @@ export async function redirectRoutes(app: FastifyInstance) {
 
       await service.trackClick(link.id, ip, userAgent);
 
-      request.log.debug(
+      request.log.info(
         {
           shortCode,
           ip,

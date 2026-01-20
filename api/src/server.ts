@@ -102,7 +102,7 @@ const start = async () => {
       app.get("/health", async (request, reply) => {
         try {
           await prisma.$queryRaw`SELECT 1`;
-          request.log.debug("Health check OK");
+          request.log.info("Health check OK");
 
           return reply
             .status(200)
