@@ -38,3 +38,5 @@ coverage/
 #Docker dev
 Dockerfile.dev
 start.sh
+
+scripts/

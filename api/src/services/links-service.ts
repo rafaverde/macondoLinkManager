@@ -110,7 +110,7 @@ export class LinksService {
   }
 
   async trackClick(linkId: string, ipAddress?: string, userAgent?: string) {
-    const { city, country } = resolveGeoLocation(ipAddress);
+    const { city, country } = await resolveGeoLocation(ipAddress);
 
     await this.clicksRepository.create({
       linkId,

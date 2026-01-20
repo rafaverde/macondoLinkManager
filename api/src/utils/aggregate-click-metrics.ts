@@ -47,7 +47,7 @@ export function aggregateClickMetrics(
   const countryMap = new Map<string, number>();
 
   clicks.forEach((click) => {
-    const country = click.country || "Desconhecido";
+    const country = click.country || "Não identificado";
     countryMap.set(country, (countryMap.get(country) ?? 0) + 1);
   });
 
@@ -61,7 +61,7 @@ export function aggregateClickMetrics(
   const cityMap = new Map<string, number>();
 
   clicks.forEach((click) => {
-    const city = click.city || "Desconhecida";
+    const city = click.city || "Não identificada";
     cityMap.set(city, (cityMap.get(city) ?? 0) + 1);
   });
 
