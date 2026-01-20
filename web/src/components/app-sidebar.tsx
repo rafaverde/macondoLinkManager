@@ -88,7 +88,7 @@ export default function AppSidebar({
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarRail />
+      <SidebarRail className="pointer-events-none" />
     </Sidebar>
   );
 }

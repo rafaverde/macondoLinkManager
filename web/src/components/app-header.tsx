@@ -46,7 +46,7 @@ export default function AppHeader() {
 
   return (
     <header className="bg-background shadow-b-sm sticky top-0 z-10 flex h-20 items-center justify-between border-b px-4">
-      <div className="flex items-center gap-2">
+      <div className="relative z-50 flex items-center gap-2">
         <SidebarTrigger className="-ml-1 cursor-pointer" />
         <ModeToggle />
       </div>
