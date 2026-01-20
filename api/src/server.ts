@@ -26,6 +26,7 @@ const app = Fastify({
   logger: {
     level: process.env.NODE_ENV === "production" ? "info" : "debug",
   },
+  trustProxy: true,
 }).withTypeProvider<ZodTypeProvider>(); // "Ensina" o Fastify a entender os tipos do Zod.
 
 app.addHook("onRequest", async (request, reply) => {

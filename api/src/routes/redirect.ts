@@ -52,7 +52,9 @@ export async function redirectRoutes(app: FastifyInstance) {
       }
 
       // Registra o clique
-      const ip = request.ip;
+      const ip =
+        request.headers["x-forwarded-for"]?.toString().split(",")[0]?.trim() ??
+        request.ip;
       const userAgent = request.headers["user-agent"];
 
       await service.trackClick(link.id, ip, userAgent);
