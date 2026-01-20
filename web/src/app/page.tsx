@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import macondoLogo from "@/assets/macondo-logo.svg";
 import googleLogo from "@/assets/google-color.svg";
 import { AuthFeedback } from "@/components/auth-feedback";
+import FullscreenLoader from "@/components/fullscreen-loader";
 
 export default function LoginPage() {
   // Busca usuário atual (/me)
@@ -29,11 +30,7 @@ export default function LoginPage() {
 
   // Enquanto verifica o cookie, mostra um loading simples ou nada
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        Carregando...
-      </div>
-    );
+    return <FullscreenLoader label="Iniciando aplicação..." />;
   }
 
   // Se já estiver redirecionando, não mostra o login para evitar "flicker"

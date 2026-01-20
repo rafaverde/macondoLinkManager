@@ -55,9 +55,7 @@ const start = async () => {
           description: "API para o gerenciador de links da Macondo Propaganda.",
           version: "1.0.0",
         },
-        servers: [
-          { url: process.env.BASE_URL || `http://localhost:${env.PORT}` },
-        ],
+        servers: [{ url: env.BASE_URL || `http://localhost:${env.PORT}` }],
       },
       transform: jsonSchemaTransform,
     });
