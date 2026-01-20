@@ -1,4 +1,4 @@
-import geoip from "geoip-lite";
+import { getGeoReader } from "../lib/geoip";
 
 export interface GeoLocation {
   country: string | null;
@@ -15,16 +15,24 @@ function isPrivateIp(ip: string) {
   );
 }
 
-export function resolveGeoLocation(ip?: string): GeoLocation {
+export async function resolveGeoLocation(ip?: string): Promise<GeoLocation> {
   if (!ip || isPrivateIp(ip)) {
     return { country: null, city: null };
   }
 
-  const geo = geoip.lookup(ip);
+  try {
+    const reader = await getGeoReader();
+    const result = reader.get(ip);
 
-  if (!geo) {
+    if (!result) {
+      return { country: null, city: null };
+    }
+
+    return {
+      country: result.country?.iso_code ?? null,
+      city: result.city?.names?.en ?? null,
+    };
+  } catch {
     return { country: null, city: null };
   }
-
-  return { country: geo.country ?? null, city: geo.city ?? null };
 }
