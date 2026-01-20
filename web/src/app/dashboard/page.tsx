@@ -39,7 +39,6 @@ export default function DashboardPage() {
     <>
       <div className="flex items-center justify-between border-b pb-8">
         <h2 className="text-4xl font-bold">Resultados gerais</h2>
-        <ModeToggle />
         <Link href="/dashboard/links/create">
           <Button size="lg">
             Novo Link
