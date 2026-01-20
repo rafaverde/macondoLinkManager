@@ -3,6 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { api } from "@/lib/api";
+import FullscreenLoader from "@/components/fullscreen-loader";
 
 export default function AuthCallbackClient() {
   const params = useSearchParams();
@@ -35,5 +36,5 @@ export default function AuthCallbackClient() {
     finalizeAuth();
   }, [params, router]);
 
-  return <p>Finalizando login...</p>;
+  return <FullscreenLoader label="Finalizando login..." />;
 }

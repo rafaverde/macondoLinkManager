@@ -3,7 +3,7 @@
 import { api } from "@/lib/api";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useUser } from "@/hooks/use-user";
 
 import { Button } from "@/components/ui/button";
@@ -11,29 +11,30 @@ import { Button } from "@/components/ui/button";
 import macondoLogo from "@/assets/macondo-logo.svg";
 import googleLogo from "@/assets/google-color.svg";
 import { AuthFeedback } from "@/components/auth-feedback";
+import FullscreenLoader from "@/components/fullscreen-loader";
 
 export default function LoginPage() {
   // Busca usuário atual (/me)
   const { data: user, isLoading } = useUser();
   const router = useRouter();
 
+  // Estado de transição de login
+  const [loginLoading, setLoginLoading] = useState(false);
+
   useEffect(() => {
-    if (user) {
+    if (!isLoading && user) {
       router.replace("/dashboard");
     }
-  }, [user, router]);
+  }, [user, router, isLoading]);
 
   function handleLogin() {
+    setLoginLoading(true);
     window.location.href = `${api.defaults.baseURL}/auth/google`;
   }
 
   // Enquanto verifica o cookie, mostra um loading simples ou nada
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        Carregando...
-      </div>
-    );
+    return <FullscreenLoader label="Iniciando aplicação..." />;
   }
 
   // Se já estiver redirecionando, não mostra o login para evitar "flicker"
@@ -61,13 +62,20 @@ export default function LoginPage() {
           <Button
             variant="outline"
             size="default"
-            className="cursor-pointer rounded-4xl bg-transparent p-10"
+            className="min-w-[275px] cursor-pointer rounded-4xl bg-transparent p-10"
             onClick={handleLogin}
+            disabled={loginLoading}
           >
-            <Image src={googleLogo} alt="" className="size-8" />
-            <p className="font-light">Fazer login com Google</p>
+            {loginLoading ? (
+              <div className="border-primary border-t-muted h-8 w-8 animate-spin rounded-full border-4" />
+            ) : (
+              <>
+                <Image src={googleLogo} alt="" className="size-8" />
+                <p className="font-light">Fazer login com Google</p>
+              </>
+            )}
           </Button>
-          <p>
+          <p className="max-w-[80%]">
             É necessário fazer parte da equipe{" "}
             <strong className="text-primary">@macondopropaganda.com</strong>
           </p>

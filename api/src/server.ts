@@ -53,7 +53,7 @@ const start = async () => {
         info: {
           title: "Macondo Link Manager API",
           description: "API para o gerenciador de links da Macondo Propaganda.",
-          version: "1.0.0",
+          version: "1.0.3",
         },
         servers: [
           { url: process.env.BASE_URL || `http://localhost:${env.PORT}` },
