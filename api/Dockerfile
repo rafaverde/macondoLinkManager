@@ -14,6 +14,9 @@ RUN npm install
 # Copia o código
 COPY . .
 
+# Copia banco Geolocation Maxmind
+COPY data ./data
+
 # Gera Prisma Client
 RUN npx prisma generate
 
@@ -33,6 +36,7 @@ COPY --from=build /app/package*.json ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
+COPY --from=build /app/data ./data
 
 ENV NODE_ENV=production
 
