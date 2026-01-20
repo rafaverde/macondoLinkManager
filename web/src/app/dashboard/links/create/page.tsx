@@ -2,7 +2,7 @@
 
 import LinkForm from "@/components/link-form";
 import { Button } from "@/components/ui/button";
-import { BreadcrumbItem, useBreadcrumb } from "@/contexts/breadcrumb-context";
+import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { RiArrowLeftLine } from "@remixicon/react";
 import Link from "next/link";
 import { useEffect } from "react";
