@@ -5,14 +5,23 @@ export interface GeoLocation {
   city: string | null;
 }
 
-function isPrivateIp(ip: string) {
-  return (
-    ip === "127.0.0.1" ||
-    ip === "::1" ||
-    ip.startsWith("10.") ||
-    ip.startsWith("192.168.") ||
-    ip.startsWith("172.")
-  );
+export function isPrivateIp(ip: string) {
+  if (!ip || typeof ip !== "string") return true;
+
+  // Loopback
+  if (ip === "127.0.0.1" || ip === "::1") return true;
+
+  // Private ranges
+  if (ip.startsWith("10.")) return true;
+  if (ip.startsWith("192.168.")) return true;
+  if (ip.startsWith("172.") && /^172\.(1[6-9]|2\d|3[01])\./.test(ip))
+    return true;
+
+  // IPv6 private/link-local
+  if (ip.startsWith("fc") || ip.startsWith("fd") || ip.startsWith("fe80:"))
+    return true;
+
+  return false;
 }
 
 export async function resolveGeoLocation(ip?: string): Promise<GeoLocation> {
