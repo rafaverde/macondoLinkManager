@@ -42,13 +42,13 @@ const analyticsOverviewSchema = z.object({
     ),
     topCountries: z.array(
       z.object({
-        country: z.string(),
+        country: z.string().nullable(),
         count: z.number(),
       }),
     ),
     topCities: z.array(
       z.object({
-        city: z.string(),
+        city: z.string().nullable(),
         count: z.number(),
       }),
     ),
