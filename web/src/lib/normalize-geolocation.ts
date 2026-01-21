@@ -9,5 +9,5 @@ export function normalizeCountry(code: string | null | undefined) {
 
 export function normalizeCity(city: string | null | undefined) {
   if (!city) return "Não identificada";
-  return city;
+  return city ?? "Não identificada";
 }
