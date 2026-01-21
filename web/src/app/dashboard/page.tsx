@@ -3,19 +3,25 @@
 import { TopClientsChart } from "@/components/charts/top-clients-chart";
 import { Button } from "@/components/ui/button";
 import CardNumbers from "@/components/card-numbers";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useDashboardMetrics } from "@/hooks/use-dashboard-metrics";
 import { RiArrowRightLine, RiLinkUnlink } from "@remixicon/react";
 import Link from "next/link";
 import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useEffect } from "react";
-import ModeToggle from "@/components/ui/mode-toggle";
 import DashboardSkeleton from "@/components/dashboard-skeleton";
+import { normalizeCountry } from "@/lib/normalize-geolocation";
 
 export default function DashboardPage() {
   const { setItems } = useBreadcrumb();
   const { topClients, overview, isLoading, isError } = useDashboardMetrics();
+
+  const normalizedCountries = overview.data?.charts.topCountries.map(
+    (item) => ({
+      ...item,
+      country: normalizeCountry(item.country),
+    }),
+  );
 
   // Gera breadcrumb
   useEffect(() => {
@@ -77,7 +83,7 @@ export default function DashboardPage() {
         <Top5PieChart
           title="Top 5 Localizações"
           description="Origem de todos os cliques."
-          data={overview?.data?.charts.topCountries}
+          data={normalizedCountries}
           dataKey="count"
           nameKey="country"
           centerLabel="Cliques"
