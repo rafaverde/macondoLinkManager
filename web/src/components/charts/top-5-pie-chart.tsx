@@ -46,13 +46,19 @@ export function Top5PieChart({
   const processedData = React.useMemo(() => {
     if (!data) return [];
 
-    // Pega os top 5 e atribui cores do tema
-    return data.slice(0, 5).map((item, index) => ({
-      ...item,
-      // Varia entre as 5 core padrão do shadcn charts (chart-1 a chart-5)
-      fill: `var(--chart-${(index % 5) + 1})`,
-    }));
-  }, [data]);
+    return data.slice(0, 5).map((item, index) => {
+      const rawName = item[nameKey];
+
+      return {
+        ...item,
+        [nameKey]:
+          rawName === null || rawName === undefined || rawName === ""
+            ? "Não identificada"
+            : rawName,
+        fill: `var(--chart-${(index % 5) + 1})`,
+      };
+    });
+  }, [data, nameKey]);
 
   // Configuração dinâmica do Chart (Shadcn)
   const chartConfig = React.useMemo(() => {
