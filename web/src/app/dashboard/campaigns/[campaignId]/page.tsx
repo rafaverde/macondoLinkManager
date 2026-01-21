@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useCampaign } from "@/hooks/use-campaign";
 import { useCampaignDashboard } from "@/hooks/use-campaign-dashboard";
+import { normalizeCity, normalizeCountry } from "@/lib/normalize-geolocation";
 import { sumLastDays } from "@/lib/utils";
 import { RiLinkUnlink } from "@remixicon/react";
 import { useParams } from "next/navigation";
@@ -17,6 +18,17 @@ export default function CampaignDashboardPage() {
   const { data, isLoading, isError } = useCampaignDashboard(campaignId);
   const { data: campaign } = useCampaign(campaignId);
   const { setItems } = useBreadcrumb();
+
+  // Padronizando geolocation
+  const normalizedCountries = data?.charts.topCountries.map((item) => ({
+    ...item,
+    country: normalizeCountry(item.country),
+  }));
+
+  const normalizedCities = data?.charts.topCities.map((item) => ({
+    ...item,
+    country: normalizeCity(item.city),
+  }));
 
   // Cliques 7 dias
   const last7DaysClicks = data ? sumLastDays(data.charts.clicksByDate, 7) : 0;
@@ -87,7 +99,7 @@ export default function CampaignDashboardPage() {
         <Top5PieChart
           title="Top Países"
           description="Origem dos cliques"
-          data={data.charts.topCountries}
+          data={normalizedCountries}
           dataKey="count"
           nameKey="country"
         />
@@ -95,7 +107,7 @@ export default function CampaignDashboardPage() {
         <Top5PieChart
           title="Top Cidades"
           description="Origem dos cliques"
-          data={data.charts.topCities}
+          data={normalizedCities}
           dataKey="count"
           nameKey="city"
         />

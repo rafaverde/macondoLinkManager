@@ -15,6 +15,7 @@ import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
 import { sumLastDays } from "@/lib/utils";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useEffect } from "react";
+import { normalizeCity, normalizeCountry } from "@/lib/normalize-geolocation";
 
 export default function LinkDetailsPage() {
   const params = useParams();
@@ -30,6 +31,17 @@ export default function LinkDetailsPage() {
 
   // Busca métricas do link
   const { data: metrics, isLoading: isLoadingMetrics } = useLinkMetrics(linkId);
+
+  // Padronizando geolocation
+  const normalizedCountries = metrics?.topCountries.map((item) => ({
+    ...item,
+    country: normalizeCountry(item.country),
+  }));
+
+  const normalizedCities = metrics?.topCities.map((item) => ({
+    ...item,
+    country: normalizeCity(item.city),
+  }));
 
   // Cliques de hoje
   const todayDate = new Date().toISOString().split("T")[0];
@@ -132,7 +144,7 @@ export default function LinkDetailsPage() {
           <Top5PieChart
             title="Top 5 Países"
             description="Países com mais acessos"
-            data={metrics?.topCountries}
+            data={normalizedCountries}
             dataKey="count"
             nameKey="country"
             isLoading={isLoadingMetrics}
@@ -142,7 +154,7 @@ export default function LinkDetailsPage() {
           <Top5PieChart
             title="Top 5 Cidades"
             description="Países com mais acessos"
-            data={metrics?.topCities}
+            data={normalizedCities}
             dataKey="count"
             nameKey="city"
             isLoading={isLoadingMetrics}

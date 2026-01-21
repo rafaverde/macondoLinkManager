@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useClient } from "@/hooks/use-client";
 import { useClientDashboard } from "@/hooks/use-client-dashboard";
+import { normalizeCity, normalizeCountry } from "@/lib/normalize-geolocation";
 import { sumLastDays } from "@/lib/utils";
 import { RiLinkUnlink } from "@remixicon/react";
 import { useParams } from "next/navigation";
@@ -17,6 +18,17 @@ export default function ClientDashboardPage() {
   const { data, isLoading, isError } = useClientDashboard(clientId);
   const { data: client } = useClient(clientId);
   const { setItems } = useBreadcrumb();
+
+  // Padronizando geolocation
+  const normalizedCountries = data?.charts.topCountries.map((item) => ({
+    ...item,
+    country: normalizeCountry(item.country),
+  }));
+
+  const normalizedCities = data?.charts.topCities.map((item) => ({
+    ...item,
+    country: normalizeCity(item.city),
+  }));
 
   // Cliques 7 dias
   const last7DaysClicks = data ? sumLastDays(data.charts.clicksByDate, 7) : 0;
@@ -87,7 +99,7 @@ export default function ClientDashboardPage() {
         <Top5PieChart
           title="Top Países"
           description="Origem dos cliques"
-          data={data.charts.topCountries}
+          data={normalizedCountries}
           dataKey="count"
           nameKey="country"
         />
@@ -95,7 +107,7 @@ export default function ClientDashboardPage() {
         <Top5PieChart
           title="Top Cidades"
           description="Origem dos cliques"
-          data={data.charts.topCities}
+          data={normalizedCities}
           dataKey="count"
           nameKey="city"
         />
