@@ -70,6 +70,7 @@ export default function AppSidebar({
                   asChild
                   isActive={isActive}
                   tooltip={item.label}
+                  disabled={item.disabled}
                   className="data-[active=true]:border-macondo-gray-300 hover:bg-macondo-gray-100 dark:hover:bg-macondo-gray-800 p-4 data-[active=true]:border"
                 >
                   <Link
