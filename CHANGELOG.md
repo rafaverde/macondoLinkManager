@@ -1,52 +1,82 @@
 # Changelog
 
-Todas as mudanças relevantes deste projeto serão documentadas aqui.
+Todas as mudanças relevantes deste projeto serão documentadas neste arquivo.
 
-O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
-e o versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
+O formato segue o padrão [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/)
+e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
+
+---
+
+## [1.0.3] - 2026-01-21
+
+### ✨ Added
+- Geolocalização de cliques utilizando **MaxMind GeoLite2 City**.
+- Identificação de **país e cidade** para cliques públicos.
+- Normalização de países usando `Intl.DisplayNames`.
+- Skeletons de carregamento no dashboard inicial.
+- Feedback visual aprimorado para estados de loading em gráficos.
+
+### 🔧 Changed
+- Ajuste no Dockerfile para incluir a base GeoLite2 no runtime.
+- Padronização de labels de localização:
+  - País: “Não identificado”
+  - Cidade: “Não identificada”
+- Melhor tratamento de IP real atrás de proxy (Vercel + Railway).
+- Melhorias visuais nos gráficos de pizza (Top 5 Países / Cidades).
+
+### 🐛 Fixed
+- Correção de cliques aparecendo como “desconhecidos” mesmo com IP público.
+- Correção de erro silencioso por ausência do arquivo `.mmdb` em produção.
+- Ajuste no schema de resposta para aceitar valores nulos antes da normalização.
+- Correção de inconsistências entre ambiente local e produção.
 
 ---
 
 ## [1.0.2] - 2026-01-19
 
-### Added
-- Deploy em produção (Frontend na Vercel, Backend no Railway)
-- Domínios personalizados:
-  - Frontend: `li.mcd.ppg.br`
-  - API: `api.mcd.ppg.br`
-- Autenticação via Google OAuth em produção
-- Dashboards de campanha e cliente
-- Breadcrumbs dinâmicos
-- Página de health check da API
+### ✨ Added
+- Deploy completo em produção:
+  - Frontend na Vercel
+  - Backend no Railway
+- Autenticação Google OAuth funcionando em produção.
+- Domínios customizados configurados.
+- Cookies HTTP-only cross-domain funcionando corretamente.
 
-### Changed
-- Fluxo de autenticação baseado em cookie httpOnly
-- Estrutura de layouts do App Router
-- UX do Link Card (ações contextuais e botão de detalhes)
-- Organização de cache e invalidação no React Query
+### 🔧 Changed
+- Reorganização dos providers globais (Theme, React Query).
+- Ajustes finais de middleware e fluxo de autenticação.
+- Melhorias gerais de UX no dashboard.
 
-### Fixed
-- Redirecionamento pós-login para `/dashboard`
-- Problemas de CORS e cookies cross-domain
-- Erros de hidratação no App Router
-- Quebra de contexto por múltiplos `QueryClientProvider`
-- Swagger em ambiente de produção
-- Middleware causando redirects indevidos (307)
+### 🐛 Fixed
+- Tela preta causada por múltiplos `QueryClientProvider`.
+- Problemas de redirecionamento após login.
+- Erros de Suspense com `useSearchParams`.
+- Problemas de hidratação em produção.
 
 ---
 
-## [1.0.1] - 2026-01-18
+## [1.0.1] - 2026-01-17
 
-### Changed
-- Ajustes visuais nos dashboards
-- Melhorias de UX no card de links
+### ✨ Added
+- Melhorias visuais no dashboard.
+- Ajustes no Link Card:
+  - Botão de detalhes.
+  - Ocultação de ações redundantes em páginas de detalhe.
+
+### 🔧 Changed
+- Refinamentos de layout e espaçamento.
+- Pequenos ajustes de UX.
 
 ---
 
-## [1.0.0] - 2026-01-17
+## [1.0.0] - 2026-01-15
 
-### Added
-- Primeira versão funcional do Macondo Link Manager
-- CRUD de links
-- Dashboard geral de métricas
-- Autenticação via Google OAuth (ambiente local)
+### 🎉 Initial Release
+
+- Autenticação via Google OAuth.
+- Gerenciamento de clientes e campanhas.
+- Criação, edição e remoção de links.
+- Redirecionamento público de shortlinks.
+- Dashboard com métricas básicas.
+- Backend em Fastify + Prisma.
+- Frontend em Next.js + React Query.
