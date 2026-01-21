@@ -17,8 +17,8 @@ export interface ClicksByDate {
 export interface MetricsResult {
   clicksByDate: ClicksByDate[];
   topBrowsers: { browser: string; count: number }[];
-  topCountries: { country: string; count: number }[];
-  topCities: { city: string; count: number }[];
+  topCountries: { country: string | null; count: number }[];
+  topCities: { city: string | null; count: number }[];
 }
 
 export interface ClicksRepository {

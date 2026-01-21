@@ -47,12 +47,18 @@ export function aggregateClickMetrics(
   const countryMap = new Map<string, number>();
 
   clicks.forEach((click) => {
-    const country = click.country || "Não identificado";
-    countryMap.set(country, (countryMap.get(country) ?? 0) + 1);
+    const country = click.country || null;
+    countryMap.set(
+      country ?? "__unknown__",
+      (countryMap.get(country ?? "__unknown__") ?? 0) + 1,
+    );
   });
 
   const topCountries = Array.from(countryMap.entries())
-    .map(([country, count]) => ({ country, count }))
+    .map(([country, count]) => ({
+      country: country === "__unknown__" ? null : country,
+      count,
+    }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 5);
 
@@ -61,12 +67,18 @@ export function aggregateClickMetrics(
   const cityMap = new Map<string, number>();
 
   clicks.forEach((click) => {
-    const city = click.city || "Não identificada";
-    cityMap.set(city, (cityMap.get(city) ?? 0) + 1);
+    const city = click.city || null;
+    cityMap.set(
+      city ?? "__unknown__",
+      (cityMap.get(city ?? "__unknown__") ?? 0) + 1,
+    );
   });
 
   const topCities = Array.from(cityMap.entries())
-    .map(([city, count]) => ({ city, count }))
+    .map(([city, count]) => ({
+      city: city === "__unknown__" ? null : city,
+      count,
+    }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 5);
 
