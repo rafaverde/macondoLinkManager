@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 export interface Client {
   id: string;
   name: string;
+  createdAt: string;
 }
 
 export function useClients() {
