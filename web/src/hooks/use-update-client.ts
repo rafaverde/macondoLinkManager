@@ -1,5 +1,6 @@
 import { api } from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface UpdateClientData {
   id: string;
@@ -15,7 +16,13 @@ export function useUpdateClient() {
       return data;
     },
     onSuccess: () => {
+      toast.success("Cliente alterado com sucesso!");
       queryClient.invalidateQueries({ queryKey: ["clients"] });
+    },
+    onError: () => {
+      toast.error(
+        "Erro ao atualizar dados do cliente. Tente novamente mais tarde.",
+      );
     },
   });
 }
