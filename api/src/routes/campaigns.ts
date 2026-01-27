@@ -108,15 +108,45 @@ export async function campaignsRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const userId = request.user.sub;
 
       const service = new CampaignsService(
         new PrismaCampaignsRepository(),
         new PrismaClientsRepository(),
       );
 
-      const campaign = await service.getCampaignById(userId, id);
+      const campaign = await service.getCampaignById(id);
       return reply.send(campaign);
+    },
+  );
+
+  // Rota DELETE campaign by id
+  app.withTypeProvider<ZodTypeProvider>().delete(
+    "/campaigns/:id",
+    {
+      onRequest: [authHook],
+      schema: {
+        tags: ["Management"],
+        summary:
+          "Exclui uma campanha e desassocia os links pertencentes a ela.",
+        params: z.object({
+          id: z.uuid(),
+        }),
+        response: {
+          204: z.null(),
+          404: z.object({ message: z.string() }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+
+      const service = new CampaignsService(
+        new PrismaCampaignsRepository(),
+        new PrismaClientsRepository(),
+      );
+
+      await service.deleteCampaign(id);
+      return reply.status(204).send();
     },
   );
 }

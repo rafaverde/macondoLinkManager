@@ -42,7 +42,7 @@ export class CampaignsService {
     return campaign;
   }
 
-  async getCampaignById(userId: string, campaignId: string) {
+  async getCampaignById(campaignId: string) {
     const campaign = await this.campaignsRepository.findById(campaignId);
 
     if (!campaign) {
@@ -50,5 +50,10 @@ export class CampaignsService {
     }
 
     return campaign;
+  }
+
+  async deleteCampaign(campaignId: string) {
+    await this.getCampaignById(campaignId);
+    await this.campaignsRepository.delete(campaignId);
   }
 }

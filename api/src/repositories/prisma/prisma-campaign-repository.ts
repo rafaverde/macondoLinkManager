@@ -41,7 +41,7 @@ export class PrismaCampaignsRepository implements CampaignsRepository {
     return campaign;
   }
 
-  async findByIdAndUserId(
+  async findByIdWithUserLinks(
     campaignId: string,
     userId: string,
   ): Promise<{ id: string } | null> {
@@ -66,6 +66,14 @@ export class PrismaCampaignsRepository implements CampaignsRepository {
     return prisma.campaign.findUnique({
       where: {
         id: campaignId,
+      },
+    });
+  }
+
+  async delete(id: string): Promise<void> {
+    await prisma.campaign.delete({
+      where: {
+        id,
       },
     });
   }

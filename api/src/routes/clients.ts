@@ -115,7 +115,7 @@ export async function clientsRoutes(app: FastifyInstance) {
       schema: {
         tags: ["Management"],
         summary:
-          "Excluí um cliente e todos os dados relacionados a ele (campanhas e links).",
+          "Exclui um cliente e todos os dados relacionados a ele (campanhas e links).",
         params: z.object({
           id: z.uuid(),
         }),

@@ -15,9 +15,10 @@ export interface CampaignsRepository {
     name: string,
     clientId: string,
   ): Promise<Campaign | null>;
-  findByIdAndUserId(
+  findByIdWithUserLinks(
     campaignId: string,
     userId: string,
   ): Promise<{ id: string } | null>;
   findById(campaignId: string): Promise<Campaign | null>;
+  delete(id: string): Promise<void>;
 }

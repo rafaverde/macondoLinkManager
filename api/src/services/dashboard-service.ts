@@ -113,7 +113,7 @@ export class DashboardService {
   }
 
   async getCampaignOverview(userId: string, campaignId: string) {
-    const campaign = await this.campaignsRepository.findByIdAndUserId(
+    const campaign = await this.campaignsRepository.findByIdWithUserLinks(
       campaignId,
       userId,
     );
