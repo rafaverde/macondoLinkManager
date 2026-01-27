@@ -134,4 +134,43 @@ export async function clientsRoutes(app: FastifyInstance) {
       return reply.status(204).send();
     },
   );
+
+  // Rota PUT client by id
+  app.withTypeProvider<ZodTypeProvider>().put(
+    "/clients/:id",
+    {
+      onRequest: [authHook],
+      schema: {
+        tags: ["Management"],
+        summary: "Atualiza dados de um cliente.",
+        params: z.object({
+          id: z.uuid(),
+        }),
+        body: z.object({
+          name: z.string().min(3),
+        }),
+        response: {
+          200: clientSchema,
+          404: z.object({ message: z.string() }),
+          409: z.object({ message: z.string() }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const { name } = request.body;
+
+      const service = new ClientsService(new PrismaClientsRepository());
+
+      try {
+        const client = await service.updateClient(id, name);
+        return reply.status(200).send(client);
+      } catch (err) {
+        if (err instanceof ClientAlreadyExistsError) {
+          return reply.status(409).send({ message: err.message });
+        }
+        throw err;
+      }
+    },
+  );
 }

@@ -39,4 +39,22 @@ export class ClientsService {
     await this.getClientById(clientId);
     await this.clientsRepository.delete(clientId);
   }
+
+  // Serviço para atualiar um cliente
+  async updateClient(clientId: string, name: string) {
+    const client = await this.getClientById(clientId);
+
+    // Verifica conflito de nomes
+    const clientWithSameName = await this.clientsRepository.findByName(name);
+
+    if (clientWithSameName && clientWithSameName.id !== client.id) {
+      throw new ClientAlreadyExistsError();
+    }
+
+    const updatedClient = await this.clientsRepository.update(clientId, {
+      name,
+    });
+
+    return updatedClient;
+  }
 }

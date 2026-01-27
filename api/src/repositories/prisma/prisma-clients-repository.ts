@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import { ClientsRepository, CreateClientDTO } from "../clients-repository";
 
@@ -68,5 +69,17 @@ export class PrismaClientsRepository implements ClientsRepository {
     await prisma.client.delete({
       where: { id },
     });
+  }
+
+  // Atualiza clientes
+  async update(id: string, data: Prisma.ClientUpdateInput) {
+    const client = await prisma.client.update({
+      where: {
+        id,
+      },
+      data,
+    });
+
+    return client;
   }
 }
