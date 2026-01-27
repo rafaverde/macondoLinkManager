@@ -1,6 +1,7 @@
 "use client";
 
 import CreateClientDialog from "@/components/create-client-dialog";
+import EditClientDialog, { ClientEdit } from "@/components/edit-client-dialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -23,6 +24,8 @@ import { useState } from "react";
 
 export default function ClientsPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editingClient, setEditingClient] = useState<ClientEdit | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const { data: clients, isLoading } = useClients();
 
   return (
@@ -67,7 +70,14 @@ export default function ClientsPage() {
               <TableCell>{client.name}</TableCell>
               <TableCell>{formatDate(client.createdAt)}</TableCell>
               <TableCell className="space-x-2 text-right">
-                <Button size="icon" variant="outline">
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={() => {
+                    setEditingClient(client);
+                    setIsEditOpen(true);
+                  }}
+                >
                   <RiPencilLine />
                 </Button>
 
@@ -92,6 +102,12 @@ export default function ClientsPage() {
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
         onSuccess={() => {}}
+      />
+
+      <EditClientDialog
+        open={isEditOpen}
+        onOpenChange={setIsEditOpen}
+        client={editingClient}
       />
     </>
   );

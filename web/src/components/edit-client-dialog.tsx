@@ -1,7 +1,7 @@
 "use client";
 
-import { useCreateClient } from "@/hooks/use-create-client";
-import { useState } from "react";
+import { useUpdateClient } from "@/hooks/use-update-client";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,41 +11,56 @@ import {
   DialogTitle,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { RiLoader4Line } from "@remixicon/react";
-import { Label } from "./ui/label";
 import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { RiLoader4Line } from "@remixicon/react";
 
-interface CreateClientDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess: (id: string) => void;
+export interface ClientEdit {
+  id: string;
+  name: string;
 }
 
-export default function CreateClientDialog({
+interface EditClientDialogProps {
+  client: ClientEdit | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export default function EditClientDialog({
+  client,
   open,
   onOpenChange,
-  onSuccess,
-}: CreateClientDialogProps) {
+}: EditClientDialogProps) {
   const [name, setName] = useState("");
 
-  const { mutate, isPending } = useCreateClient((newId) => {
-    setName("");
-    onOpenChange(false);
-    onSuccess(newId);
-  });
+  const { mutate, isPending } = useUpdateClient();
 
-  const handleSave = () => {
-    if (!name.trim()) return;
-    mutate(name);
-  };
+  useEffect(() => {
+    if (client) {
+      setName(client.name);
+    }
+  }, [client]);
+
+  function handleSave() {
+    if (!client || !name.trim()) return;
+
+    mutate(
+      { id: client.id, name },
+      {
+        onSuccess: () => {
+          onOpenChange(false);
+        },
+      },
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Novo Cliente</DialogTitle>
+          <DialogTitle>Editar Cliente</DialogTitle>
           <DialogDescription>
-            Adicione um novo cliente para vincular aos links.
+            Atualizar informações do cliente.
           </DialogDescription>
         </DialogHeader>
 
@@ -83,7 +98,7 @@ export default function CreateClientDialog({
             {isPending && (
               <RiLoader4Line className="mr-2 size-4 animate-spin" />
             )}
-            Salvar Cliente
+            Salvar Alterações
           </Button>
         </DialogFooter>
       </DialogContent>

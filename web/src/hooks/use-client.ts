@@ -5,6 +5,7 @@ export interface Client {
   id: string;
   name: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 export function useClient(clientId: string) {
