@@ -39,7 +39,7 @@ export default function ClientDashboardPage() {
     setItems([
       { label: "Dashboard", href: "/dashboard" },
       { label: "Links", href: "/dashboard/links" },
-      { label: "Cliente" },
+      { label: "Clientes", href: "/dashboard/clients" },
       { label: client.name },
     ]);
   }, [client, setItems]);

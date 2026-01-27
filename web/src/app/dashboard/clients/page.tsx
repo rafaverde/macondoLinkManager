@@ -15,17 +15,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useClients } from "@/hooks/use-clients";
 import { formatDate } from "@/lib/utils";
 import {
   RiAddLine,
+  RiBarChartFill,
   RiDeleteBinLine,
   RiLinkUnlink,
   RiPencilLine,
 } from "@remixicon/react";
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function ClientsPage() {
+  const { setItems } = useBreadcrumb();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<ClientEdit | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -35,6 +39,14 @@ export default function ClientsPage() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const { data: clients, isLoading } = useClients();
+
+  // Gera breadcrumb
+  useEffect(() => {
+    setItems([
+      { label: "Dashboard", href: "/dashboard" },
+      { label: "Clientes" },
+    ]);
+  }, [setItems]);
 
   return (
     <>
@@ -78,6 +90,12 @@ export default function ClientsPage() {
               <TableCell>{client.name}</TableCell>
               <TableCell>{formatDate(client.createdAt)}</TableCell>
               <TableCell className="space-x-2 text-right">
+                <Link href={`/dashboard/clients/${client.id}`}>
+                  <Button size="icon" variant="outline">
+                    <RiBarChartFill />
+                  </Button>
+                </Link>
+
                 <Button
                   size="icon"
                   variant="outline"
