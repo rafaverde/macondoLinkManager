@@ -1,6 +1,9 @@
 "use client";
 
 import CreateClientDialog from "@/components/create-client-dialog";
+import DeleteClientDialog, {
+  ClientDelete,
+} from "@/components/delete-client-dialog";
 import EditClientDialog, { ClientEdit } from "@/components/edit-client-dialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -26,6 +29,11 @@ export default function ClientsPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<ClientEdit | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [deletingClient, setDeletingClient] = useState<ClientDelete | null>(
+    null,
+  );
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
   const { data: clients, isLoading } = useClients();
 
   return (
@@ -81,7 +89,14 @@ export default function ClientsPage() {
                   <RiPencilLine />
                 </Button>
 
-                <Button size="icon" variant="destructive">
+                <Button
+                  size="icon"
+                  variant="destructive"
+                  onClick={() => {
+                    setDeletingClient(client);
+                    setIsDeleteOpen(true);
+                  }}
+                >
                   <RiDeleteBinLine />
                 </Button>
               </TableCell>
@@ -108,6 +123,12 @@ export default function ClientsPage() {
         open={isEditOpen}
         onOpenChange={setIsEditOpen}
         client={editingClient}
+      />
+
+      <DeleteClientDialog
+        open={isDeleteOpen}
+        onOpenChange={setIsDeleteOpen}
+        client={deletingClient}
       />
     </>
   );
