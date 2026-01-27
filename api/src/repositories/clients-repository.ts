@@ -16,4 +16,5 @@ export interface ClientsRepository {
   findByName(name: string): Promise<Client | null>; // Busca cliente pelo nome
   findById(id: string): Promise<Client | null>; // Busca cliente pelo id
   findTopClients(userId?: string): Promise<ClientsWithClicks[]>; // Pega os clientes com mais cliques
+  delete(id: string): Promise<void>; // Deleta cliente pelo id
 }

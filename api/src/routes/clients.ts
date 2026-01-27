@@ -11,13 +11,13 @@ import { authHook } from "../hooks/auth";
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { ClientsService } from "../services/clients-service";
 import { ClientAlreadyExistsError } from "../services/errors/client-already-exists-error";
-import { ClientNotFoundError } from "../services/errors/client-not-found-error";
 
 // Define a forma de um cliente para a API
 const clientSchema = z.object({
   id: z.uuid(),
   name: z.string(),
   createdAt: z.date(),
+  updatedAt: z.date(),
 });
 
 export async function clientsRoutes(app: FastifyInstance) {
@@ -92,23 +92,46 @@ export async function clientsRoutes(app: FastifyInstance) {
           id: z.uuid(),
         }),
         response: {
-          200: z.object({
-            id: z.uuid(),
-            name: z.string(),
-            createdAt: z.date(),
-          }),
+          200: clientSchema,
           404: z.object({ message: z.string() }),
         },
       },
     },
     async (request, reply) => {
       const { id } = request.params;
-      const userId = request.user.sub;
 
       const service = new ClientsService(new PrismaClientsRepository());
 
-      const client = await service.getClientById(userId, id);
+      const client = await service.getClientById(id);
       return reply.send(client);
+    },
+  );
+
+  // Rota DELETE client by id
+  app.withTypeProvider<ZodTypeProvider>().delete(
+    "/clients/:id",
+    {
+      onRequest: [authHook],
+      schema: {
+        tags: ["Management"],
+        summary:
+          "Excluí um cliente e todos os dados relacionados a ele (campanhas e links).",
+        params: z.object({
+          id: z.uuid(),
+        }),
+        response: {
+          204: z.null(),
+          404: z.object({ message: z.string() }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+
+      const service = new ClientsService(new PrismaClientsRepository());
+
+      await service.deleteClient(id);
+      return reply.status(204).send();
     },
   );
 }

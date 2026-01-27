@@ -28,7 +28,7 @@ export class PrismaClientsRepository implements ClientsRepository {
     return client;
   }
 
-  async findTopClients(userId?: string) {
+  async findTopClients(userId: string) {
     const clients = await prisma.client.findMany({
       where: {
         links: {
@@ -61,5 +61,12 @@ export class PrismaClientsRepository implements ClientsRepository {
 
     // Ordena decrescente e pga o Top 5
     return clientsWithTotal.sort((a, b) => b._count - a._count).slice(0, 5);
+  }
+
+  // Deleta clientes
+  async delete(id: string): Promise<void> {
+    await prisma.client.delete({
+      where: { id },
+    });
   }
 }
