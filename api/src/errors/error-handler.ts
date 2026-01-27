@@ -1,5 +1,5 @@
 import { FastifyError, FastifyReply, FastifyRequest } from "fastify";
-import { ZodError } from "zod";
+import z, { ZodError } from "zod";
 import { LinkNotFoundError } from "../services/errors/link-not-found-error";
 import { ClientNotFoundError } from "../services/errors/client-not-found-error";
 import { CampaignNotFoundError } from "../services/errors/campaign-not-found.error";
@@ -13,7 +13,7 @@ export function errorHandler(
   if (error instanceof ZodError) {
     return reply.status(400).send({
       message: "Erro de validação.",
-      issues: error.format(),
+      issues: z.treeifyError(error),
     });
   }
 
