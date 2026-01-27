@@ -21,4 +21,5 @@ export interface CampaignsRepository {
   ): Promise<{ id: string } | null>;
   findById(campaignId: string): Promise<Campaign | null>;
   delete(id: string): Promise<void>;
+  update(id: string, data: Prisma.CampaignUpdateInput): Promise<Campaign>;
 }
