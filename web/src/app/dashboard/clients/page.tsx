@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -9,8 +11,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RiAddLine, RiDeleteBinLine, RiPencilLine } from "@remixicon/react";
+import { useState } from "react";
 
 export default function ClientsPage() {
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const isLoading = false;
 
   return (
@@ -18,7 +22,7 @@ export default function ClientsPage() {
       <div className="flex items-center justify-between border-b pb-8">
         <h2 className="text-4xl font-bold">Clientes</h2>
 
-        <Button size="lg">
+        <Button size="lg" onClick={() => setIsCreateOpen(true)}>
           Novo Cliente
           <RiAddLine />
         </Button>
