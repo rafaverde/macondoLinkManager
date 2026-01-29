@@ -7,6 +7,33 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.1.0] - 2026-01-27
+
+### ✨ Added
+- CRUD completo de **Clientes** (criar, listar, editar e excluir).
+- CRUD completo de **Campanhas**, vinculadas a clientes.
+- Página dedicada para gerenciamento de clientes.
+- Página dedicada para gerenciamento de campanhas.
+- Filtro por cliente na listagem de campanhas.
+- Visualização global de campanhas com identificação do cliente associado.
+
+### 🔧 Changed
+- Clientes e campanhas passam a ser **entidades globais da agência**.
+- Melhor organização do fluxo de criação de links com clientes e campanhas.
+- Filtros interdependentes na listagem de links:
+  - Campanhas filtradas automaticamente pelo cliente selecionado.
+- Breadcrumbs dinâmicos padronizados em todo o dashboard.
+- Melhorias gerais de UX em formulários, tabelas e diálogos modais.
+
+### 🐛 Fixed
+- Correção de inconsistências de cache após criação, edição ou exclusão de clientes e campanhas.
+- Correção de filtros exibindo campanhas incorretas ao trocar cliente.
+- Ajuste no comportamento de breadcrumbs que causavam reload de página.
+- Correção de estados desatualizados em selects após exclusão de campanhas.
+
+
+---
+
 ## [1.0.3] - 2026-01-21
 
 ### ✨ Added
