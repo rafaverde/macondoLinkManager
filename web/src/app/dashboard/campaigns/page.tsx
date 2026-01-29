@@ -254,7 +254,6 @@ export default function CampaignsPage() {
           open={isDeleteOpen}
           onOpenChange={setIsDeleteOpen}
           campaign={isDeletingCampaign}
-          clientId={selectedClientId}
         />
       )}
     </>
