@@ -12,6 +12,8 @@ export function useDeleteClient() {
     onSuccess: () => {
       toast.warning("Cliente e seus dados relacionados apagados!");
       queryClient.invalidateQueries({ queryKey: ["clients"] });
+      queryClient.invalidateQueries({ queryKey: ["campaigns"] });
+      queryClient.invalidateQueries({ queryKey: ["links"] });
     },
     onError: () => {
       toast.error("Erro ao apagar cliente. Tente novamente mais tarde.");
