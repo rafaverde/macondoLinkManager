@@ -11,7 +11,8 @@ export function useDeleteCampaign(clientId: string) {
     },
     onSuccess: () => {
       toast.warning("Campanha apagada e seus links desassociados!");
-      queryClient.invalidateQueries({ queryKey: ["campaings", clientId] });
+      queryClient.invalidateQueries({ queryKey: ["campaigns", clientId] });
+      queryClient.invalidateQueries({ queryKey: ["links"] });
     },
     onError: () => {
       toast.error("Erro ao excluir a campanha. Tente novamente mais tarde.");
