@@ -22,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useCampaigns } from "@/hooks/use-campaigns";
 import { useClients } from "@/hooks/use-clients";
 import { formatDate } from "@/lib/utils";
@@ -38,6 +39,7 @@ import { useEffect, useState } from "react";
 type ClientScope = "all" | string;
 
 export default function CampaignsPage() {
+  const { setItems } = useBreadcrumb();
   const [selectedClientId, setSelectedClientId] = useState<ClientScope>("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
@@ -68,6 +70,14 @@ export default function CampaignsPage() {
       setIsDeletingCampaign(null);
     }
   }, [isEditOpen]);
+
+  // Gera breadcrumb
+  useEffect(() => {
+    setItems([
+      { label: "Dashboard", href: "/dashboard" },
+      { label: "Campanhas" },
+    ]);
+  }, [setItems]);
 
   return (
     <>
