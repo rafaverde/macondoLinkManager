@@ -1,5 +1,6 @@
 "use client";
 
+import CreateCampaignDialog from "@/components/create-campaign-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -32,6 +33,8 @@ import { useState } from "react";
 
 export default function CampaignsPage() {
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+
   const { data: clients, isLoading: isLoadingClients } = useClients();
   const { data: campaigns, isLoading: isLoadingCampaigns } = useCampaigns(
     selectedClientId ?? undefined,
@@ -44,17 +47,7 @@ export default function CampaignsPage() {
           <h2 className="text-4xl font-bold">Campanhas</h2>
         </div>
 
-        <Button size="lg" onClick={() => {}}>
-          Nova Campanha
-          <RiAddLine />
-        </Button>
-      </div>
-
-      <div className="flex flex-col items-center gap-2 border-b py-6 lg:flex-row">
-        <span>Selecione um cliente</span>
-
-        {/* Filtros por digitação */}
-        <div className="flex w-full flex-1">
+        <div className="flex items-end justify-center gap-6">
           <Select
             value={selectedClientId ?? ""}
             onValueChange={(value) => setSelectedClientId(value)}
@@ -71,7 +64,22 @@ export default function CampaignsPage() {
               ))}
             </SelectContent>
           </Select>
+
+          <Button
+            size="lg"
+            onClick={() => {
+              setIsCreateDialogOpen(true);
+            }}
+            disabled={!selectedClientId}
+          >
+            Nova Campanha
+            <RiAddLine />
+          </Button>
         </div>
+      </div>
+
+      <div className="flex flex-col items-center gap-2 border-b py-6 lg:flex-row">
+        <span>Selecione um cliente</span>
       </div>
 
       {/* Table */}
@@ -134,13 +142,14 @@ export default function CampaignsPage() {
         </div>
       )}
 
-      {/* <CreateClientDialog
-        open={isCreateOpen}
-        onOpenChange={setIsCreateOpen}
+      <CreateCampaignDialog
+        clientId={selectedClientId!}
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
         onSuccess={() => {}}
       />
 
-      <EditClientDialog
+      {/* <EditClientDialog
         open={isEditOpen}
         onOpenChange={setIsEditOpen}
         client={editingClient}

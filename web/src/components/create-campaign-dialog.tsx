@@ -20,20 +20,23 @@ import { toast } from "sonner";
 
 interface CreateCampaignDialogProps {
   clientId: string;
-  onSelectNew: (id: string) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: (id: string) => void;
 }
 
 export default function CreateCampaignDialog({
   clientId,
-  onSelectNew,
+  open,
+  onOpenChange,
+  onSuccess,
 }: CreateCampaignDialogProps) {
-  const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
 
   const { mutate, isPending } = useCreateCampaign((newId) => {
-    setOpen(false);
     setName("");
-    onSelectNew(newId);
+    onOpenChange(false);
+    onSuccess(newId);
   });
 
   const handleSave = () => {
@@ -48,18 +51,7 @@ export default function CreateCampaignDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          type="button"
-          title="Criar nova campanha"
-          disabled={!clientId} // Desabilita se não tiver cliente selecionado
-        >
-          <RiAddLine size={18} />
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Nova Campanha</DialogTitle>
@@ -85,12 +77,20 @@ export default function CreateCampaignDialog({
           </div>
         </div>
         <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Cancelar</Button>
-          </DialogClose>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              setName("");
+              onOpenChange(false);
+            }}
+          >
+            Cancelar
+          </Button>
+
           <Button type="button" disabled={isPending} onClick={handleSave}>
             {isPending && (
-              <RiLoader4Line className="mr-2 h-4 w-4 animate-spin" />
+              <RiLoader4Line className="mr-2 size-4 animate-spin" />
             )}
             Salvar Campanha
           </Button>
