@@ -1,6 +1,9 @@
 "use client";
 
 import CreateCampaignDialog from "@/components/create-campaign-dialog";
+import EditCampaignDialog, {
+  CampaignEdit,
+} from "@/components/edit-campaign-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -35,6 +38,11 @@ export default function CampaignsPage() {
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
+  const [editingCampaign, setEditingCampaign] = useState<CampaignEdit | null>(
+    null,
+  );
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
   const { data: clients, isLoading: isLoadingClients } = useClients();
   const { data: campaigns, isLoading: isLoadingCampaigns } = useCampaigns(
     selectedClientId ?? undefined,
@@ -48,22 +56,26 @@ export default function CampaignsPage() {
         </div>
 
         <div className="flex items-end justify-center gap-6">
-          <Select
-            value={selectedClientId ?? ""}
-            onValueChange={(value) => setSelectedClientId(value)}
-          >
-            <SelectTrigger className="w-[260px]">
-              <SelectValue placeholder="Selecione um cliente" />
-            </SelectTrigger>
+          <div className="flex items-center gap-4">
+            <span>Selecione um cliente</span>
 
-            <SelectContent>
-              {clients?.map((client) => (
-                <SelectItem key={client.id} value={client.id}>
-                  {client.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <Select
+              value={selectedClientId ?? ""}
+              onValueChange={(value) => setSelectedClientId(value)}
+            >
+              <SelectTrigger className="w-[260px]">
+                <SelectValue placeholder="Selecione um cliente" />
+              </SelectTrigger>
+
+              <SelectContent>
+                {clients?.map((client) => (
+                  <SelectItem key={client.id} value={client.id}>
+                    {client.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
           <Button
             size="lg"
@@ -78,59 +90,75 @@ export default function CampaignsPage() {
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-2 border-b py-6 lg:flex-row">
-        <span>Selecione um cliente</span>
-      </div>
-
-      {/* Table */}
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Nome</TableHead>
-            <TableHead>Criado em</TableHead>
-            <TableHead className="text-right">Ações</TableHead>
-          </TableRow>
-        </TableHeader>
-
-        <TableBody>
-          {isLoadingCampaigns &&
-            Array.from({ length: 8 }).map((item, i) => (
-              <TableRow key={i}>
-                <TableCell>
-                  <Skeleton className="bg-muted-foreground/20 h-8 w-full" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="bg-muted-foreground/20 h-8 w-full" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="bg-muted-foreground/20 h-8 w-full" />
-                </TableCell>
+      {!selectedClientId ? (
+        <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-2 py-20">
+          <RiEmotionUnhappyLine className="text-primary size-10" />
+          <h3 className="text-3xl font-bold">Nenhuma campanha encontrada.</h3>
+          <p className="mb-6 text-center">
+            Selecione um cliente para mostrar suas campanhas.
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Table */}
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nome</TableHead>
+                <TableHead>Criado em</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
               </TableRow>
-            ))}
+            </TableHeader>
 
-          {campaigns?.map((campaign) => (
-            <TableRow key={campaign.id}>
-              <TableCell>{campaign.name}</TableCell>
-              <TableCell>{formatDate(campaign.createdAt)}</TableCell>
-              <TableCell className="space-x-2 text-right">
-                <Link href={`/dashboard/campaigns/${campaign.id}`}>
-                  <Button size="icon" variant="outline">
-                    <RiBarChartFill />
-                  </Button>
-                </Link>
+            <TableBody>
+              {isLoadingCampaigns &&
+                Array.from({ length: 8 }).map((item, i) => (
+                  <TableRow key={i}>
+                    <TableCell>
+                      <Skeleton className="bg-muted-foreground/20 h-8 w-full" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="bg-muted-foreground/20 h-8 w-full" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="bg-muted-foreground/20 h-8 w-full" />
+                    </TableCell>
+                  </TableRow>
+                ))}
 
-                <Button size="icon" variant="outline" disabled>
-                  <RiPencilLine />
-                </Button>
+              {campaigns?.map((campaign) => (
+                <TableRow key={campaign.id}>
+                  <TableCell>{campaign.name}</TableCell>
+                  <TableCell>{formatDate(campaign.createdAt)}</TableCell>
+                  <TableCell className="space-x-2 text-right">
+                    <Link href={`/dashboard/campaigns/${campaign.id}`}>
+                      <Button size="icon" variant="outline">
+                        <RiBarChartFill />
+                      </Button>
+                    </Link>
 
-                <Button size="icon" variant="destructive" disabled>
-                  <RiDeleteBinLine />
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      onClick={() => {
+                        setEditingCampaign(campaign);
+                        setIsEditOpen(true);
+                      }}
+                      disabled={!selectedClientId}
+                    >
+                      <RiPencilLine />
+                    </Button>
+
+                    <Button size="icon" variant="destructive" disabled>
+                      <RiDeleteBinLine />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </>
+      )}
 
       {!isLoadingCampaigns && campaigns?.length === 0 && (
         <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-2 py-20">
@@ -149,13 +177,16 @@ export default function CampaignsPage() {
         onSuccess={() => {}}
       />
 
-      {/* <EditClientDialog
-        open={isEditOpen}
-        onOpenChange={setIsEditOpen}
-        client={editingClient}
-      />
+      {selectedClientId && (
+        <EditCampaignDialog
+          open={isEditOpen}
+          onOpenChange={setIsEditOpen}
+          campaign={editingCampaign}
+          clientId={selectedClientId}
+        />
+      )}
 
-      <DeleteClientDialog
+      {/* <DeleteClientDialog
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}
         client={deletingClient}
