@@ -34,7 +34,7 @@ import {
   RiPencilLine,
 } from "@remixicon/react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type ClientScope = "all" | string;
 
@@ -53,11 +53,18 @@ export default function CampaignsPage() {
     selectedClientId === "all" ? undefined : selectedClientId,
   );
 
+  console.log(clients);
+  console.log(campaigns);
+
   const [isDeletingCampaign, setIsDeletingCampaign] =
     useState<CampaignEdit | null>(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const isScopedToClient = selectedClientId !== "all";
+
+  const clientsById = useMemo(() => {
+    return new Map(clients?.map((c) => [c.id, c.name]));
+  }, [clients]);
 
   useEffect(() => {
     if (!isEditOpen) {
@@ -132,6 +139,7 @@ export default function CampaignsPage() {
           <TableRow>
             <TableHead>Nome</TableHead>
             <TableHead>Criado em</TableHead>
+            <TableHead>Pertence a</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -140,6 +148,9 @@ export default function CampaignsPage() {
           {isLoadingCampaigns &&
             Array.from({ length: 8 }).map((item, i) => (
               <TableRow key={i}>
+                <TableCell>
+                  <Skeleton className="bg-muted-foreground/20 h-8 w-full" />
+                </TableCell>
                 <TableCell>
                   <Skeleton className="bg-muted-foreground/20 h-8 w-full" />
                 </TableCell>
@@ -160,6 +171,9 @@ export default function CampaignsPage() {
               </TableCell>
               <TableCell className="hidden lg:table-cell">
                 {formatDate(campaign.createdAt)}
+              </TableCell>
+              <TableCell className="hidden lg:table-cell">
+                {clientsById.get(campaign.clientId)}
               </TableCell>
               <TableCell className="space-x-2 text-right">
                 <Link href={`/dashboard/campaigns/${campaign.id}`}>
