@@ -1,6 +1,7 @@
 "use client";
 
 import CreateCampaignDialog from "@/components/create-campaign-dialog";
+import DeleteCampaignDialog from "@/components/delete-campaign-dialog";
 import EditCampaignDialog, {
   CampaignEdit,
 } from "@/components/edit-campaign-dialog";
@@ -47,6 +48,11 @@ export default function CampaignsPage() {
   const { data: campaigns, isLoading: isLoadingCampaigns } = useCampaigns(
     selectedClientId ?? undefined,
   );
+
+  const [deletingCampaign, setDeletingCampaign] = useState<CampaignEdit | null>(
+    null,
+  );
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   return (
     <>
@@ -186,11 +192,14 @@ export default function CampaignsPage() {
         />
       )}
 
-      {/* <DeleteClientDialog
-        open={isDeleteOpen}
-        onOpenChange={setIsDeleteOpen}
-        client={deletingClient}
-      /> */}
+      {selectedClientId && (
+        <DeleteCampaignDialog
+          open={isDeleteOpen}
+          onOpenChange={setIsDeleteOpen}
+          campaign={deletingCampaign}
+          clientId={selectedClientId}
+        />
+      )}
     </>
   );
 }
