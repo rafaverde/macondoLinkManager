@@ -78,7 +78,7 @@ export default function AppSidebar({
         </SidebarMenu>
         <div className="p-6">
           <p className="text-muted-foreground text-xs">
-            Macondo Link Manager v1.0.3
+            Macondo Link Manager v1.1.0
           </p>
         </div>
       </SidebarContent>

@@ -13,18 +13,16 @@ import { Button } from "./ui/button";
 
 interface DeleteCampaignDialogProps {
   campaign: CampaignEdit | null;
-  clientId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 export default function DeleteCampaignDialog({
   campaign,
-  clientId,
   open,
   onOpenChange,
 }: DeleteCampaignDialogProps) {
-  const { mutate, isPending } = useDeleteCampaign(clientId);
+  const { mutate, isPending } = useDeleteCampaign();
 
   if (!campaign) return null;
 

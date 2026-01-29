@@ -2,7 +2,7 @@ import { api } from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export function useDeleteCampaign(clientId: string) {
+export function useDeleteCampaign() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -11,7 +11,7 @@ export function useDeleteCampaign(clientId: string) {
     },
     onSuccess: () => {
       toast.warning("Campanha apagada e seus links desassociados!");
-      queryClient.invalidateQueries({ queryKey: ["campaigns", clientId] });
+      queryClient.invalidateQueries({ queryKey: ["campaigns"] });
       queryClient.invalidateQueries({ queryKey: ["links"] });
     },
     onError: () => {
