@@ -6,6 +6,11 @@ import DeleteClientDialog, {
 } from "@/components/delete-client-dialog";
 import EditClientDialog, { ClientEdit } from "@/components/edit-client-dialog";
 import { Button } from "@/components/ui/button";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -17,21 +22,29 @@ import {
 } from "@/components/ui/table";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useClients } from "@/hooks/use-clients";
+import { useDebounce } from "@/hooks/use-debounce";
 import { formatDate } from "@/lib/utils";
 import {
   RiAddLine,
   RiBarChartFill,
+  RiCloseLine,
   RiDeleteBinLine,
   RiLinkUnlink,
   RiPencilLine,
+  RiSearchLine,
 } from "@remixicon/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function ClientsPage() {
   const { setItems } = useBreadcrumb();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearch = useDebounce(searchTerm, 400);
+
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<ClientEdit | null>(null);
+
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [deletingClient, setDeletingClient] = useState<ClientDelete | null>(
     null,
@@ -39,7 +52,14 @@ export default function ClientsPage() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const { data: clients, isLoading } = useClients();
+  const filteredClients =
+    debouncedSearch.trim().length > 0
+      ? clients?.filter((client) =>
+          client.name.toLowerCase().includes(debouncedSearch.toLowerCase()),
+        )
+      : clients;
 
+  console.log(filteredClients);
   // Gera breadcrumb
   useEffect(() => {
     setItems([
@@ -57,6 +77,31 @@ export default function ClientsPage() {
           Novo Cliente
           <RiAddLine />
         </Button>
+      </div>
+
+      {/* Barra de filtros */}
+      <div className="flex flex-col items-center gap-2 border-b py-6 lg:flex-row">
+        <InputGroup>
+          <InputGroupInput
+            placeholder="Buscar cliente pelo nome..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
+          <InputGroupAddon align="inline-start">
+            <RiSearchLine />
+          </InputGroupAddon>
+
+          {searchTerm && (
+            <InputGroupAddon
+              onClick={() => setSearchTerm("")}
+              align="inline-end"
+              className="cursor-pointer"
+            >
+              <RiCloseLine className="select-none" />
+            </InputGroupAddon>
+          )}
+        </InputGroup>
       </div>
 
       {/* Table */}
@@ -85,7 +130,7 @@ export default function ClientsPage() {
               </TableRow>
             ))}
 
-          {clients?.map((client, i) => (
+          {filteredClients?.map((client, i) => (
             <TableRow key={i}>
               <TableCell>{client.name}</TableCell>
               <TableCell>{formatDate(client.createdAt)}</TableCell>
@@ -122,6 +167,17 @@ export default function ClientsPage() {
           ))}
         </TableBody>
       </Table>
+
+      {!isLoading && filteredClients?.length === 0 && searchTerm && (
+        <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-2 py-20">
+          <RiLinkUnlink className="text-primary size-10" />
+          <h3 className="text-3xl font-bold">Nenhum cliente encontrado.</h3>
+          <p className="mb-6 text-center text-sm">
+            Tente ajustar ou limpar o filtro de busca
+          </p>
+          <Button onClick={() => setSearchTerm("")}>Limpar busca</Button>
+        </div>
+      )}
 
       {!isLoading && clients?.length === 0 && (
         <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-2 py-20">
