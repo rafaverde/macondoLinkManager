@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import { ClientsRepository, CreateClientDTO } from "../clients-repository";
 
@@ -28,7 +29,7 @@ export class PrismaClientsRepository implements ClientsRepository {
     return client;
   }
 
-  async findTopClients(userId?: string) {
+  async findTopClients(userId: string) {
     const clients = await prisma.client.findMany({
       where: {
         links: {
@@ -61,5 +62,24 @@ export class PrismaClientsRepository implements ClientsRepository {
 
     // Ordena decrescente e pga o Top 5
     return clientsWithTotal.sort((a, b) => b._count - a._count).slice(0, 5);
+  }
+
+  // Deleta clientes
+  async delete(id: string): Promise<void> {
+    await prisma.client.delete({
+      where: { id },
+    });
+  }
+
+  // Atualiza clientes
+  async update(id: string, data: Prisma.ClientUpdateInput) {
+    const client = await prisma.client.update({
+      where: {
+        id,
+      },
+      data,
+    });
+
+    return client;
   }
 }

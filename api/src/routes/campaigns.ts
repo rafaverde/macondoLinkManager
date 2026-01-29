@@ -96,27 +96,94 @@ export async function campaignsRoutes(app: FastifyInstance) {
           id: z.uuid(),
         }),
         response: {
-          200: z.object({
-            id: z.uuid(),
-            name: z.string(),
-            clientId: z.uuid(),
-            createdAt: z.date(),
-          }),
+          200: campaignSchema,
           404: z.object({ message: z.string() }),
         },
       },
     },
     async (request, reply) => {
       const { id } = request.params;
-      const userId = request.user.sub;
 
       const service = new CampaignsService(
         new PrismaCampaignsRepository(),
         new PrismaClientsRepository(),
       );
 
-      const campaign = await service.getCampaignById(userId, id);
+      const campaign = await service.getCampaignById(id);
       return reply.send(campaign);
+    },
+  );
+
+  // Rota DELETE campaign by id
+  app.withTypeProvider<ZodTypeProvider>().delete(
+    "/campaigns/:id",
+    {
+      onRequest: [authHook],
+      schema: {
+        tags: ["Management"],
+        summary:
+          "Exclui uma campanha e desassocia os links pertencentes a ela.",
+        params: z.object({
+          id: z.uuid(),
+        }),
+        response: {
+          204: z.null(),
+          404: z.object({ message: z.string() }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+
+      const service = new CampaignsService(
+        new PrismaCampaignsRepository(),
+        new PrismaClientsRepository(),
+      );
+
+      await service.deleteCampaign(id);
+      return reply.status(204).send();
+    },
+  );
+
+  // Rota PUT campaigns by id
+  app.withTypeProvider<ZodTypeProvider>().put(
+    "/campaigns/:id",
+    {
+      onRequest: [authHook],
+      schema: {
+        tags: ["Management"],
+        summary: "Atualiza os dados de uma campanha.",
+        params: z.object({
+          id: z.uuid(),
+        }),
+        body: z.object({
+          name: z.string().min(3),
+        }),
+        response: {
+          200: campaignSchema,
+          404: z.object({ message: z.string() }),
+          409: z.object({ message: z.string() }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const { name } = request.body;
+
+      const service = new CampaignsService(
+        new PrismaCampaignsRepository(),
+        new PrismaClientsRepository(),
+      );
+
+      try {
+        const campaign = await service.updateCampaign(id, name);
+        return reply.status(200).send(campaign);
+      } catch (err) {
+        if (err instanceof CampaignAlreadyExistsError) {
+          return reply.status(409).send({ message: err.message });
+        }
+        throw err;
+      }
     },
   );
 }

@@ -9,8 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
-import { getBreadcrumbsFromPath } from "@/lib/get-breadcrumbs-from-path";
-import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { Fragment } from "react/jsx-runtime";
 
 export function AppBreadcrumbs() {
@@ -25,7 +24,9 @@ export function AppBreadcrumbs() {
           <Fragment key={index}>
             <BreadcrumbItem>
               {item.href ? (
-                <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
+                <BreadcrumbLink asChild>
+                  <Link href={item.href}>{item.label}</Link>
+                </BreadcrumbLink>
               ) : (
                 <BreadcrumbPage>{item.label}</BreadcrumbPage>
               )}

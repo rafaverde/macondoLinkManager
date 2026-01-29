@@ -1,81 +1,87 @@
 "use client";
 
-import { useCreateCampaign } from "@/hooks/use-create-campaign";
-import { useState } from "react";
+import { useUpdateClient } from "@/hooks/use-update-client";
+import { useEffect, useState } from "react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { RiAddLine, RiLoader4Line } from "@remixicon/react";
-import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { toast } from "sonner";
+import { Label } from "./ui/label";
+import { RiLoader4Line } from "@remixicon/react";
 
-interface CreateCampaignDialogProps {
-  clientId: string;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess: (id: string) => void;
+export interface ClientEdit {
+  id: string;
+  name: string;
 }
 
-export default function CreateCampaignDialog({
-  clientId,
+interface EditClientDialogProps {
+  client: ClientEdit | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export default function EditClientDialog({
+  client,
   open,
   onOpenChange,
-  onSuccess,
-}: CreateCampaignDialogProps) {
+}: EditClientDialogProps) {
   const [name, setName] = useState("");
 
-  const { mutate, isPending } = useCreateCampaign((newId) => {
-    setName("");
-    onOpenChange(false);
-    onSuccess(newId);
-  });
+  const { mutate, isPending } = useUpdateClient();
 
-  const handleSave = () => {
-    if (!clientId) {
-      toast.error("Selecione um cliente primeiro.");
-      return;
+  useEffect(() => {
+    if (client) {
+      setName(client.name);
     }
+  }, [client]);
 
-    if (!name.trim()) return;
+  function handleSave() {
+    if (!client || !name.trim()) return;
 
-    mutate({ name, clientId });
-  };
+    mutate(
+      { id: client.id, name },
+      {
+        onSuccess: () => {
+          onOpenChange(false);
+        },
+      },
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Nova Campanha</DialogTitle>
+          <DialogTitle>Editar Cliente</DialogTitle>
           <DialogDescription>
-            Crie uma campanha para o cliente selecionado.
+            Atualizar informações do cliente.
           </DialogDescription>
         </DialogHeader>
+
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="name">Nome da Campanha</Label>
+            <Label htmlFor="name">Nome do Cliente</Label>
             <Input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Ex: Black Friday 2025"
+              placeholder="Ex: Macondo Propaganda"
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
-                  handleSave;
+                  handleSave();
                 }
               }}
             />
           </div>
         </div>
+
         <DialogFooter>
           <Button
             type="button"
@@ -92,7 +98,7 @@ export default function CreateCampaignDialog({
             {isPending && (
               <RiLoader4Line className="mr-2 size-4 animate-spin" />
             )}
-            Salvar Campanha
+            Salvar Alterações
           </Button>
         </DialogFooter>
       </DialogContent>

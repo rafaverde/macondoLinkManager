@@ -4,33 +4,34 @@ import { useCreateClient } from "@/hooks/use-create-client";
 import { useState } from "react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { RiAddLine, RiLoader4Line } from "@remixicon/react";
+import { RiLoader4Line } from "@remixicon/react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 
 interface CreateClientDialogProps {
-  onSelectNew: (id: string) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: (id: string) => void;
 }
 
 export default function CreateClientDialog({
-  onSelectNew,
+  open,
+  onOpenChange,
+  onSuccess,
 }: CreateClientDialogProps) {
-  const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
 
   const { mutate, isPending } = useCreateClient((newId) => {
-    setOpen(false);
     setName("");
-    onSelectNew(newId);
+    onOpenChange(false);
+    onSuccess(newId);
   });
 
   const handleSave = () => {
@@ -39,18 +40,7 @@ export default function CreateClientDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          type="button"
-          title="Criar novo cliente"
-        >
-          <RiAddLine />
-        </Button>
-      </DialogTrigger>
-
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Novo Cliente</DialogTitle>
@@ -70,7 +60,7 @@ export default function CreateClientDialog({
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
-                  handleSave;
+                  handleSave();
                 }
               }}
             />
@@ -78,9 +68,17 @@ export default function CreateClientDialog({
         </div>
 
         <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Cancelar</Button>
-          </DialogClose>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              setName("");
+              onOpenChange(false);
+            }}
+          >
+            Cancelar
+          </Button>
+
           <Button type="button" disabled={isPending} onClick={handleSave}>
             {isPending && (
               <RiLoader4Line className="mr-2 size-4 animate-spin" />

@@ -12,22 +12,11 @@ import {
 } from "./ui/sidebar";
 import { usePathname } from "next/navigation";
 
-import { RiBarChartFill, RiLinksFill, RiWhatsappLine } from "@remixicon/react";
 import macondoLogo from "@/assets/macondo-logo.svg";
 import macondoIcon from "@/assets/macondo-icon.svg";
 import Image from "next/image";
 import Link from "next/link";
-
-const menuItems = [
-  { href: "/dashboard/links", label: "Meus Links", icon: RiLinksFill },
-  { href: "/dashboard", label: "Estatísticas", icon: RiBarChartFill },
-  {
-    href: "/",
-    label: "Whatsapp Link",
-    icon: RiWhatsappLine,
-    disabled: true,
-  },
-];
+import { menuItems } from "@/lib/sidebar-menu-items";
 
 export default function AppSidebar({
   ...props
@@ -58,7 +47,7 @@ export default function AppSidebar({
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="bg-background">
+      <SidebarContent className="bg-background justify-between">
         <SidebarMenu className="p-2">
           {menuItems.map((item, index) => {
             const isActive = pathname === item.href;
@@ -87,6 +76,11 @@ export default function AppSidebar({
             );
           })}
         </SidebarMenu>
+        <div className="p-6">
+          <p className="text-muted-foreground text-xs">
+            Macondo Link Manager v1.0.3
+          </p>
+        </div>
       </SidebarContent>
 
       <SidebarRail className="pointer-events-none" />

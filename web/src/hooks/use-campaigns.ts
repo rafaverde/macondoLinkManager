@@ -4,11 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 export interface Campaign {
   id: string;
   name: string;
+  createdAt: string;
+  clientId: string;
 }
 
 export function useCampaigns(clientId?: string) {
   return useQuery({
-    queryKey: ["campaigns"],
+    queryKey: ["campaigns", clientId],
     queryFn: async () => {
       const { data } = await api.get<Campaign[]>("/campaigns", {
         params: { clientId },

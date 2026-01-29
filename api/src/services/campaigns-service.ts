@@ -42,7 +42,7 @@ export class CampaignsService {
     return campaign;
   }
 
-  async getCampaignById(userId: string, campaignId: string) {
+  async getCampaignById(campaignId: string) {
     const campaign = await this.campaignsRepository.findById(campaignId);
 
     if (!campaign) {
@@ -50,5 +50,31 @@ export class CampaignsService {
     }
 
     return campaign;
+  }
+
+  async deleteCampaign(campaignId: string) {
+    await this.getCampaignById(campaignId);
+    await this.campaignsRepository.delete(campaignId);
+  }
+
+  async updateCampaign(campaignId: string, name: string) {
+    const campaign = await this.getCampaignById(campaignId);
+
+    // Verifica duplicidade
+    const campaignWithSameName =
+      await this.campaignsRepository.findByNameAndClientId(
+        name,
+        campaign.clientId,
+      );
+
+    if (campaignWithSameName && campaignWithSameName.id !== campaign.id) {
+      throw new CampaignAlreadyExistsError();
+    }
+
+    const updatedCampaign = await this.campaignsRepository.update(campaignId, {
+      name,
+    });
+
+    return updatedCampaign;
   }
 }

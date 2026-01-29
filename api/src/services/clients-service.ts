@@ -24,7 +24,7 @@ export class ClientsService {
   }
 
   // Serviço para listar um cliente
-  async getClientById(userId: string, clientId: string) {
+  async getClientById(clientId: string) {
     const client = await this.clientsRepository.findById(clientId);
 
     if (!client) {
@@ -32,5 +32,29 @@ export class ClientsService {
     }
 
     return client;
+  }
+
+  // Serviço para deletar um cliente (Confirmação forte no front)
+  async deleteClient(clientId: string) {
+    await this.getClientById(clientId);
+    await this.clientsRepository.delete(clientId);
+  }
+
+  // Serviço para atualiar um cliente
+  async updateClient(clientId: string, name: string) {
+    const client = await this.getClientById(clientId);
+
+    // Verifica conflito de nomes
+    const clientWithSameName = await this.clientsRepository.findByName(name);
+
+    if (clientWithSameName && clientWithSameName.id !== client.id) {
+      throw new ClientAlreadyExistsError();
+    }
+
+    const updatedClient = await this.clientsRepository.update(clientId, {
+      name,
+    });
+
+    return updatedClient;
   }
 }

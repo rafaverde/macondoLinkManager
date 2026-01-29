@@ -19,12 +19,17 @@ export function createInitials(name: string | undefined) {
 }
 
 // Formata a data para padrão pt-BR
-export function formatDate(date: string) {
-  const formattedDate = new Date(date).toLocaleDateString("pt-BR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+export function formatDate(date: string, short?: boolean) {
+  const formattedDate = new Date(date).toLocaleDateString(
+    "pt-BR",
+    !short
+      ? {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }
+      : { dateStyle: "short" },
+  );
 
   return formattedDate;
 }

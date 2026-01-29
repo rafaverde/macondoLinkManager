@@ -85,6 +85,8 @@ const start = async () => {
       },
     });
 
+    app.setErrorHandler(errorHandler);
+
     await app.register(authRoutes);
     await app.register(usersRoutes);
     await app.register(clientsRoutes);
@@ -92,8 +94,6 @@ const start = async () => {
     await app.register(linksRoutes);
     await app.register(redirectRoutes);
     await app.register(dashboardRoutes);
-
-    app.setErrorHandler(errorHandler);
 
     // Criação da Rota "Health Check"
     // Esta rota é essencial para sabermos se a API está online

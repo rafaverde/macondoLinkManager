@@ -1,4 +1,4 @@
-import { Campaign } from "@prisma/client";
+import { Campaign, Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import {
   CampaignsRepository,
@@ -41,7 +41,7 @@ export class PrismaCampaignsRepository implements CampaignsRepository {
     return campaign;
   }
 
-  async findByIdAndUserId(
+  async findByIdWithUserLinks(
     campaignId: string,
     userId: string,
   ): Promise<{ id: string } | null> {
@@ -68,5 +68,27 @@ export class PrismaCampaignsRepository implements CampaignsRepository {
         id: campaignId,
       },
     });
+  }
+
+  async delete(id: string): Promise<void> {
+    await prisma.campaign.delete({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async update(
+    id: string,
+    data: Prisma.CampaignUpdateInput,
+  ): Promise<Campaign> {
+    const campaign = await prisma.campaign.update({
+      where: {
+        id,
+      },
+      data,
+    });
+
+    return campaign;
   }
 }
