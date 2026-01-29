@@ -34,6 +34,7 @@ import { InputTags } from "./ui/input-tags";
 import { Link } from "@/types";
 import { useUpdateLink } from "@/hooks/use-update-link";
 import CreateClientInline from "./create-client-inline";
+import { CreateCampaignInline } from "./create-campaign-inline";
 
 const linkFormSchema = z.object({
   originalUrl: z.url("Insira uma URL válida, ex.: 'https://...'"),
@@ -205,7 +206,7 @@ export default function LinkForm({ initialData }: LinkFormProps) {
                           )}
                         </SelectContent>
                       </Select>
-                      <CreateCampaignDialog
+                      <CreateCampaignInline
                         clientId={form.watch("clientId")}
                         onSelectNew={(id) => field.onChange(id)}
                       />
