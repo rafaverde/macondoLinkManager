@@ -28,7 +28,7 @@ import { useCampaigns } from "@/hooks/use-campaigns";
 import { useClients } from "@/hooks/use-clients";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLinks } from "@/hooks/use-links";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 
@@ -49,12 +49,33 @@ export default function LinksPage() {
     campaignId: selectedCampaign === "all" ? undefined : selectedCampaign,
   });
 
+  const campaignsForSelect = useMemo(() => {
+    if (selectedClient === "all") return campaigns;
+    return campaigns?.filter(
+      (campaign) => campaign.clientId === selectedClient,
+    );
+  }, [campaigns, selectedClient]);
+
   // Limpa filtros
   const handleClearFilters = () => {
     setSearchTerm("");
     setSelectedClient("all");
     setSelectedCampaign("all");
   };
+
+  useEffect(() => {
+    if (
+      selectedCampaign !== "all" &&
+      campaigns &&
+      !campaigns.some(
+        (c) =>
+          c.id === selectedCampaign &&
+          (selectedClient === "all" || c.clientId === selectedClient),
+      )
+    ) {
+      setSelectedCampaign("all");
+    }
+  }, [selectedClient, campaigns]);
 
   // Gera breadcrumb
   useEffect(() => {
@@ -127,7 +148,7 @@ export default function LinksPage() {
             <SelectGroup>
               <SelectLabel>Campanhas</SelectLabel>
               <SelectItem value="all">Todos as campanhas</SelectItem>
-              {campaigns?.map((campaign) => (
+              {campaignsForSelect?.map((campaign) => (
                 <SelectItem key={campaign.id} value={campaign.id}>
                   {campaign.name}
                 </SelectItem>

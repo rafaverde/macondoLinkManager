@@ -5,6 +5,7 @@ export interface Campaign {
   id: string;
   name: string;
   createdAt: string;
+  clientId: string;
 }
 
 export function useCampaigns(clientId?: string) {
