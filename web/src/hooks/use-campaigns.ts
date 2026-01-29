@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 export interface Campaign {
   id: string;
   name: string;
+  createdAt: string;
 }
 
 export function useCampaigns(clientId?: string) {
