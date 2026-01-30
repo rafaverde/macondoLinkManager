@@ -20,8 +20,10 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
       auth: fastifyOauth2.GOOGLE_CONFIGURATION,
     },
     startRedirectPath: "/auth/google",
-    callbackUri: `http://localhost:${env.PORT}/auth/google/callback`, //Quando em dev
-    // callbackUri: `${env.BASE_URL}/auth/google/callback`,
+    callbackUri:
+      process.env.NEXT_PUBLIC_ENV === "production"
+        ? `${env.BASE_URL}/auth/google/callback`
+        : `http://localhost:${env.PORT}/auth/google/callback`,
   });
 
   // O Endpoint de callback (controller)

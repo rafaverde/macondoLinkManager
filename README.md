@@ -129,6 +129,8 @@ v1.0.1 – Ajustes de layout e UX
 
 v1.0.2 – Deploy em produção, OAuth, domínios e dashboards completos
 
+v1.1.0 - Novas funcionalidades de gerenciamento de campanhas e clientes. Bugs corrigidos.
+
 📄 Consulte o histórico completo em
 ➡️ [CHANGELOG.md](./CHANGELOG.md) 
 
