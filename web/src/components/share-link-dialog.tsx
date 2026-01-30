@@ -9,9 +9,16 @@ import {
   DialogTitle,
   DialogFooter,
 } from "./ui/dialog";
-import { RiFileCopyLine, RiQrCodeLine } from "@remixicon/react";
+import {
+  RiDownloadLine,
+  RiFileCopyLine,
+  RiMailSendLine,
+  RiQrCodeLine,
+  RiWhatsappLine,
+} from "@remixicon/react";
 import { Button } from "./ui/button";
 import { QRCode } from "./qr-code";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 interface ShareLinkDialogProps {
   open: boolean;
@@ -27,9 +34,14 @@ export default function ShareLinkDialog({
   title,
 }: ShareLinkDialogProps) {
   const safeShortUrl = `${process.env.NEXT_PUBLIC_API_URL}/${shortUrl}`;
+
   function handleCopyLink() {
     navigator.clipboard.writeText(safeShortUrl);
     toast.success("Link copiado para a área de transferência.");
+  }
+
+  function handleShareWhatsapp() {
+    window.open(`https://wa.me/?text=${safeShortUrl}`, "_blank");
   }
 
   async function handleCopyQr() {
@@ -65,6 +77,38 @@ export default function ShareLinkDialog({
     img.src = `data:image/svg+xml;base64,${base64}`;
   }
 
+  function handleShareEmail() {
+    const subject = encodeURIComponent(title ?? "Link compartilhado");
+    const body = encodeURIComponent(
+      `${title ?? "Link compartilhado"}\n\n${shortUrl}`,
+    );
+
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  }
+
+  function handleDownloadQrSvg() {
+    const svg = document.getElementById("qr-code");
+    if (!svg) return;
+
+    const serializer = new XMLSerializer();
+    const svgStr = serializer.serializeToString(svg);
+
+    const blob = new Blob([svgStr], {
+      type: "image/svg+xml;charset=utf-8",
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "qrcode.svg";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -92,15 +136,52 @@ export default function ShareLinkDialog({
           </span>
         </div>
 
-        <DialogFooter className="flex gap-2">
-          <Button variant="outline" onClick={handleCopyLink}>
-            <RiFileCopyLine className="mr-2 h-4 w-4" />
-            Copiar link
+        <DialogFooter className="flex flex-row justify-center! gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button size="icon" variant="outline" onClick={handleCopyLink}>
+                <RiFileCopyLine />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Copiar link</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={handleShareWhatsapp}
+              >
+                <RiWhatsappLine />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Enviar no WhatsApp</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button size="icon" variant="outline" onClick={handleShareEmail}>
+                <RiMailSendLine />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Enviar por Email</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <Button variant="outline" onClick={handleCopyQr}>
+            <RiQrCodeLine className="mr-2 h-4 w-4" />
+            Copiar PNG
           </Button>
 
-          <Button onClick={handleCopyQr}>
-            <RiQrCodeLine className="mr-2 h-4 w-4" />
-            Copiar QR
+          <Button onClick={handleDownloadQrSvg}>
+            <RiDownloadLine className="mr-2 h-4 w-4" />
+            Baixar SVG
           </Button>
         </DialogFooter>
       </DialogContent>
