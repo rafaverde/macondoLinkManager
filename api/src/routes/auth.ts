@@ -21,9 +21,9 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
     },
     startRedirectPath: "/auth/google",
     callbackUri:
-      process.env.NEXT_PUBLIC_ENV === "production"
-        ? `${env.BASE_URL}/auth/google/callback`
-        : `http://localhost:${env.PORT}/auth/google/callback`,
+      process.env.NODE_ENV === "development"
+        ? `http://localhost:${env.PORT}/auth/google/callback`
+        : `${env.BASE_URL}/auth/google/callback`,
   });
 
   // O Endpoint de callback (controller)
@@ -47,7 +47,7 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
 
       // Valida os dados com zod
       const userInfoSchema = z.object({
-        email: z.string().email(),
+        email: z.email(),
         name: z.string(),
         picture: z.string().url(),
       });

@@ -10,6 +10,7 @@ const envSchema = z.object({
   FRONTEND_URL: z.url(),
   BASE_URL: z.url().optional(),
   PORT: z.coerce.number().default(3333),
+  NODE_ENV: z.string(),
 });
 
 const _env = envSchema.safeParse(process.env);
