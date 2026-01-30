@@ -35,6 +35,7 @@ import {
   AlertDialogContent,
 } from "./ui/alert-dialog";
 import Link from "next/link";
+import ShareLinkDialog from "./share-link-dialog";
 
 interface LinkCardProps {
   link: LinkType;
@@ -42,6 +43,7 @@ interface LinkCardProps {
 }
 
 export default function LinkCard({ link, isDetails }: LinkCardProps) {
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { mutate: deleteLink, isPending: isDeleting } = useDeleteLink();
 
@@ -143,7 +145,7 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
               Copiar
             </Button>
 
-            <Button variant="outline" disabled>
+            <Button variant="outline" onClick={() => setIsShareOpen(true)}>
               <RiShareLine />
               Compartilhar
             </Button>
@@ -235,6 +237,12 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ShareLinkDialog
+        open={isShareOpen}
+        onOpenChange={setIsShareOpen}
+        shortUrl={link.shortCode}
+      />
     </>
   );
 }
