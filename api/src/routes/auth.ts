@@ -21,8 +21,8 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
     },
     startRedirectPath: "/auth/google",
 
-    callbackUri: `http://localhost:${env.PORT}/auth/google/callback`, // dev
-    // callbackUri: `${env.BASE_URL}/auth/google/callback` ,
+    // callbackUri: `http://localhost:${env.PORT}/auth/google/callback`, // dev
+    callbackUri: `${env.BASE_URL}/auth/google/callback`,
   });
 
   // O Endpoint de callback (controller)
