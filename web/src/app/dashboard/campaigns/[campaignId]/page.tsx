@@ -3,13 +3,16 @@
 import CardNumbers from "@/components/card-numbers";
 import { ClicksAreaChart } from "@/components/charts/clicks-area-chart";
 import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
+import DashboardSkeleton from "@/components/dashboard-skeleton";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useCampaign } from "@/hooks/use-campaign";
 import { useCampaignDashboard } from "@/hooks/use-campaign-dashboard";
 import { normalizeCity, normalizeCountry } from "@/lib/normalize-geolocation";
 import { sumLastDays } from "@/lib/utils";
-import { RiLinkUnlink } from "@remixicon/react";
+import { RiAddLine, RiLinksLine, RiLinkUnlink } from "@remixicon/react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 
@@ -48,8 +51,24 @@ export default function CampaignDashboardPage() {
     return <DashboardSkeleton />;
   }
 
+  if (!data) {
+    return (
+      <div className="text-foreground flex h-full w-full flex-col items-center justify-center gap-4">
+        <RiLinksLine className="text-primary size-12" />
+        <p>
+          Essa campanha ainda não possui nenhum link, tente adicionar alguns!
+        </p>
+        <Link href="/dashboard/links/create">
+          <Button>
+            Novo Link <RiAddLine />
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
   // Se der erro, mostra algo simples
-  if (isError || !data) {
+  if (isError) {
     return (
       <div className="text-foreground flex h-full w-full flex-col items-center justify-center gap-4">
         <RiLinkUnlink className="text-primary size-12" />
@@ -113,24 +132,5 @@ export default function CampaignDashboardPage() {
         />
       </div>
     </>
-  );
-}
-
-// Componente simples de Loading State
-function DashboardSkeleton() {
-  return (
-    <div className="space-y-8">
-      <div className="space-y-2">
-        <Skeleton className="h-8 w-[200px]" />
-        <Skeleton className="h-4 w-[300px]" />
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Skeleton className="h-[120px] rounded-xl" />
-        <Skeleton className="h-[120px] rounded-xl" />
-      </div>
-      <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
-        <Skeleton className="h-[300px] rounded-xl" />
-      </div>
-    </div>
   );
 }
