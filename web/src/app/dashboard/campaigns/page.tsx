@@ -139,7 +139,7 @@ export default function CampaignsPage() {
           <TableRow>
             <TableHead>Nome</TableHead>
             <TableHead>Criado em</TableHead>
-            <TableHead>Pertence a</TableHead>
+            <TableHead className="hidden lg:table-cell">Pertence a</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -155,7 +155,7 @@ export default function CampaignsPage() {
                   <Skeleton className="bg-muted-foreground/20 h-8 w-full" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="bg-muted-foreground/20 h-8 w-full" />
+                  <Skeleton className="bg-muted-foreground/20 hidden h-8 w-full lg:table-cell" />
                 </TableCell>
                 <TableCell>
                   <Skeleton className="bg-muted-foreground/20 h-8 w-full" />

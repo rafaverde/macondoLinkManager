@@ -133,7 +133,12 @@ export default function ClientsPage() {
           {filteredClients?.map((client, i) => (
             <TableRow key={i}>
               <TableCell>{client.name}</TableCell>
-              <TableCell>{formatDate(client.createdAt)}</TableCell>
+              <TableCell className="hidden lg:table-cell">
+                {formatDate(client.createdAt)}
+              </TableCell>
+              <TableCell className="lg:hidden">
+                {formatDate(client.createdAt, true)}
+              </TableCell>
               <TableCell className="space-x-2 text-right">
                 <Link href={`/dashboard/clients/${client.id}`}>
                   <Button size="icon" variant="outline">
