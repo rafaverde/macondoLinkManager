@@ -69,7 +69,7 @@ export default function ShareLinkDialog({
           </span>
         </div>
 
-        <DialogFooter className="flex flex-row justify-center! gap-2">
+        <DialogFooter className="flex flex-row flex-wrap justify-center! gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button

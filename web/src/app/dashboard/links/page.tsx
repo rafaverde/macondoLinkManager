@@ -18,7 +18,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import {
-  RiArrowRightLine,
+  RiAddLine,
   RiCloseLine,
   RiLinkUnlink,
   RiSearchLine,
@@ -89,7 +89,7 @@ export default function LinksPage() {
         <Link href="/dashboard/links/create">
           <Button size="lg">
             Novo Link
-            <RiArrowRightLine />
+            <RiAddLine />
           </Button>
         </Link>
       </div>

@@ -131,6 +131,10 @@ v1.0.2 – Deploy em produção, OAuth, domínios e dashboards completos
 
 v1.1.0 - Novas funcionalidades de gerenciamento de campanhas e clientes. Bugs corrigidos.
 
+v1.1.1 - Novas funcionalidades de compartilhamento de links e geração de QR Codes. Correções de bugs.
+
+v1.1.2 - Melhorias de UX/UI e correções de bugs.
+
 📄 Consulte o histórico completo em
 ➡️ [CHANGELOG.md](./CHANGELOG.md) 
 

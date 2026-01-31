@@ -4,11 +4,13 @@ import * as React from "react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "./ui/sidebar";
 import { usePathname } from "next/navigation";
 
@@ -17,11 +19,15 @@ import macondoIcon from "@/assets/macondo-icon.svg";
 import Image from "next/image";
 import Link from "next/link";
 import { menuItems } from "@/lib/sidebar-menu-items";
+import { cn } from "@/lib/utils";
 
 export default function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
+
+  const { isMobile, setOpenMobile, state } = useSidebar();
+
   return (
     <Sidebar
       collapsible="icon"
@@ -61,6 +67,7 @@ export default function AppSidebar({
                   tooltip={item.label}
                   disabled={item.disabled}
                   className="data-[active=true]:border-macondo-gray-300 hover:bg-macondo-gray-100 dark:hover:bg-macondo-gray-800 p-4 data-[active=true]:border"
+                  onClick={isMobile ? () => setOpenMobile(false) : () => {}}
                 >
                   <Link
                     href={item.href}
@@ -76,11 +83,17 @@ export default function AppSidebar({
             );
           })}
         </SidebarMenu>
-        <div className="p-6">
-          <p className="text-muted-foreground text-xs">
-            Macondo Link Manager {process.env.NEXT_PUBLIC_APP_VERSION}
+        <SidebarFooter className="p-6">
+          <p
+            className={cn(
+              "text-muted-foreground text-xs transition-transform duration-500",
+              state === "collapsed" && "-rotate-90",
+            )}
+          >
+            {state === "expanded" && "Macondo Link Manager "}v
+            {process.env.NEXT_PUBLIC_APP_VERSION}
           </p>
-        </div>
+        </SidebarFooter>
       </SidebarContent>
 
       <SidebarRail className="pointer-events-none" />

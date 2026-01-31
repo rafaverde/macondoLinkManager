@@ -36,6 +36,7 @@ import {
 } from "./ui/alert-dialog";
 import Link from "next/link";
 import ShareLinkDialog from "./share-link-dialog";
+import DeleteLinkDialog from "./delete-link-dialog";
 
 interface LinkCardProps {
   link: LinkType;
@@ -130,7 +131,7 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
             </div>
           </div>
 
-          <div className="space-x-2">
+          <div className="space-y-2 space-x-2">
             {!isDetails && (
               <Link href={`/dashboard/links/${link.id}`}>
                 <Button variant="outline">
@@ -198,45 +199,11 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
         </CardContent>
       </Card>
 
-      <AlertDialog
+      <DeleteLinkDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Tem certeza que vai deletar o link?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Essa ação não pode ser desfeita! O link{" "}
-              <strong>{formatLink(link.shortCode)}</strong> deixará de funcionar
-              imediatamente.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={(e) => {
-                e.preventDefault();
-                handleDelete();
-              }}
-              disabled={isDeleting}
-              className="min-w-[140px]"
-            >
-              {isDeleting ? (
-                <>
-                  <RiLoader4Line className="mr-2 size-4 animate-spin" />
-                  Removendo
-                </>
-              ) : (
-                "Sim, deletar!"
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        link={link}
+      />
 
       <ShareLinkDialog
         open={isShareOpen}
