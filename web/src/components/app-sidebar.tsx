@@ -9,6 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "./ui/sidebar";
 import { usePathname } from "next/navigation";
 
@@ -22,6 +23,9 @@ export default function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
+
+  const { isMobile, setOpenMobile } = useSidebar();
+
   return (
     <Sidebar
       collapsible="icon"
@@ -61,6 +65,7 @@ export default function AppSidebar({
                   tooltip={item.label}
                   disabled={item.disabled}
                   className="data-[active=true]:border-macondo-gray-300 hover:bg-macondo-gray-100 dark:hover:bg-macondo-gray-800 p-4 data-[active=true]:border"
+                  onClick={isMobile ? () => setOpenMobile(false) : () => {}}
                 >
                   <Link
                     href={item.href}
