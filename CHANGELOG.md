@@ -7,6 +7,57 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.1.2] - 2026-01-30
+
+### ✨ Added
+- Componente **DeleteLinkDialog** para confirmação de exclusão de links.
+- Integração do fluxo de exclusão diretamente no **LinkCard**.
+- Componente **NotFound** para tratamento de páginas 404 com mensagem amigável e navegação orientada.
+- Exibição da **quantidade de campanhas por cliente** na página de clientes.
+
+### 🔧 Changed
+- Melhoria na **CampaignDashboardPage**:
+  - Estado de loading mais claro.
+  - Prompt visual para criação de links quando não há dados.
+- Refatoração do **AppSidebar**:
+  - Uso de `SidebarFooter` para exibição da versão do app.
+  - Melhor organização visual e responsividade.
+- Ajustes de responsividade:
+  - Visibilidade condicional da data de criação de clientes em tabelas.
+  - Substituição de ícone de seta por ícone de adicionar no botão de criação de links.
+- Integração do hook **useSidebar** para controle adequado do menu mobile.
+
+### 🐛 Fixed
+- Remoção de logs de debug remanescentes em produção.
+- Correção de inconsistências visuais em layouts responsivos.
+- Ajustes finos de espaçamento e alinhamento em componentes do dashboard.
+
+---
+
+## [1.1.1] - 2026-01-29
+
+### ✨ Added
+- Modal de **compartilhamento de links** acessível a partir do Link Card.
+- Geração de **QR Code dinâmico** para links curtos.
+- Ações de compartilhamento:
+  - Copiar link para a área de transferência.
+  - Copiar QR Code como imagem (PNG).
+  - Download do QR Code em formato SVG.
+  - Compartilhamento direto via **WhatsApp**.
+  - Compartilhamento via **Email**.
+
+### 🔧 Changed
+- Centralização da lógica de compartilhamento em helper dedicado (`lib/link-share.ts`).
+- Geração de QR Code realizada exclusivamente no frontend (sem chamadas adicionais à API).
+- Ajuste nos hooks de invalidação de cache para manter filtros de campanhas sincronizados após exclusão.
+
+### 🐛 Fixed
+- Correção de QR Codes inválidos gerados sem protocolo HTTP/HTTPS.
+- Correção de estado desatualizado no select de campanhas da página de links após exclusão.
+- Ajustes na serialização SVG para cópia correta do QR Code para o clipboard.
+
+---
+
 ## [1.1.0] - 2026-01-27
 
 ### ✨ Added
