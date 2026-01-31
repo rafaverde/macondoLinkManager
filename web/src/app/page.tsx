@@ -75,7 +75,7 @@ export default function LoginPage() {
               </>
             )}
           </Button>
-          <p className="max-w-[80%]">
+          <p className="max-w-[80%] text-center">
             É necessário fazer parte da equipe{" "}
             <strong className="text-primary">@macondopropaganda.com</strong>
           </p>

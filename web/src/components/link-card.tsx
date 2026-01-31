@@ -130,7 +130,7 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
             </div>
           </div>
 
-          <div className="space-x-2">
+          <div className="space-y-2 space-x-2">
             {!isDetails && (
               <Link href={`/dashboard/links/${link.id}`}>
                 <Button variant="outline">

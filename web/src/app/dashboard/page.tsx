@@ -4,7 +4,7 @@ import { TopClientsChart } from "@/components/charts/top-clients-chart";
 import { Button } from "@/components/ui/button";
 import CardNumbers from "@/components/card-numbers";
 import { useDashboardMetrics } from "@/hooks/use-dashboard-metrics";
-import { RiArrowRightLine, RiLinkUnlink } from "@remixicon/react";
+import { RiAddLine, RiLinkUnlink } from "@remixicon/react";
 import Link from "next/link";
 import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
@@ -49,7 +49,7 @@ export default function DashboardPage() {
         <Link href="/dashboard/links/create">
           <Button size="lg">
             Novo Link
-            <RiArrowRightLine />
+            <RiAddLine />
           </Button>
         </Link>
       </div>
