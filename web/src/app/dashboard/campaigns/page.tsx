@@ -53,9 +53,6 @@ export default function CampaignsPage() {
     selectedClientId === "all" ? undefined : selectedClientId,
   );
 
-  console.log(clients);
-  console.log(campaigns);
-
   const [isDeletingCampaign, setIsDeletingCampaign] =
     useState<CampaignEdit | null>(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
