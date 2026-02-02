@@ -27,21 +27,16 @@ export interface ClicksRepository {
   getMetrics(linkId: string, days: number): Promise<MetricsResult>;
 
   // User
-  count(userId?: string): Promise<number>;
-  getMetricsByUserId(userId: string, days: number): Promise<MetricsResult>;
+  count(): Promise<number>;
+  getMetricsByUserId(days: number): Promise<MetricsResult>;
 
   // Client
-  countByClient(userId: string, clientId: string): Promise<number>;
-  getMetricsByClientId(
-    userId: string,
-    clientId: string,
-    days: number,
-  ): Promise<MetricsResult>;
+  countByClient(clientId: string): Promise<number>;
+  getMetricsByClientId(clientId: string, days: number): Promise<MetricsResult>;
 
   // Campaign
-  countByCampaign(userId: string, campaignId: string): Promise<number>;
+  countByCampaign(campaignId: string): Promise<number>;
   getMetricsByCampaignId(
-    userId: string,
     campaignId: string,
     days: number,
   ): Promise<MetricsResult>;

@@ -49,52 +49,37 @@ export class PrismaClicksRepository implements ClicksRepository {
     return aggregateClickMetrics(clicks, days);
   }
 
-  async count(userId?: string) {
-    const count = await prisma.click.count({
-      where: {
-        link: {
-          userId: userId,
-        },
-      },
-    });
-
+  async count() {
+    const count = await prisma.click.count();
     return count;
   }
 
-  async countByClient(userId: string, clientId: string) {
+  async countByClient(clientId: string) {
     return prisma.click.count({
       where: {
         link: {
-          userId,
           clientId,
         },
       },
     });
   }
 
-  async countByCampaign(userId: string, campaignId: string): Promise<number> {
+  async countByCampaign(campaignId: string): Promise<number> {
     return prisma.click.count({
       where: {
         link: {
-          userId,
           campaignId,
         },
       },
     });
   }
 
-  async getMetricsByUserId(
-    userId: string,
-    days: number,
-  ): Promise<MetricsResult> {
+  async getMetricsByUserId(days: number): Promise<MetricsResult> {
     const startDate = subDays(new Date(), days);
 
     // Busca todos os cliques do user
     const clicks = await prisma.click.findMany({
       where: {
-        link: {
-          userId: userId,
-        },
         timestamp: {
           gte: startDate,
         },
@@ -108,7 +93,6 @@ export class PrismaClicksRepository implements ClicksRepository {
   }
 
   async getMetricsByClientId(
-    userId: string,
     clientId: string,
     days: number,
   ): Promise<MetricsResult> {
@@ -117,7 +101,6 @@ export class PrismaClicksRepository implements ClicksRepository {
     const clicks = await prisma.click.findMany({
       where: {
         link: {
-          userId,
           clientId,
         },
         timestamp: {
@@ -133,7 +116,6 @@ export class PrismaClicksRepository implements ClicksRepository {
   }
 
   async getMetricsByCampaignId(
-    userId: string,
     campaignId: string,
     days: number,
   ): Promise<MetricsResult> {
@@ -142,7 +124,6 @@ export class PrismaClicksRepository implements ClicksRepository {
     const clicks = await prisma.click.findMany({
       where: {
         link: {
-          userId,
           campaignId,
         },
         timestamp: {
