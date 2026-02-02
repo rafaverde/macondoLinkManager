@@ -50,9 +50,7 @@ export class PrismaCampaignsRepository implements CampaignsRepository {
         id: campaignId,
         client: {
           links: {
-            some: {
-              userId,
-            },
+            some: {},
           },
         },
       },
