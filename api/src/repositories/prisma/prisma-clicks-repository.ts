@@ -52,9 +52,7 @@ export class PrismaClicksRepository implements ClicksRepository {
   async count(userId?: string) {
     const count = await prisma.click.count({
       where: {
-        link: {
-          userId: userId,
-        },
+        link: {},
       },
     });
 
@@ -65,7 +63,6 @@ export class PrismaClicksRepository implements ClicksRepository {
     return prisma.click.count({
       where: {
         link: {
-          userId,
           clientId,
         },
       },
@@ -76,7 +73,6 @@ export class PrismaClicksRepository implements ClicksRepository {
     return prisma.click.count({
       where: {
         link: {
-          userId,
           campaignId,
         },
       },
@@ -92,9 +88,7 @@ export class PrismaClicksRepository implements ClicksRepository {
     // Busca todos os cliques do user
     const clicks = await prisma.click.findMany({
       where: {
-        link: {
-          userId: userId,
-        },
+        link: {},
         timestamp: {
           gte: startDate,
         },
@@ -117,7 +111,6 @@ export class PrismaClicksRepository implements ClicksRepository {
     const clicks = await prisma.click.findMany({
       where: {
         link: {
-          userId,
           clientId,
         },
         timestamp: {
@@ -142,7 +135,6 @@ export class PrismaClicksRepository implements ClicksRepository {
     const clicks = await prisma.click.findMany({
       where: {
         link: {
-          userId,
           campaignId,
         },
         timestamp: {

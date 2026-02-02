@@ -7,6 +7,31 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.2.0] - 2026-02-02
+
+### 🔧 Changed
+- Revisão do modelo de **ownership de links**:
+  - Links passam a pertencer à **organização**, não mais ao usuário.
+  - Todos os usuários autenticados passam a ter **visualização e gerenciamento global** dos links.
+- Atualização das regras de acesso nas rotas de links:
+  - Remoção da validação de ownership por usuário.
+  - Acesso baseado exclusivamente em autenticação.
+- Revisão completa das **métricas e dashboards**:
+  - Métricas agora consideram **todos os links da organização**.
+  - Remoção de filtros por usuário nas agregações de cliques.
+  - Garantia de consistência dos dados entre diferentes usuários.
+
+### 🧹 Refactored
+- Simplificação da lógica de autorização relacionada a links.
+- Centralização do escopo de métricas exclusivamente nos repositórios.
+- Adequação semântica do `userId` como metadado de criação (sem função de ownership).
+
+### 🐛 Fixed
+- Correção de dashboards exibindo métricas incompletas dependendo do usuário autenticado.
+- Correção de inconsistências entre listagem de links e dados de analytics.
+
+---
+
 ## [1.1.2] - 2026-01-30
 
 ### ✨ Added

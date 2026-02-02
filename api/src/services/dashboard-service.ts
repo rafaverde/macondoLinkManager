@@ -16,7 +16,7 @@ export class DashboardService {
     // Executa em paralelo para ser mais rápido
     const [totalClicks, activeLinks] = await Promise.all([
       this.clicksRepository.count(userId),
-      this.linksRepository.count({ userId }),
+      this.linksRepository.count({}),
     ]);
 
     return {
@@ -28,7 +28,7 @@ export class DashboardService {
   async getClientGeneralMetrics(userId: string, clientId: string) {
     const [totalClicks, activeLinks] = await Promise.all([
       this.clicksRepository.countByClient(userId, clientId),
-      this.linksRepository.count({ userId, clientId }),
+      this.linksRepository.count({ clientId }),
     ]);
 
     return { totalClicks, activeLinks };
@@ -37,7 +37,7 @@ export class DashboardService {
   async getCampaignGeneralMetrics(userId: string, campaignId: string) {
     const [totalClicks, activeLinks] = await Promise.all([
       this.clicksRepository.countByCampaign(userId, campaignId),
-      this.linksRepository.count({ userId, campaignId }),
+      this.linksRepository.count({ campaignId }),
     ]);
 
     return { totalClicks, activeLinks };

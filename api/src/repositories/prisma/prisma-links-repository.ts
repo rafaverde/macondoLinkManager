@@ -19,7 +19,7 @@ export class PrismaLinksRepository implements LinksRepository {
       data: {
         originalUrl,
         shortCode,
-        userId, // Conecta via ID direto (Prisma permite isso em versões recentes)
+        userId, // userId = createdByUserId (Future improvemnt)
         clientId, // Conecta via ID direto
         campaignId, // Pode ser null
 
@@ -43,21 +43,24 @@ export class PrismaLinksRepository implements LinksRepository {
     return link;
   }
 
-  async findMany({ userId, campaignId, clientId, search }: FindLinksParams) {
+  async findMany({ campaignId, clientId, search }: FindLinksParams) {
     const links = await prisma.link.findMany({
       where: {
-        userId, // Se for undefined, ignora e traz todos
         clientId, // Opcional
         campaignId, // Opcional
         // Busca textual
-        ...(search ? {
-          OR: [
-            {originalUrl: {contains: search, mode: "insensitive"}},
-            {shortCode: {contains: search, mode: "insensitive"}},
-            {client: {name: {contains: search, mode: "insensitive"}}},
-            {campaign: {name: {contains: search, mode: "insensitive"}}},
-          ]
-        } : {})
+        ...(search
+          ? {
+              OR: [
+                { originalUrl: { contains: search, mode: "insensitive" } },
+                { shortCode: { contains: search, mode: "insensitive" } },
+                { client: { name: { contains: search, mode: "insensitive" } } },
+                {
+                  campaign: { name: { contains: search, mode: "insensitive" } },
+                },
+              ],
+            }
+          : {}),
       },
       orderBy: {
         createdAt: "desc",
@@ -89,18 +92,18 @@ export class PrismaLinksRepository implements LinksRepository {
           select: {
             id: true,
             name: true,
-          }
+          },
         },
         campaign: {
           select: {
             id: true,
             name: true,
-          }
+          },
         },
         _count: {
           select: {
-            clicks: true
-          }
+            clicks: true,
+          },
         },
         tags: {
           include: {
@@ -115,7 +118,7 @@ export class PrismaLinksRepository implements LinksRepository {
 
   async update(
     id: string,
-    { originalUrl, clientId, campaignId }: UpdateLinkDTO
+    { originalUrl, clientId, campaignId }: UpdateLinkDTO,
   ) {
     const link = await prisma.link.update({
       where: { id },
@@ -135,10 +138,9 @@ export class PrismaLinksRepository implements LinksRepository {
     });
   }
 
-  async count({ userId, clientId, campaignId }: FindLinksParams) {
+  async count({ clientId, campaignId }: FindLinksParams) {
     const count = await prisma.link.count({
       where: {
-        userId,
         clientId,
         campaignId,
       },

@@ -135,6 +135,8 @@ v1.1.1 - Novas funcionalidades de compartilhamento de links e geração de QR Co
 
 v1.1.2 - Melhorias de UX/UI e correções de bugs.
 
+v1.2.0 - Revisão do modelo de ownership de links que agora passam a ser globais. Atualização de métricas para serem também globais da organização.
+
 📄 Consulte o histórico completo em
 ➡️ [CHANGELOG.md](./CHANGELOG.md) 
 
