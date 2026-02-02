@@ -3,6 +3,7 @@ import { ClicksRepository } from "../repositories/clicks-repository";
 import { ClientsRepository } from "../repositories/clients-repository";
 import { LinksRepository } from "../repositories/links-repository";
 import { CampaignNotAllowedError } from "./errors/campaign-not-allowed-error";
+import { CampaignNotFoundError } from "./errors/campaign-not-found.error";
 
 export class DashboardService {
   constructor(
@@ -119,7 +120,7 @@ export class DashboardService {
     );
 
     if (!campaign) {
-      throw new CampaignNotAllowedError();
+      throw new CampaignNotFoundError();
     }
 
     const [general, analytics] = await Promise.all([
