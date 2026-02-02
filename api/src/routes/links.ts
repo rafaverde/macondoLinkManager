@@ -1,11 +1,12 @@
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { z } from "zod";
+import { string, z } from "zod";
 import { authHook } from "../hooks/auth";
 import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repository";
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { LinksService } from "../services/links-service";
 import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
+import { requireLinkOwner } from "../middlewares/require-link-owner";
 
 const linkSchema = z.object({
   id: z.uuid(),
@@ -99,7 +100,7 @@ export async function linksRoutes(app: FastifyInstance) {
       onRequest: [authHook], // Protegida
       schema: {
         tags: ["Links"],
-        summary: "Lista os links da organização.",
+        summary: "Lista os links do usuário logado.",
         querystring: z.object({
           // Filtros opcionais na URL
           clientId: z.uuid().optional(),
@@ -113,6 +114,7 @@ export async function linksRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { clientId, campaignId, search } = request.query;
+      const userId = request.user.sub; // Filtra pelo usuário logado
 
       const service = new LinksService(
         new PrismaLinksRepository(),
@@ -121,6 +123,7 @@ export async function linksRoutes(app: FastifyInstance) {
       );
 
       const links = await service.listLinks({
+        userId,
         clientId,
         campaignId,
         search,
@@ -134,7 +137,7 @@ export async function linksRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
     "/links/:id",
     {
-      onRequest: [authHook],
+      onRequest: [authHook, requireLinkOwner],
       schema: {
         tags: ["Links"],
         summary: "Obtém detalhes de um link.",
@@ -163,7 +166,7 @@ export async function linksRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().put(
     "/links/:id",
     {
-      onRequest: [authHook],
+      onRequest: [authHook, requireLinkOwner],
       schema: {
         tags: ["Links"],
         summary: "Atualiza informações de um link.",
@@ -205,7 +208,7 @@ export async function linksRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().delete(
     "/links/:id",
     {
-      onRequest: [authHook],
+      onRequest: [authHook, requireLinkOwner],
       schema: {
         tags: ["Links"],
         summary: "Deleta um link.",
@@ -234,7 +237,7 @@ export async function linksRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
     "/links/:id/metrics",
     {
-      onRequest: [authHook],
+      onRequest: [authHook, requireLinkOwner],
       schema: {
         tags: ["Analytics"],
         summary: "Obtém estatísticas de acesso do link.",
