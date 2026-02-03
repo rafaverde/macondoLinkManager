@@ -1,6 +1,5 @@
 "use client";
 
-import { toast } from "sonner";
 import {
   Dialog,
   DialogDescription,
@@ -12,6 +11,7 @@ import {
 import {
   RiDownloadLine,
   RiFileCopyLine,
+  RiLoader4Line,
   RiMailSendLine,
   RiQrCodeLine,
   RiWhatsappLine,
@@ -26,6 +26,8 @@ import {
   handleShareEmail,
   handleShareWhatsapp,
 } from "@/lib/link-share";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface ShareLinkDialogProps {
   open: boolean;
@@ -40,6 +42,9 @@ export default function ShareLinkDialog({
   shortUrl,
   title,
 }: ShareLinkDialogProps) {
+  const [isCopyingQr, setIsCopyingQr] = useState(false);
+  const [isDownloadingQr, setIsDowloadingQr] = useState(false);
+
   const safeShortUrl = `${process.env.NEXT_PUBLIC_API_URL}/${shortUrl}`;
 
   return (
@@ -115,9 +120,30 @@ export default function ShareLinkDialog({
             </TooltipContent>
           </Tooltip>
 
-          <Button variant="outline" onClick={() => handleCopyQr()}>
-            <RiQrCodeLine className="mr-2 h-4 w-4" />
-            Copiar PNG
+          <Button
+            variant="outline"
+            disabled={isCopyingQr}
+            onClick={async () => {
+              try {
+                setIsCopyingQr(true);
+                handleCopyQr();
+              } finally {
+                setTimeout(() => {
+                  setIsCopyingQr(false);
+                  toast.success("QRCode copiado para a área de transferência.");
+                }, 500);
+              }
+            }}
+            className="min-w-[135px]"
+          >
+            {isCopyingQr ? (
+              <RiLoader4Line className="animate-spin" />
+            ) : (
+              <>
+                <RiQrCodeLine className="mr-2 h-4 w-4" />
+                Copiar PNG
+              </>
+            )}
           </Button>
 
           <Button onClick={() => handleDownloadQrSvg()}>
