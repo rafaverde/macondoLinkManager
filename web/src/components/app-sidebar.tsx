@@ -25,6 +25,7 @@ export default function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
+  const version = process.env.NEXT_PUBLIC_APP_VERSION ?? "dev";
 
   const { isMobile, setOpenMobile, state } = useSidebar();
 
@@ -90,8 +91,7 @@ export default function AppSidebar({
               state === "collapsed" && "-rotate-90",
             )}
           >
-            {state === "expanded" && "Macondo Link Manager "}v
-            {process.env.NEXT_PUBLIC_APP_VERSION}
+            {state === "expanded" && "Macondo Link Manager "}v{version}
           </p>
         </SidebarFooter>
       </SidebarContent>
