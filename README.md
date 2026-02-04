@@ -123,7 +123,7 @@ Resposta esperada:
 
 O projeto segue Semantic Versioning (MAJOR.MINOR.PATCH).
 
-v1.0.0 – Primeira versão funcional
+### v1.0.0 (Release) – Primeira versão funcional
 
 v1.0.1 – Ajustes de layout e UX
 
@@ -135,7 +135,9 @@ v1.1.1 - Novas funcionalidades de compartilhamento de links e geração de QR Co
 
 v1.1.2 - Melhorias de UX/UI e correções de bugs.
 
-v1.2.0 - Revisão do modelo de ownership de links que agora passam a ser globais. Atualização de métricas para serem também globais da organização.
+### v1.2.0 (Release) - Revisão do modelo de ownership de links que agora passam a ser globais. Atualização de métricas para serem também globais da organização.
+
+v1.2.1 – refinamentos em UX, melhorias na navegação e correções no dashboard
 
 📄 Consulte o histórico completo em
 ➡️ [CHANGELOG.md](./CHANGELOG.md) 
