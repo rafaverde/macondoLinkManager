@@ -35,9 +35,10 @@ export function formatDate(date: string, short?: boolean) {
 }
 
 // Formata link tirando protocolo da exibição
-export function formatLink(link: string | undefined) {
-  const formattedLink = `${process.env.NEXT_PUBLIC_API_URL?.replace(/^https?:\/\//, "")}/${link}`;
-  return formattedLink;
+export function formatLink(link: string | undefined, sharing?: boolean) {
+  if (!sharing)
+    return `${process.env.NEXT_PUBLIC_API_URL?.replace(/^https?:\/\//, "")}/${link}`;
+  return `${process.env.NEXT_PUBLIC_API_URL}/${link}`;
 }
 
 // Calcula últimos 7 dias com base em uma data

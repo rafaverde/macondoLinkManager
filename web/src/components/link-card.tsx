@@ -10,7 +10,6 @@ import {
   RiExternalLinkLine,
   RiEyeLine,
   RiFileCopyLine,
-  RiLoader4Line,
   RiMoreFill,
   RiPencilLine,
   RiShareLine,
@@ -24,19 +23,10 @@ import {
 } from "./ui/dropdown-menu";
 import { useState } from "react";
 import { useDeleteLink } from "@/hooks/use-delete-links";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogContent,
-} from "./ui/alert-dialog";
 import Link from "next/link";
 import ShareLinkDialog from "./share-link-dialog";
 import DeleteLinkDialog from "./delete-link-dialog";
+import { handleCopyLink } from "@/lib/link-share";
 
 interface LinkCardProps {
   link: LinkType;
@@ -46,22 +36,8 @@ interface LinkCardProps {
 export default function LinkCard({ link, isDetails }: LinkCardProps) {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const { mutate: deleteLink, isPending: isDeleting } = useDeleteLink();
 
   const initials = createInitials(link.client?.name);
-
-  const handleCopyLink: any = () => {
-    // Remove o protocolo para exibição, mas mantém pra cópia
-    const shortUrl = formatLink(link.shortCode);
-    navigator.clipboard.writeText(shortUrl);
-    toast.success("Link copiado para a área de transferência.");
-  };
-
-  const handleDelete = () => {
-    deleteLink(link.id, {
-      onSuccess: () => setIsDeleteDialogOpen(false),
-    });
-  };
 
   return (
     <>
@@ -97,7 +73,9 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
                 <h3 className="text-muted-foreground">Sem campanha</h3>
               )}
 
-              <button onClick={handleCopyLink}>
+              <button
+                onClick={() => handleCopyLink(formatLink(link.shortCode, true))}
+              >
                 <div className="text-muted-foreground group/link flex cursor-pointer gap-1 py-1 select-none">
                   <RiFileCopyLine className="group-hover/link:text-primary" />
                   <span className="text-primary font-bold">
@@ -141,7 +119,9 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
               </Link>
             )}
 
-            <Button onClick={handleCopyLink}>
+            <Button
+              onClick={() => handleCopyLink(formatLink(link.shortCode, true))}
+            >
               <RiFileCopyLine />
               Copiar
             </Button>
@@ -164,10 +144,7 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <Link
-                  href={`${process.env.NEXT_PUBLIC_API_URL}/${link.shortCode}`}
-                  target="_blank"
-                >
+                <Link href={formatLink(link.shortCode, true)} target="_blank">
                   <DropdownMenuItem className="cursor-pointer">
                     <RiExternalLinkLine className="size-4" />
                     Abrir Link
