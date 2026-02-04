@@ -84,7 +84,7 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
                 </div>
               </button>
 
-              <p className="text-muted-foreground flex gap-1 text-xs">
+              <p className="text-muted-foreground flex gap-1 text-xs break-all">
                 <RiExternalLinkLine className="size-4" />
                 {link.originalUrl}
               </p>
