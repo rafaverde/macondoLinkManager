@@ -76,8 +76,6 @@ export default function ClientsPage() {
     return map;
   }, [campaigns]);
 
-  console.log(campaignCountByClientId);
-
   // Gera breadcrumb
   useEffect(() => {
     setItems([
@@ -154,7 +152,14 @@ export default function ClientsPage() {
 
           {filteredClients?.map((client, i) => (
             <TableRow key={i}>
-              <TableCell>{client.name}</TableCell>
+              <TableCell>
+                <Link
+                  href={`/dashboard/clients/${client.id}`}
+                  className="hover:text-primary border-primary transition-all duration-300"
+                >
+                  {client.name}
+                </Link>
+              </TableCell>
               <TableCell className="hidden lg:table-cell">
                 {formatDate(client.createdAt)}
               </TableCell>
