@@ -8,6 +8,13 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 ---
 
 ## [1.2.1] - 2026-02-04
+### 🔧 Changed
+- Adicionado link completo com protocolo HTTP/HTTPS na cópia do link curto para o clipboard.
+
+
+---
+
+## [1.2.1] - 2026-02-04
 
 ### ✨ Added
 - Estados de loading nos botões de compartilhamento de links:

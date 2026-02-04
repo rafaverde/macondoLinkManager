@@ -137,7 +137,9 @@ v1.1.2 - Melhorias de UX/UI e correções de bugs.
 
 ### v1.2.0 (Release) - Revisão do modelo de ownership de links que agora passam a ser globais. Atualização de métricas para serem também globais da organização.
 
-v1.2.1 – refinamentos em UX, melhorias na navegação e correções no dashboard
+v1.2.1 – Refinamentos em UX, melhorias na navegação e correções no dashboard
+
+v1.2.2 - Correção de bug ao copiar links curtos para o clipboard.
 
 📄 Consulte o histórico completo em
 ➡️ [CHANGELOG.md](./CHANGELOG.md) 
