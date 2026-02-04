@@ -84,10 +84,14 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
                 </div>
               </button>
 
-              <p className="text-muted-foreground flex gap-1 text-xs break-all">
-                <RiExternalLinkLine className="size-4" />
-                {link.originalUrl}
-              </p>
+              <div className="flex gap-1">
+                <div>
+                  <RiExternalLinkLine className="text-muted-foreground w-4" />
+                </div>
+                <p className="text-muted-foreground flex gap-1 text-xs break-all">
+                  {link.originalUrl}
+                </p>
+              </div>
             </div>
 
             <div className="mt-6 flex flex-col gap-2 text-sm md:flex-row md:gap-8">

@@ -11,6 +11,7 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 ### 🔧 Changed
 - Adicionado link completo com protocolo HTTP/HTTPS na cópia do link curto para o clipboard.
 - Adicionado word wrapping na URL original no componente LinkCard.
+- Melhorado o layout da exibição da URL original no componente LinkCard.
 
 ---
 

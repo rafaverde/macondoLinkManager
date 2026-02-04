@@ -90,7 +90,7 @@ export default function AppSidebar({
               state === "collapsed" && "-rotate-90",
             )}
           >
-            {state === "expanded" && "Macondo Link Manager "}v
+            {state === "expanded" && "Macondo Link Manager "}
             {process.env.NEXT_PUBLIC_APP_VERSION}
           </p>
         </SidebarFooter>
