@@ -137,7 +137,10 @@ export default function ShareLinkDialog({
             className="min-w-[135px]"
           >
             {isCopyingQr ? (
-              <RiLoader4Line className="animate-spin" />
+              <>
+                <RiLoader4Line className="animate-spin" />
+                Copiando
+              </>
             ) : (
               <>
                 <RiQrCodeLine className="mr-2 h-4 w-4" />
@@ -146,9 +149,31 @@ export default function ShareLinkDialog({
             )}
           </Button>
 
-          <Button onClick={() => handleDownloadQrSvg()}>
-            <RiDownloadLine className="mr-2 h-4 w-4" />
-            Baixar SVG
+          <Button
+            onClick={async () => {
+              try {
+                setIsDowloadingQr(true);
+                handleDownloadQrSvg();
+              } finally {
+                setTimeout(() => {
+                  setIsDowloadingQr(false);
+                }, 500);
+              }
+            }}
+            disabled={isDownloadingQr}
+            className="min-w-[130px]"
+          >
+            {isDownloadingQr ? (
+              <>
+                <RiLoader4Line className="animate-spin" />
+                Baixando
+              </>
+            ) : (
+              <>
+                <RiDownloadLine className="mr-2 h-4 w-4" />
+                Baixar SVG
+              </>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
