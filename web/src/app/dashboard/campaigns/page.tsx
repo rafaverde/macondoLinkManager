@@ -164,7 +164,7 @@ export default function CampaignsPage() {
             <TableRow key={campaign.id}>
               <TableCell>
                 <Link
-                  href={`/dashboard/clients/${campaign.id}`}
+                  href={`/dashboard/campaigns/${campaign.id}`}
                   className="hover:text-primary border-primary transition-all duration-300"
                 >
                   {campaign.name}

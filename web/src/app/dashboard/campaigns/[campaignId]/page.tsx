@@ -42,6 +42,7 @@ export default function CampaignDashboardPage() {
     setItems([
       { label: "Dashboard", href: "/dashboard" },
       { label: "Links", href: "/dashboard/links" },
+      { label: "Campanhas", href: "/dashboard/campaigns" },
       { label: "Campanha" },
       { label: campaign.name },
     ]);
