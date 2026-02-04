@@ -5,11 +5,18 @@ export function handleCopyLink(shortUrl: string) {
   toast.success("Link copiado para a área de transferência.");
 }
 
+export function handleShareEmail(shortUrl: string) {
+  const subject = encodeURIComponent("Link compartilhado");
+  const body = encodeURIComponent(`${"Link compartilhado"}\n\n${shortUrl}`);
+
+  window.location.href = `mailto:?subject=${subject}&body=${body}`;
+}
+
 export function handleShareWhatsapp(shortUrl: string) {
   window.open(`https://wa.me/?text=${shortUrl}`, "_blank");
 }
 
-export async function handleCopyQr() {
+export async function handleCopyQr(): Promise<void> {
   const svg = document.getElementById("qr-code") as SVGSVGElement | null;
   if (!svg) return;
 
@@ -23,33 +30,29 @@ export async function handleCopyQr() {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
 
-  img.onload = async () => {
-    canvas.width = img.width;
-    canvas.height = img.height;
-    ctx?.drawImage(img, 0, 0);
+  await new Promise<void>((resolve, reject) => {
+    img.onload = async () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx?.drawImage(img, 0, 0);
 
-    canvas.toBlob(async (blob) => {
-      if (!blob) return;
+      canvas.toBlob(async (blob) => {
+        if (!blob) return reject();
 
-      await navigator.clipboard.write([
-        new ClipboardItem({ "image/png": blob }),
-      ]);
+        await navigator.clipboard.write([
+          new ClipboardItem({ "image/png": blob }),
+        ]);
 
-      toast.success("QRCode copiado para a área de transferência.");
-    });
-  };
+        resolve();
+      });
+    };
 
-  img.src = `data:image/svg+xml;base64,${base64}`;
+    img.onerror = reject;
+    img.src = `data:image/svg+xml;base64,${base64}`;
+  });
 }
 
-export function handleShareEmail(shortUrl: string) {
-  const subject = encodeURIComponent("Link compartilhado");
-  const body = encodeURIComponent(`${"Link compartilhado"}\n\n${shortUrl}`);
-
-  window.location.href = `mailto:?subject=${subject}&body=${body}`;
-}
-
-export function handleDownloadQrSvg() {
+export async function handleDownloadQrSvg(): Promise<void> {
   const svg = document.getElementById("qr-code");
   if (!svg) return;
 

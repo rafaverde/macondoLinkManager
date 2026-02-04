@@ -7,6 +7,27 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.2.1] - 2026-02-04
+
+### ✨ Added
+- Estados de loading nos botões de compartilhamento de links:
+  - Feedback visual ao copiar QR Code como imagem (PNG).
+  - Feedback visual ao baixar QR Code em formato SVG.
+  - Prevenção de múltiplos cliques durante ações assíncronas.
+
+### 🔧 Changed
+- Melhoria na navegação das tabelas:
+  - Nomes de clientes agora funcionam como links para seus respectivos dashboards.
+  - Nomes de campanhas agora funcionam como links para seus respectivos dashboards.
+- Ajustes nos breadcrumbs e rotas internas das páginas de campanhas e dashboards.
+
+### 🐛 Fixed
+- Correção de inconsistência no dashboard global após exclusão de clientes:
+  - Invalidação adequada das queries relacionadas a dashboards e métricas.
+  - Remoção de dados obsoletos exibidos em gráficos (ex: Top 5 Clientes).
+
+---
+
 ## [1.2.0] - 2026-02-02
 
 ### 🔧 Changed

@@ -162,7 +162,14 @@ export default function CampaignsPage() {
 
           {campaigns?.map((campaign) => (
             <TableRow key={campaign.id}>
-              <TableCell>{campaign.name}</TableCell>
+              <TableCell>
+                <Link
+                  href={`/dashboard/campaigns/${campaign.id}`}
+                  className="hover:text-primary border-primary transition-all duration-300"
+                >
+                  {campaign.name}
+                </Link>
+              </TableCell>
               <TableCell className="table-cell lg:hidden">
                 {formatDate(campaign.createdAt, true)}
               </TableCell>
