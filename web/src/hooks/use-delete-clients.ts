@@ -14,6 +14,7 @@ export function useDeleteClient() {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
       queryClient.invalidateQueries({ queryKey: ["campaigns"] });
       queryClient.invalidateQueries({ queryKey: ["links"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: () => {
       toast.error("Erro ao apagar cliente. Tente novamente mais tarde.");
