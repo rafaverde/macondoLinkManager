@@ -7,6 +7,17 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.2.3] - 2026-02-05
+
+### ✨ Added
+- Botão para limpar todos os filtros na página de links.
+
+### 🔧 Changed
+- Melhoria de ux na criação de links:
+  - Persistencia dos valores selecionados de cliente e campanha após criação de link.
+
+---
+
 ## [1.2.2] - 2026-02-04
 ### 🔧 Changed
 - Adicionado link completo com protocolo HTTP/HTTPS na cópia do link curto para o clipboard.
