@@ -17,9 +17,15 @@ export function useCreateCampaign(onSuccessCallback?: (newId: string) => void) {
     },
     onSuccess: (data) => {
       toast.success(`Campanha ${data.name} criada com sucesso!`);
+
+      queryClient.setQueryData(["campaigns"], (old: any[] = []) => [
+        ...old,
+        data,
+      ]);
       queryClient.invalidateQueries({ queryKey: ["campaigns"] });
+
       if (onSuccessCallback) {
-        onSuccessCallback(data.id);
+        setTimeout(() => onSuccessCallback(data.id), 10);
       }
     },
     onError: () =>
