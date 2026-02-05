@@ -1,6 +1,6 @@
 type BotDetectionResult = {
   isBot: boolean;
-  reason?: String;
+  reason?: string;
 };
 
 const KNOWN_BOT_SIGNATURES = [

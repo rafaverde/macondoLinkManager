@@ -6,6 +6,8 @@ export interface CreateClickDTO {
   userAgent?: string | null;
   country?: string | null;
   city?: string | null;
+  isBot: boolean;
+  botReason?: string;
 }
 
 // Interface para resultados agregados

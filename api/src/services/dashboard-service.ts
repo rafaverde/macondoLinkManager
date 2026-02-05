@@ -2,7 +2,6 @@ import { CampaignsRepository } from "../repositories/campaigns-repository";
 import { ClicksRepository } from "../repositories/clicks-repository";
 import { ClientsRepository } from "../repositories/clients-repository";
 import { LinksRepository } from "../repositories/links-repository";
-import { CampaignNotAllowedError } from "./errors/campaign-not-allowed-error";
 import { CampaignNotFoundError } from "./errors/campaign-not-found.error";
 
 export class DashboardService {
