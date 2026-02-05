@@ -147,7 +147,7 @@ export default function LinksPage() {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Campanhas</SelectLabel>
-              <SelectItem value="all">Todos as campanhas</SelectItem>
+              <SelectItem value="all">Todas as campanhas</SelectItem>
               {campaignsForSelect?.map((campaign) => (
                 <SelectItem key={campaign.id} value={campaign.id}>
                   {campaign.name}
@@ -156,6 +156,19 @@ export default function LinksPage() {
             </SelectGroup>
           </SelectContent>
         </Select>
+
+        <Button
+          size="icon"
+          variant="outline"
+          disabled={
+            selectedCampaign === "all" &&
+            selectedClient === "all" &&
+            !searchTerm
+          }
+          onClick={handleClearFilters}
+        >
+          <RiCloseLine />
+        </Button>
       </div>
 
       {isLoading ? (

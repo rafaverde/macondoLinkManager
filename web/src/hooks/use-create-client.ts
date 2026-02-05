@@ -12,9 +12,14 @@ export function useCreateClient(onSuccessCallback?: (newId: string) => void) {
     },
     onSuccess: (data) => {
       toast.success(`Cliente ${data.name} criado!`);
+      queryClient.setQueryData(["clients"], (old: any[] = []) => [
+        ...old,
+        data,
+      ]);
       queryClient.invalidateQueries({ queryKey: ["clients"] });
+
       if (onSuccessCallback) {
-        onSuccessCallback(data.id);
+        setTimeout(() => onSuccessCallback(data.id), 10);
       }
     },
     onError: () =>
