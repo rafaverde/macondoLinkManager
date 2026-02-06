@@ -1,6 +1,6 @@
 // prisma/scripts/backfill-bot-clicks.ts
-import { prisma } from "../../src/lib/prisma";
-import { detectBot } from "../../src/utils/detect-bot";
+import { prisma } from "../../lib/prisma";
+import { detectBot } from "../../utils/detect-bot";
 
 const BATCH_SIZE = 500;
 

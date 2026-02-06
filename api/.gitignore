@@ -42,4 +42,4 @@ start.sh
 scripts/
 
 # Backfill Bots
-!prisma/scripts
+!src/prisma/scripts
