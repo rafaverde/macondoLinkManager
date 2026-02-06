@@ -34,7 +34,7 @@ import {
   RiPencilLine,
 } from "@remixicon/react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 type ClientScope = "all" | string;
 
@@ -58,10 +58,6 @@ export default function CampaignsPage() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const isScopedToClient = selectedClientId !== "all";
-
-  const clientsById = useMemo(() => {
-    return new Map(clients?.map((c) => [c.id, c.name]));
-  }, [clients]);
 
   useEffect(() => {
     if (!isEditOpen) {
@@ -137,6 +133,7 @@ export default function CampaignsPage() {
             <TableHead>Nome</TableHead>
             <TableHead>Criado em</TableHead>
             <TableHead className="hidden lg:table-cell">Pertence a</TableHead>
+            <TableHead className="hidden lg:table-cell">Links</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -150,6 +147,9 @@ export default function CampaignsPage() {
                 </TableCell>
                 <TableCell>
                   <Skeleton className="bg-muted-foreground/20 h-8 w-full" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="bg-muted-foreground/20 hidden h-8 w-full lg:table-cell" />
                 </TableCell>
                 <TableCell>
                   <Skeleton className="bg-muted-foreground/20 hidden h-8 w-full lg:table-cell" />
@@ -177,7 +177,10 @@ export default function CampaignsPage() {
                 {formatDate(campaign.createdAt)}
               </TableCell>
               <TableCell className="hidden lg:table-cell">
-                {clientsById.get(campaign.clientId)}
+                {campaign.clientName}
+              </TableCell>
+              <TableCell className="hidden lg:table-cell">
+                {campaign.linksCount}
               </TableCell>
               <TableCell className="space-x-2 text-right">
                 <Link href={`/dashboard/campaigns/${campaign.id}`}>

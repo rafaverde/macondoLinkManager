@@ -141,6 +141,8 @@ v1.2.1 – Refinamentos em UX, melhorias na navegação e correções no dashboa
 
 v1.2.2 - Correção de bug ao copiar links curtos para o clipboard.
 
+v1.2.3 - Métricas confiáveis com filtragem de bots baseada em estado persistido (write-time).
+
 📄 Consulte o histórico completo em
 ➡️ [CHANGELOG.md](./CHANGELOG.md) 
 

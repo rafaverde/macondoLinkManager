@@ -1,12 +1,6 @@
 import { api } from "@/lib/api";
+import { Client } from "@/types/clients";
 import { useQuery } from "@tanstack/react-query";
-
-export interface Client {
-  id: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
 export function useClient(clientId: string) {
   return useQuery({

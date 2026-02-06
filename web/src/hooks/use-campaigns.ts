@@ -1,18 +1,12 @@
 import { api } from "@/lib/api";
+import { CampaignListItem } from "@/types/campaigns";
 import { useQuery } from "@tanstack/react-query";
-
-export interface Campaign {
-  id: string;
-  name: string;
-  createdAt: string;
-  clientId: string;
-}
 
 export function useCampaigns(clientId?: string) {
   return useQuery({
     queryKey: ["campaigns", clientId],
     queryFn: async () => {
-      const { data } = await api.get<Campaign[]>("/campaigns", {
+      const { data } = await api.get<CampaignListItem[]>("/campaigns", {
         params: { clientId },
       });
       return data;

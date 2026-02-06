@@ -16,12 +16,6 @@ export class CampaignsService {
     private clientsRepository: ClientsRepository,
   ) {}
 
-  // Serviço para listar
-  async listCampaigns(clientId?: string) {
-    const campaigns = await this.campaignsRepository.findMany(clientId);
-    return campaigns;
-  }
-
   // Serviço para criar
   async createCampaign({ name, clientId }: CreateCampaignRequest) {
     // Regra de negócio 1: O cliente deve existir

@@ -5,7 +5,6 @@ import { ClicksAreaChart } from "@/components/charts/clicks-area-chart";
 import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
 import DashboardSkeleton from "@/components/dashboard-skeleton";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useCampaign } from "@/hooks/use-campaign";
 import { useCampaignDashboard } from "@/hooks/use-campaign-dashboard";

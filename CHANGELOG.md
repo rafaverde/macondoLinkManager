@@ -5,6 +5,32 @@ Todas as mudanças relevantes deste projeto serão documentadas neste arquivo.
 O formato segue o padrão [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/)
 e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
+--- 
+
+## [1.3.0] - 2026-02-06
+
+### ✨ Added
+- Detecção persistente de bots no registro de cliques:
+  - Classificação de cliques em write-time (`isBot`, `botReason`).
+  - Script de backfill para classificação de cliques históricos.
+- Agregações de domínio no backend para listagens:
+  - Contagem de campanhas e links por cliente.
+  - Contagem de links por campanha.
+  - Inclusão explícita do nome do cliente nas listagens de campanhas.
+- Introdução de **read models** dedicados para consumo da UI.
+
+### 🔧 Changed
+- Métricas e dashboards passam a utilizar exclusivamente o estado persistido de cliques (`isBot`) como fonte de verdade.
+- Refatoração das rotas de listagem de clientes e campanhas para consumir dados agregados diretamente do backend.
+- Separação clara entre services de leitura (read models) e services de escrita (CRUD).
+- Frontend passa a consumir contratos estáveis, sem cálculos ou transformações locais.
+
+### 🧹 Removed
+- Remoção de heurísticas de detecção de bots baseadas em `user_agent` em tempo de leitura.
+- Remoção de cálculos de agregação e joins indiretos no frontend.
+- Remoção de métodos legados de listagem nos services e repositórios CRUD.
+
+
 ---
 
 ## [1.2.3] - 2026-02-05
