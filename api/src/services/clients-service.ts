@@ -5,12 +5,6 @@ import { ClientNotFoundError } from "./errors/client-not-found-error";
 export class ClientsService {
   constructor(private clientsRepository: ClientsRepository) {}
 
-  // Serviço para listar
-  async listClients() {
-    const clients = await this.clientsRepository.findMany();
-    return clients;
-  }
-
   // Serviço para criar
   async createClient(name: string) {
     // Regra de negócio

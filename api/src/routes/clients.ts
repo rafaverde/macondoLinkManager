@@ -11,7 +11,7 @@ import { authHook } from "../hooks/auth";
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { ClientsService } from "../services/clients-service";
 import { ClientAlreadyExistsError } from "../services/errors/client-already-exists-error";
-import { ClientsListRepository } from "../repositories/read-models/clients-list-repository";
+import { ClientsListRepository } from "../repositories/read-models/client-list-repository";
 import { ClientsListService } from "../services/clients-list-service";
 
 // Define a forma de um cliente para a API
