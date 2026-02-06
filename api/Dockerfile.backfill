@@ -1,0 +1,18 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copia apenas o necessário
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+# Gera Prisma Client
+RUN npx prisma generate
+
+# Builda TS → JS
+RUN npm run build
+
+# Comando direto do backfill
+CMD ["node", "dist/prisma/scripts/backfill-bot-clicks.js"]
