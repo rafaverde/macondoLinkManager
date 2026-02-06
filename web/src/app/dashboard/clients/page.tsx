@@ -110,6 +110,7 @@ export default function ClientsPage() {
             <TableHead>Nome</TableHead>
             <TableHead>Criado em</TableHead>
             <TableHead className="hidden lg:table-cell">Campanhas</TableHead>
+            <TableHead className="hidden lg:table-cell">Links</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -118,6 +119,9 @@ export default function ClientsPage() {
           {isLoading &&
             Array.from({ length: 8 }).map((item, i) => (
               <TableRow key={i}>
+                <TableCell>
+                  <Skeleton className="bg-muted-foreground/20 h-8 w-full" />
+                </TableCell>
                 <TableCell>
                   <Skeleton className="bg-muted-foreground/20 h-8 w-full" />
                 </TableCell>
@@ -151,6 +155,9 @@ export default function ClientsPage() {
               </TableCell>
               <TableCell className="hidden lg:table-cell">
                 {client.campaignsCount}
+              </TableCell>
+              <TableCell className="hidden lg:table-cell">
+                {client.linksCount}
               </TableCell>
               <TableCell className="space-x-2 text-right">
                 <Link href={`/dashboard/clients/${client.id}`}>
