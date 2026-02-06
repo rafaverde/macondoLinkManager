@@ -9,7 +9,8 @@
     "esModuleInterop": true, // Permite 'import' de módulos 'require'
     "skipLibCheck": true, // Pula a checagem de tipos em libs (mais rápido)
     "forceConsistentCasingInFileNames": true, // Evita erros de case em nomes de arquivos
-    "resolveJsonModule": true // Permite importar arquivos .json
+    "resolveJsonModule": true, // Permite importar arquivos .json
+    "types": ["node"]
   },
   "include": ["src"], // Quais pastas o TS deve "assistir"
   "exclude": ["node_modules"] // Quais pastas ele deve ignorar
