@@ -1,13 +1,6 @@
 import { api } from "@/lib/api";
+import { Campaign } from "@/types/campaigns";
 import { useQuery } from "@tanstack/react-query";
-
-export interface Campaign {
-  id: string;
-  name: string;
-  clientId: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
 export function useCampaign(campaignId: string) {
   return useQuery({
