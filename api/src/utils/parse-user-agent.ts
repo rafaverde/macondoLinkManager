@@ -1,15 +1,7 @@
-export function parseUserAgent(ua?: string | null): string {
+export function parseBrowserName(ua?: string | null): string {
   if (!ua) return "Desconhecido";
 
   const agent = ua.toLowerCase();
-
-  if (
-    agent.includes("bot") ||
-    agent.includes("crawler") ||
-    agent.includes("spider")
-  ) {
-    return "Bot";
-  }
 
   if (agent.includes("edg")) return "Edge";
 
