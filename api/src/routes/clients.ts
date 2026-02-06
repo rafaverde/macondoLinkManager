@@ -11,6 +11,8 @@ import { authHook } from "../hooks/auth";
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { ClientsService } from "../services/clients-service";
 import { ClientAlreadyExistsError } from "../services/errors/client-already-exists-error";
+import { ClientsListRepository } from "../repositories/read-models/clients-list-repository";
+import { ClientsListService } from "../services/clients-list-service";
 
 // Define a forma de um cliente para a API
 const clientSchema = z.object({
@@ -18,6 +20,14 @@ const clientSchema = z.object({
   name: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
+});
+
+const clientListSchema = z.object({
+  id: z.uuid(),
+  name: z.string(),
+  campaignsCount: z.number().int().nonnegative(),
+  linksCount: z.number().int().nonnegative(),
+  createdAt: z.date(),
 });
 
 export async function clientsRoutes(app: FastifyInstance) {
@@ -31,15 +41,15 @@ export async function clientsRoutes(app: FastifyInstance) {
         tags: ["Management"],
         summary: "Lista todos os clientes da agência.",
         response: {
-          200: z.array(clientSchema), // Retorna uma array de clientes
+          200: z.array(clientListSchema), // Retorna uma array de clientes
         },
       },
     },
     async (request, reply) => {
-      const repo = new PrismaClientsRepository();
-      const service = new ClientsService(repo);
+      const listRepository = new ClientsListRepository();
+      const listService = new ClientsListService(listRepository);
 
-      const clients = await service.listClients();
+      const clients = await listService.execute();
       return reply.status(200).send(clients);
     },
   );
