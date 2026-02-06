@@ -59,8 +59,6 @@ export default function CampaignsPage() {
 
   const isScopedToClient = selectedClientId !== "all";
 
-  console.log(campaigns);
-
   useEffect(() => {
     if (!isEditOpen) {
       setEditingCampaign(null);
