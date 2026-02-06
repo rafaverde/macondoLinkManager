@@ -1,18 +1,20 @@
 FROM node:20-alpine
 
-WORKDIR /app
+# 👇 entra direto no backend
+WORKDIR /app/api
 
-# Copia apenas o necessário
-COPY package*.json ./
+# Copia manifests do backend
+COPY api/package*.json ./
 RUN npm install
 
-COPY . .
+# Copia o código do backend
+COPY api .
 
-# Gera Prisma Client
+# Prisma
 RUN npx prisma generate
 
-# Builda TS → JS
+# Build
 RUN npm run build
 
-# Comando direto do backfill
+# Executa o backfill
 CMD ["node", "dist/prisma/scripts/backfill-bot-clicks.js"]
