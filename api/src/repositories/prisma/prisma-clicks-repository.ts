@@ -14,6 +14,8 @@ export class PrismaClicksRepository implements ClicksRepository {
     userAgent,
     country,
     city,
+    isBot,
+    botReason,
   }: CreateClickDTO) {
     const click = await prisma.click.create({
       data: {
@@ -22,6 +24,8 @@ export class PrismaClicksRepository implements ClicksRepository {
         userAgent,
         country,
         city,
+        isBot,
+        botReason,
       },
     });
 
@@ -37,6 +41,7 @@ export class PrismaClicksRepository implements ClicksRepository {
     const clicks = await prisma.click.findMany({
       where: {
         linkId,
+        isBot: false,
         timestamp: {
           gte: startDate, // Maior ou igual a data de corte
         },
@@ -53,6 +58,7 @@ export class PrismaClicksRepository implements ClicksRepository {
     const count = await prisma.click.count({
       where: {
         link: {},
+        isBot: false,
       },
     });
 
@@ -65,6 +71,7 @@ export class PrismaClicksRepository implements ClicksRepository {
         link: {
           clientId,
         },
+        isBot: false,
       },
     });
   }
@@ -75,6 +82,7 @@ export class PrismaClicksRepository implements ClicksRepository {
         link: {
           campaignId,
         },
+        isBot: false,
       },
     });
   }
@@ -89,6 +97,7 @@ export class PrismaClicksRepository implements ClicksRepository {
     const clicks = await prisma.click.findMany({
       where: {
         link: {},
+        isBot: false,
         timestamp: {
           gte: startDate,
         },
@@ -113,6 +122,7 @@ export class PrismaClicksRepository implements ClicksRepository {
         link: {
           clientId,
         },
+        isBot: false,
         timestamp: {
           gte: startDate,
         },
@@ -137,6 +147,7 @@ export class PrismaClicksRepository implements ClicksRepository {
         link: {
           campaignId,
         },
+        isBot: false,
         timestamp: {
           gte: startDate,
         },

@@ -1,6 +1,7 @@
 import { ClicksRepository } from "../repositories/clicks-repository";
 import { ClientsRepository } from "../repositories/clients-repository";
 import { LinksRepository } from "../repositories/links-repository";
+import { detectBot } from "../utils/detect-bot";
 import { generateShortCode } from "../utils/generate-short-code";
 import { resolveGeoLocation } from "../utils/geoip";
 import { ClientNotFoundError } from "./errors/client-not-found-error";
@@ -108,8 +109,21 @@ export class LinksService {
     await this.linksRepository.delete(id);
   }
 
-  async trackClick(linkId: string, ipAddress?: string, userAgent?: string) {
-    const { city, country } = await resolveGeoLocation(ipAddress);
+  async trackClick(
+    linkId: string,
+    ipAddress?: string | null,
+    userAgent?: string | null,
+  ) {
+    const { isBot, reason } = detectBot(userAgent);
+
+    let country: string | null = null;
+    let city: string | null = null;
+
+    if (!isBot && ipAddress) {
+      const geo = await resolveGeoLocation(ipAddress);
+      country = geo?.country;
+      city = geo?.city;
+    }
 
     await this.clicksRepository.create({
       linkId,
@@ -117,6 +131,8 @@ export class LinksService {
       userAgent: userAgent ?? null,
       country,
       city,
+      isBot,
+      botReason: reason,
     });
   }
 
