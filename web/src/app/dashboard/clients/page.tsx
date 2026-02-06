@@ -21,7 +21,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
-import { useCampaigns } from "@/hooks/use-campaigns";
 import { useClients } from "@/hooks/use-clients";
 import { useDebounce } from "@/hooks/use-debounce";
 import { formatDate } from "@/lib/utils";
@@ -35,7 +34,7 @@ import {
   RiSearchLine,
 } from "@remixicon/react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ClientsPage() {
   const { setItems } = useBreadcrumb();
@@ -59,22 +58,6 @@ export default function ClientsPage() {
           client.name.toLowerCase().includes(debouncedSearch.toLowerCase()),
         )
       : clients;
-
-  const { data: campaigns } = useCampaigns();
-
-  const campaignCountByClientId = useMemo(() => {
-    const map: Record<string, number> = {};
-
-    if (!campaigns) return map;
-
-    for (const campaign of campaigns) {
-      const clientId = campaign.clientId;
-
-      map[clientId] = (map[clientId] ?? 0) + 1;
-    }
-
-    return map;
-  }, [campaigns]);
 
   // Gera breadcrumb
   useEffect(() => {
@@ -167,7 +150,7 @@ export default function ClientsPage() {
                 {formatDate(client.createdAt, true)}
               </TableCell>
               <TableCell className="hidden lg:table-cell">
-                {campaignCountByClientId[client.id] ?? 0}
+                {client.campaignsCount}
               </TableCell>
               <TableCell className="space-x-2 text-right">
                 <Link href={`/dashboard/clients/${client.id}`}>
