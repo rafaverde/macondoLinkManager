@@ -1,4 +1,4 @@
-export interface CampaignsListItem {
+export interface CampaignListItem {
   id: string;
   name: string;
   clientId: string;

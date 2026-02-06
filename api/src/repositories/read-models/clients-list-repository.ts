@@ -1,7 +1,7 @@
 import { prisma } from "../../lib/prisma";
 import { ClientListItem } from "./types/client-list-item";
 
-export class ClientListRepository {
+export class ClientsListRepository {
   async list(): Promise<ClientListItem[]> {
     const clients = await prisma.client.findMany({
       orderBy: { name: "asc" },
