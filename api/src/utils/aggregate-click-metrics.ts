@@ -1,7 +1,7 @@
 import { Click } from "@prisma/client";
 import { MetricsResult } from "../repositories/clicks-repository";
 import { format, subDays } from "date-fns";
-import { parseUserAgent } from "./parse-user-agent";
+import { parseBrowserName } from "./parse-user-agent";
 
 export function aggregateClickMetrics(
   clicks: Click[],
@@ -34,7 +34,7 @@ export function aggregateClickMetrics(
   // Agrupar por Browser (Simplificado do UserAgent)
   const browserMap = new Map<string, number>();
   clicks.forEach((click) => {
-    const browser = parseUserAgent(click.userAgent);
+    const browser = parseBrowserName(click.userAgent);
     browserMap.set(browser, (browserMap.get(browser) ?? 0) + 1);
   });
 
