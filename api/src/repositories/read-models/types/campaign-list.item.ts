@@ -5,4 +5,5 @@ export interface CampaignListItem {
   clientName: string;
   linksCount: number;
   createdAt: Date;
+  updatedAt: Date;
 }

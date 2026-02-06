@@ -32,6 +32,7 @@ export class CampaignsListRepository {
       clientName: campaign.client.name,
       linksCount: campaign._count.links,
       createdAt: campaign.createdAt,
+      updatedAt: campaign.updatedAt,
     }));
   }
 }

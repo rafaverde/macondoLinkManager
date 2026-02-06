@@ -6,11 +6,23 @@ import { PrismaCampaignsRepository } from "../repositories/prisma/prisma-campaig
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { CampaignsService } from "../services/campaigns-service";
 import { CampaignAlreadyExistsError } from "../services/errors/campaign-already-exists-error";
+import { CampaignsListRepository } from "../repositories/read-models/campaigns-list-repository";
+import { CampaignsListService } from "../services/campaings-list-service";
 
 const campaignSchema = z.object({
   id: z.uuid(),
   name: z.string(),
   clientId: z.uuid(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+const campaingsListSchema = z.object({
+  id: z.uuid(),
+  name: z.string(),
+  clientId: z.uuid(),
+  clientName: z.string(),
+  linksCount: z.number().int().nonnegative(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
@@ -28,18 +40,18 @@ export async function campaignsRoutes(app: FastifyInstance) {
           clientId: z.uuid().optional(),
         }),
         response: {
-          200: z.array(campaignSchema), // Retorna um array de campanhas
+          200: z.array(campaingsListSchema), // Retorna um array de campanhas
         },
       },
     },
     async (request, reply) => {
       const { clientId } = request.query;
 
-      const campaignsRepo = new PrismaCampaignsRepository();
-      const clientsRepo = new PrismaClientsRepository();
-      const service = new CampaignsService(campaignsRepo, clientsRepo);
+      const listSservice = new CampaignsListService(
+        new CampaignsListRepository(),
+      );
 
-      const campaigns = await service.listCampaigns(clientId);
+      const campaigns = await listSservice.execute(clientId);
       return reply.status(200).send(campaigns);
     },
   );
