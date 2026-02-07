@@ -5,6 +5,18 @@ Todas as mudanças relevantes deste projeto serão documentadas neste arquivo.
 O formato segue o padrão [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/)
 e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
+---
+
+## [1.3.1] - 2026-02-07
+
+### 🔧 Changed
+- Ampliação das regras de detecção de bots, incluindo mais assinaturas conhecidas de crawlers, previews de redes sociais e ferramentas de SEO (Google, Bing, Meta/Facebook, WhatsApp, Slack, Twitter/X, LinkedIn, Discord, Telegram, AppleBot, Ahrefs, Semrush e clientes HTTP genéricos).
+- Melhoria na classificação de tráfego não humano sem alterações na estrutura de dados ou contratos existentes.
+- Expansão da identificação de navegadores a partir do User-Agent, reduzindo significativamente a categoria “Outros”.
+- Melhor distinção entre navegadores desktop e mobile, aumentando a precisão das métricas de browser.
+
+
+
 --- 
 
 ## [1.3.0] - 2026-02-06
