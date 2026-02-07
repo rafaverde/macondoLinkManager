@@ -132,7 +132,7 @@ export default function CampaignsPage() {
           <TableRow>
             <TableHead>Nome</TableHead>
             <TableHead>Criado em</TableHead>
-            <TableHead className="hidden lg:table-cell">Pertence a</TableHead>
+            <TableHead className="hidden lg:table-cell">Cliente</TableHead>
             <TableHead className="hidden lg:table-cell">Links</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
@@ -143,19 +143,23 @@ export default function CampaignsPage() {
             Array.from({ length: 8 }).map((item, i) => (
               <TableRow key={i}>
                 <TableCell>
-                  <Skeleton className="bg-muted-foreground/20 h-8 w-full" />
+                  <Skeleton className="bg-muted-foreground/20 h-9 w-full" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="bg-muted-foreground/20 h-8 w-full" />
+                  <Skeleton className="bg-muted-foreground/20 h-9 w-full" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="bg-muted-foreground/20 hidden h-8 w-full lg:table-cell" />
+                  <Skeleton className="bg-muted-foreground/20 hidden h-9 w-full lg:flex" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="bg-muted-foreground/20 hidden h-8 w-full lg:table-cell" />
+                  <Skeleton className="bg-muted-foreground/20 hidden size-9 lg:flex" />
                 </TableCell>
-                <TableCell>
-                  <Skeleton className="bg-muted-foreground/20 h-8 w-full" />
+                <TableCell className="flex items-center justify-end">
+                  <div className="flex w-fit items-end gap-2">
+                    <Skeleton className="bg-muted-foreground/20 size-9" />
+                    <Skeleton className="bg-muted-foreground/20 size-9" />
+                    <Skeleton className="bg-muted-foreground/20 size-9" />
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
