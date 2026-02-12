@@ -1,5 +1,4 @@
 import { Link as LinkType } from "@/types";
-import { toast } from "sonner";
 import { Card, CardContent } from "./ui/card";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { cn, createInitials, formatDate, formatLink } from "@/lib/utils";
@@ -22,7 +21,6 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { useState } from "react";
-import { useDeleteLink } from "@/hooks/use-delete-links";
 import Link from "next/link";
 import ShareLinkDialog from "./share-link-dialog";
 import DeleteLinkDialog from "./delete-link-dialog";

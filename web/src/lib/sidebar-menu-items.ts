@@ -12,7 +12,7 @@ export const menuItems = [
   { href: "/dashboard/clients", label: "Clientes", icon: RiSuitcaseLine },
   { href: "/dashboard/campaigns", label: "Campanhas", icon: RiFocus2Line },
   {
-    href: "/",
+    href: "/dashboard/tools/whatsapp-generator",
     label: "Whatsapp Link",
     icon: RiWhatsappLine,
     disabled: true,
