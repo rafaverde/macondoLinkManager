@@ -181,7 +181,32 @@ export class PrismaLinksRepository implements LinksRepository {
         }
       }
 
-      return updatedLink;
+      // Busca com include completo
+      const linkWithRelations = await tx.link.findUnique({
+        where: { id },
+        include: {
+          client: { select: { id: true, name: true } },
+          campaign: { select: { id: true, name: true } },
+          _count: { select: { clicks: true } },
+          tags: {
+            include: {
+              tag: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!linkWithRelations) return null;
+
+      return {
+        ...linkWithRelations,
+        tags: linkWithRelations.tags.map((lt) => lt.tag),
+      };
     });
   }
 
