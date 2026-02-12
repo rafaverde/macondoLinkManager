@@ -10,6 +10,7 @@ export interface Link {
   client?: { name: string };
   campaign?: { name: string } | null;
   _count?: { clicks: number };
+  tags?: { id: string; name: string }[];
 }
 
 export interface CreateLinkData {

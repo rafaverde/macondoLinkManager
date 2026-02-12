@@ -28,8 +28,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import CreateClientDialog from "./create-client-dialog";
-import CreateCampaignDialog from "./create-campaign-dialog";
 import { InputTags } from "./ui/input-tags";
 import { Link } from "@/types";
 import { useUpdateLink } from "@/hooks/use-update-link";
@@ -51,7 +49,6 @@ interface LinkFormProps {
 
 export default function LinkForm({ initialData }: LinkFormProps) {
   const router = useRouter();
-  const isEditing = !!initialData;
 
   // Hooks de dados
   const { data: clients } = useClients();
@@ -69,7 +66,7 @@ export default function LinkForm({ initialData }: LinkFormProps) {
       originalUrl: initialData?.originalUrl || "",
       clientId: initialData?.clientId || "",
       campaignId: initialData?.campaignId || "",
-      tags: [],
+      tags: initialData?.tags?.map((tag) => tag.name) || [],
     },
   });
 
@@ -79,13 +76,14 @@ export default function LinkForm({ initialData }: LinkFormProps) {
     useCampaigns(selectedClientId);
 
   function onSubmit(data: LinkFormValues) {
-    if (isEditing && initialData) {
+    if (initialData) {
       // Modo Edição
       updateMutation.mutate({
         id: initialData.id,
         originalUrl: data.originalUrl,
         clientId: data.clientId,
         campaignId: data.campaignId || null,
+        tags: data.tags || [],
       });
     } else {
       // Modo criação
@@ -219,28 +217,24 @@ export default function LinkForm({ initialData }: LinkFormProps) {
             </div>
 
             {/* 4. Tags */}
-            {!isEditing && (
-              <FormField
-                control={form.control}
-                name="tags"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tags</FormLabel>
-                    <FormControl>
-                      <InputTags
-                        value={field.value || []}
-                        onChange={field.onChange}
-                        placeholder="Digite e tecle enter"
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Separe as tags por vírgula.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+            <FormField
+              control={form.control}
+              name="tags"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tags</FormLabel>
+                  <FormControl>
+                    <InputTags
+                      value={field.value || []}
+                      onChange={field.onChange}
+                      placeholder="Digite e tecle enter"
+                    />
+                  </FormControl>
+                  <FormDescription>Separe as tags por vírgula.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Ações (Rodapé do Form) */}
             <div className="flex items-center justify-end gap-3 border-t pt-4">
