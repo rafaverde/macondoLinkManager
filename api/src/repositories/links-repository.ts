@@ -20,6 +20,7 @@ export interface UpdateLinkDTO {
   originalUrl?: string;
   clientId?: string;
   campaignId?: string | null;
+  tags?: string[];
 }
 
 export interface LinksRepository {
