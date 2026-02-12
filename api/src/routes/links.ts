@@ -20,6 +20,7 @@ const linkSchema = z.object({
   client: z.object({ name: z.string() }).optional(),
   campaign: z.object({ name: z.string() }).nullable().optional(),
   _count: z.object({ clicks: z.number() }).optional(),
+  tags: z.array(z.object({ id: z.uuid(), name: z.string() })).optional(),
 });
 
 const metricsSchema = z.object({
