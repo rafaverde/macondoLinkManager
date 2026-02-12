@@ -174,6 +174,7 @@ export async function linksRoutes(app: FastifyInstance) {
           originalUrl: z.url().optional(),
           clientId: z.uuid().optional(),
           campaignId: z.uuid().optional().nullable(),
+          tags: z.array(z.string()).optional(),
         }),
         response: {
           200: linkSchema,
@@ -183,7 +184,7 @@ export async function linksRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const { originalUrl, clientId, campaignId } = request.body;
+      const { originalUrl, clientId, campaignId, tags } = request.body;
 
       const service = new LinksService(
         new PrismaLinksRepository(),
@@ -195,6 +196,7 @@ export async function linksRoutes(app: FastifyInstance) {
         originalUrl,
         clientId,
         campaignId,
+        tags,
       });
 
       return reply.status(200).send(updatedLink);

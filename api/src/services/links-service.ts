@@ -91,6 +91,7 @@ export class LinksService {
       originalUrl?: string;
       clientId?: string;
       campaignId?: string | null;
+      tags?: string[];
     },
   ) {
     await this.getLink(id);
