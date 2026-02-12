@@ -137,7 +137,7 @@ export class PrismaLinksRepository implements LinksRepository {
   ) {
     return await prisma.$transaction(async (tx) => {
       // Atualiza dados básicos do link
-      const updatedLink = await tx.link.update({
+      await tx.link.update({
         where: {
           id,
         },
@@ -201,7 +201,9 @@ export class PrismaLinksRepository implements LinksRepository {
         },
       });
 
-      if (!linkWithRelations) return null;
+      if (!linkWithRelations) {
+        throw new Error("Unexpected null after update");
+      }
 
       return {
         ...linkWithRelations,
