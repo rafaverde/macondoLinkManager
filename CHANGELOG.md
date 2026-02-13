@@ -7,6 +7,38 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.4.0] - 2026-02-13
+
+### ✨ Added
+- Ferramenta de geração de link oficial do WhatsApp:
+  - Rota dedicada em `/dashboard/tools/whatsapp-generator`.
+  - Geração dinâmica de URL no padrão `https://wa.me/`.
+  - Validação com React Hook Form + Zod.
+  - Preview em tempo real com encoding correto da mensagem.
+  - Botão de cópia com feedback visual.
+- Consolidação completa do sistema de Tags:
+  - Suporte a edição de tags no fluxo de update de links.
+  - Sincronização transacional de relações many-to-many.
+  - Criação automática de tags inexistentes.
+
+### 🔧 Changed
+- Update de link passa a sincronizar completamente o conjunto de tags.
+- Backend retorna tags normalizadas no formato `{ id, name }[]`.
+- Padronização do tipo de retorno para `LinkWithRelations`.
+- Fluxo de criação e edição de links agora é simétrico.
+- Frontend passa a exibir e editar tags de forma consistente.
+
+### 🧹 Removed
+- Remoção da exposição da tabela intermediária `LinkTag` nos retornos da API.
+- Remoção de inconsistências no contrato de retorno entre listagem, detalhe e update.
+
+### 🐛 Fixed
+- Correção de cache no detalhe de link após update (invalidando query específica).
+- Correção de inconsistência onde tags não eram atualizadas no modo edição.
+
+
+---
+
 ## [1.3.1] - 2026-02-07
 
 ### 🔧 Changed

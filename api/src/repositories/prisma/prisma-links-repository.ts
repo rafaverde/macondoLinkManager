@@ -70,10 +70,23 @@ export class PrismaLinksRepository implements LinksRepository {
         client: { select: { name: true } },
         campaign: { select: { name: true } },
         _count: { select: { clicks: true } }, //Traz a contagem de clicks
+        tags: {
+          include: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
 
-    return links;
+    return links.map((link) => ({
+      ...link,
+      tags: link.tags.map((linkTag) => linkTag.tag),
+    }));
   }
 
   async findByShortCode(shortCode: string) {
@@ -113,23 +126,90 @@ export class PrismaLinksRepository implements LinksRepository {
       },
     });
 
-    return link;
+    if (!link) return null;
+
+    return { ...link, tags: link.tags.map((linkTag) => linkTag.tag) };
   }
 
   async update(
     id: string,
-    { originalUrl, clientId, campaignId }: UpdateLinkDTO,
+    { originalUrl, clientId, campaignId, tags }: UpdateLinkDTO,
   ) {
-    const link = await prisma.link.update({
-      where: { id },
-      data: {
-        originalUrl,
-        clientId,
-        campaignId,
-      },
-    });
+    return await prisma.$transaction(async (tx) => {
+      // Atualiza dados básicos do link
+      await tx.link.update({
+        where: {
+          id,
+        },
+        data: {
+          originalUrl,
+          clientId,
+          campaignId,
+        },
+      });
 
-    return link;
+      // Se houver tags, sincroniza
+      if (tags !== undefined) {
+        const normalizedTags = Array.from(
+          new Set(tags.map((tag) => tag.trim()).filter(Boolean)),
+        );
+
+        // Busca ou cria todas as tags
+        const resolvedTags = await Promise.all(
+          normalizedTags.map((tagName) =>
+            tx.tag.upsert({
+              where: { name: tagName },
+              update: {},
+              create: { name: tagName },
+            }),
+          ),
+        );
+
+        // Remove relações atuais
+        await tx.linkTag.deleteMany({
+          where: { linkId: id },
+        });
+
+        // Cria novas relações
+        if (resolvedTags.length > 0) {
+          await tx.linkTag.createMany({
+            data: resolvedTags.map((tag) => ({
+              linkId: id,
+              tagId: tag.id,
+            })),
+          });
+        }
+      }
+
+      // Busca com include completo
+      const linkWithRelations = await tx.link.findUnique({
+        where: { id },
+        include: {
+          client: { select: { id: true, name: true } },
+          campaign: { select: { id: true, name: true } },
+          _count: { select: { clicks: true } },
+          tags: {
+            include: {
+              tag: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!linkWithRelations) {
+        throw new Error("Unexpected null after update");
+      }
+
+      return {
+        ...linkWithRelations,
+        tags: linkWithRelations.tags.map((lt) => lt.tag),
+      };
+    });
   }
 
   async delete(id: string) {

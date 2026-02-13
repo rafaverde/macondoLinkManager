@@ -8,6 +8,7 @@ interface UpdateLinkData {
   originalUrl?: string;
   clientId?: string;
   campaignId?: string | null;
+  tags?: string[];
 }
 
 export function useUpdateLink(onSuccessCallback?: () => void) {
@@ -19,11 +20,13 @@ export function useUpdateLink(onSuccessCallback?: () => void) {
       const response = await api.put(`/links/${id}`, body);
       return response.data;
     },
-    onSuccess: (_data, variables) => {
+    onSuccess: (data, variables) => {
       toast.success("Link atualizado com sucesso");
 
       queryClient.invalidateQueries({ queryKey: ["links"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+
+      queryClient.setQueryData(["link", variables.id], data);
 
       if (variables.clientId) {
         queryClient.invalidateQueries({

@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 
-export function handleCopyLink(shortUrl: string) {
-  navigator.clipboard.writeText(shortUrl);
+export function handleCopyLink(url: string) {
+  navigator.clipboard.writeText(url);
   toast.success("Link copiado para a área de transferência.");
 }
 

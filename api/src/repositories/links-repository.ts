@@ -20,14 +20,31 @@ export interface UpdateLinkDTO {
   originalUrl?: string;
   clientId?: string;
   campaignId?: string | null;
+  tags?: string[];
+}
+
+export interface LinkWithRelations {
+  id: string;
+  shortCode: string;
+  originalUrl: string;
+  userId: string;
+  clientId: string;
+  campaignId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+
+  client?: { id: string; name: string };
+  campaign?: { id: string; name: string } | null;
+  _count?: { clicks: number };
+  tags?: { id: string; name: string }[];
 }
 
 export interface LinksRepository {
-  create(data: CreateLinkDTO): Promise<Link>;
+  create(data: CreateLinkDTO): Promise<LinkWithRelations>;
   findMany(params: FindLinksParams): Promise<Link[]>;
   findByShortCode(shortCode: string): Promise<Link | null>;
-  findById(id: string): Promise<Link | null>;
-  update(id: string, data: UpdateLinkDTO): Promise<Link>;
+  findById(id: string): Promise<LinkWithRelations | null>;
+  update(id: string, data: UpdateLinkDTO): Promise<LinkWithRelations>;
   delete(id: string): Promise<void>;
   count(params: FindLinksParams): Promise<number>;
 }
