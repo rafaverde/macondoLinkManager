@@ -25,6 +25,7 @@ import Link from "next/link";
 import ShareLinkDialog from "./share-link-dialog";
 import DeleteLinkDialog from "./delete-link-dialog";
 import { handleCopyLink } from "@/lib/link-share";
+import { Badge } from "./ui/badge";
 
 interface LinkCardProps {
   link: LinkType;
@@ -89,6 +90,19 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
                 <p className="text-muted-foreground flex gap-1 text-xs break-all">
                   {link.originalUrl}
                 </p>
+              </div>
+
+              <div className="mt-1 flex gap-2">
+                {link.tags &&
+                  link.tags.map((tag) => (
+                    <Badge
+                      variant="outline"
+                      key={tag.id}
+                      className="border-muted-foreground/50 pointer-events-none"
+                    >
+                      {tag.name}
+                    </Badge>
+                  ))}
               </div>
             </div>
 
