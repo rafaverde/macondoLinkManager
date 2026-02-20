@@ -40,6 +40,4 @@ Dockerfile.dev
 start.sh
 
 scripts/
-
-# Backfill Bots
-!src/prisma/scripts
+docs/

@@ -5,6 +5,16 @@ type BotDetectionResult = {
   signals?: string[];
 };
 
+type BotDetectionContext = {
+  burst?: {
+    isBurst: boolean;
+    count: number;
+    threshold: number;
+    windowMs: number;
+  } | null;
+  asnOrg?: string | null;
+};
+
 const STRONG_BOT_SIGNATURES = [
   // =========================
   // Search engines
@@ -84,6 +94,29 @@ const GENERIC_HTTP_CLIENT_PATTERNS = [
 ];
 
 const BOT_SCORE_THRESHOLD = 4;
+const DATACENTER_ORG_PATTERNS = [
+  /amazon/i,
+  /\baws\b/i,
+  /google/i,
+  /microsoft/i,
+  /azure/i,
+  /digitalocean/i,
+  /ovh/i,
+  /hetzner/i,
+  /linode/i,
+  /oracle/i,
+  /tencent/i,
+  /alibaba/i,
+  /vultr/i,
+  /choopa/i,
+  /leaseweb/i,
+  /netcup/i,
+  /contabo/i,
+  /stackpath/i,
+  /fastly/i,
+  /akamai/i,
+  /cloudflare/i,
+];
 
 function normalizeHeaderValue(
   value: string | string[] | undefined,
@@ -96,6 +129,7 @@ function normalizeHeaderValue(
 export function detectBot(
   userAgent?: string | null,
   headers?: Record<string, string | string[] | undefined>,
+  context?: BotDetectionContext,
 ): BotDetectionResult {
   if (!userAgent || userAgent.trim() === "")
     return {
@@ -153,6 +187,23 @@ export function detectBot(
   if (!secFetchSite) {
     signals.push("NO_SEC_FETCH_SITE");
     score += 1;
+  }
+
+  const burst = context?.burst;
+  if (burst?.isBurst) {
+    signals.push("BURST_CLICK");
+    score += 3;
+  }
+
+  const asnOrg = context?.asnOrg;
+  if (asnOrg) {
+    for (const pattern of DATACENTER_ORG_PATTERNS) {
+      if (pattern.test(asnOrg)) {
+        signals.push("DATACENTER_ASN");
+        score += 2;
+        break;
+      }
+    }
   }
 
   if (ua.includes("whatsapp")) {
