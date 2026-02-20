@@ -17,6 +17,9 @@ COPY . .
 # Copia banco Geolocation Maxmind
 COPY data ./data
 
+# Garante curl/tar para download opcional do GeoLite
+RUN apk add --no-cache curl tar
+
 # Gera Prisma Client
 RUN npx prisma generate
 
@@ -31,15 +34,19 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Garante curl/tar para download opcional do GeoLite
+RUN apk add --no-cache curl tar
+
 # Copia apenas o necessário
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/data ./data
+COPY --from=build /app/scripts ./scripts
 
 ENV NODE_ENV=production
 
 EXPOSE 3333
 
-CMD ["node", "dist/server.js"]
+CMD ["sh", "-c", "./scripts/download-geolite.sh || true; node dist/server.js"]

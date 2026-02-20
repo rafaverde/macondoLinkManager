@@ -39,5 +39,6 @@ coverage/
 Dockerfile.dev
 start.sh
 
-scripts/
+!scripts/
+!scripts/download-geolite.sh
 docs/
