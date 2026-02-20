@@ -39,7 +39,6 @@ coverage/
 Dockerfile.dev
 start.sh
 
-scripts/
-
-# Backfill Bots
-!src/prisma/scripts
+!scripts/
+!scripts/download-geolite.sh
+docs/

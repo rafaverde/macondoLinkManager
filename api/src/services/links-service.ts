@@ -2,6 +2,8 @@ import { ClicksRepository } from "../repositories/clicks-repository";
 import { ClientsRepository } from "../repositories/clients-repository";
 import { LinksRepository } from "../repositories/links-repository";
 import { detectBot } from "../utils/detect-bot";
+import { recordClickBurst } from "../utils/bot-burst-detector";
+import { resolveAsnInfo } from "../utils/asn";
 import { generateShortCode } from "../utils/generate-short-code";
 import { resolveGeoLocation } from "../utils/geoip";
 import { ClientNotFoundError } from "./errors/client-not-found-error";
@@ -114,8 +116,15 @@ export class LinksService {
     linkId: string,
     ipAddress?: string | null,
     userAgent?: string | null,
+    headers?: Record<string, string | string[] | undefined>,
   ) {
-    const { isBot, reason } = detectBot(userAgent);
+    const burst = recordClickBurst(ipAddress, userAgent);
+    const asnInfo = ipAddress ? await resolveAsnInfo(ipAddress) : null;
+
+    const { isBot, reason } = detectBot(userAgent, headers, {
+      burst,
+      asnOrg: asnInfo?.organization ?? null,
+    });
 
     let country: string | null = null;
     let city: string | null = null;
