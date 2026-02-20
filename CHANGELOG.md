@@ -7,6 +7,25 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.4.1] - 2026-02-13
+
+### 🔧 Changed
+API:
+- Detecção de bots com score e sinais adicionais (headers + heurísticas).
+- Burst/rate por IP+UA para marcar tráfego suspeito.
+- Suporte opcional a ASN/datacenter (GeoLite2-ASN).
+- Download automático do GeoLite (City + ASN) no boot do container.
+
+WEB:
+- Melhoria na quebra de linha do link gerado no WhatsApp Generator (break-all) para evitar overflow.
+- Ajustes no LinkCard:
+  - Reorganização da exibição de tags.
+  - Inclusão de ícone para identificar tags.
+  - Ajustes de espaçamento/estilo para melhor leitura.
+
+
+---
+
 ## [1.4.0] - 2026-02-13
 
 ### ✨ Added
