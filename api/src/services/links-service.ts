@@ -114,8 +114,9 @@ export class LinksService {
     linkId: string,
     ipAddress?: string | null,
     userAgent?: string | null,
+    headers?: Record<string, string | string[] | undefined>,
   ) {
-    const { isBot, reason } = detectBot(userAgent);
+    const { isBot, reason } = detectBot(userAgent, headers);
 
     let country: string | null = null;
     let city: string | null = null;

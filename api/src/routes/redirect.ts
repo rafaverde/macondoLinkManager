@@ -52,7 +52,7 @@ export async function redirectRoutes(app: FastifyInstance) {
       const ip = getPublicClientIp(request);
       const userAgent = request.headers["user-agent"];
 
-      await service.trackClick(link.id, ip, userAgent);
+      await service.trackClick(link.id, ip, userAgent, request.headers);
 
       // Redireciona para a URL original
       return reply.redirect(link.originalUrl);
