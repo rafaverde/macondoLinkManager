@@ -149,7 +149,7 @@ export default function WhatsAppGeneratorPage() {
             <div className="flex flex-col gap-3 lg:flex-row">
               <div className="bg-muted-foreground/10 border-muted-foreground/50 flex-1 rounded-lg border px-4 py-2">
                 <Link href="" onClick={() => handleCopyLink(generatedLink)}>
-                  <span className="text-primary font-semibold wrap-break-word">
+                  <span className="text-primary font-semibold break-all">
                     {generatedLink}
                   </span>
                 </Link>

@@ -11,6 +11,7 @@ import {
   RiFileCopyLine,
   RiMoreFill,
   RiPencilLine,
+  RiPriceTag3Line,
   RiShareLine,
 } from "@remixicon/react";
 import { Button } from "./ui/button";
@@ -91,22 +92,9 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
                   {link.originalUrl}
                 </p>
               </div>
-
-              <div className="mt-1 flex gap-2">
-                {link.tags &&
-                  link.tags.map((tag) => (
-                    <Badge
-                      variant="outline"
-                      key={tag.id}
-                      className="border-muted-foreground/50 pointer-events-none"
-                    >
-                      {tag.name}
-                    </Badge>
-                  ))}
-              </div>
             </div>
 
-            <div className="mt-6 flex flex-col gap-2 text-sm md:flex-row md:gap-8">
+            <div className="mt-6 flex flex-col gap-2 text-sm md:flex-row md:gap-5">
               <Link
                 href={`/dashboard/links/${link.id}`}
                 className={cn("", isDetails && "pointer-events-none")}
@@ -121,6 +109,22 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
               <div className="text-macondo-gray-400 flex items-center gap-1">
                 <RiCalendarLine className="size-4" />
                 {formatDate(link.createdAt)}
+              </div>
+
+              <div className="flex items-center gap-1">
+                {link.tags && (
+                  <RiPriceTag3Line className="text-macondo-gray-400 size-4" />
+                )}
+                {link.tags &&
+                  link.tags.map((tag) => (
+                    <Badge
+                      variant="outline"
+                      key={tag.id}
+                      className="border-muted-foreground/50 text-macondo-gray-400 pointer-events-none"
+                    >
+                      {tag.name}
+                    </Badge>
+                  ))}
               </div>
             </div>
           </div>
