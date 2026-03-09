@@ -1,5 +1,6 @@
 export interface Link {
   id: string;
+  name: string;
   originalUrl: string;
   shortCode: string;
   userId: string;
@@ -14,6 +15,7 @@ export interface Link {
 }
 
 export interface CreateLinkData {
+  name: string;
   originalUrl: string;
   clientId: string;
   campaignId?: string | null;

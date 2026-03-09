@@ -5,6 +5,7 @@ import { toast } from "sonner";
 // DTO para atualização parcial
 interface UpdateLinkData {
   id: string;
+  name?: string;
   originalUrl?: string;
   clientId?: string;
   campaignId?: string | null;
