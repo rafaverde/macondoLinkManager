@@ -7,7 +7,7 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
-## [1.4.1] - 2026-02-13
+## [1.4.1] - 2026-02-20
 
 ### 🔧 Changed
 API:
