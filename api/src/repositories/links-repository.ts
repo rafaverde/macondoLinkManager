@@ -8,6 +8,7 @@ export interface FindLinksParams {
 }
 
 export interface CreateLinkDTO {
+  name: string;
   originalUrl: string;
   shortCode: string;
   userId: string; // userId = createdByUserId (Future improvement)
@@ -25,6 +26,7 @@ export interface UpdateLinkDTO {
 
 export interface LinkWithRelations {
   id: string;
+  name: string;
   shortCode: string;
   originalUrl: string;
   userId: string;
