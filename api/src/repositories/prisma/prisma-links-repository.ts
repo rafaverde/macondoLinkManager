@@ -8,6 +8,7 @@ import { prisma } from "../../lib/prisma";
 
 export class PrismaLinksRepository implements LinksRepository {
   async create({
+    name,
     originalUrl,
     shortCode,
     userId,
@@ -17,6 +18,7 @@ export class PrismaLinksRepository implements LinksRepository {
   }: CreateLinkDTO) {
     const link = await prisma.link.create({
       data: {
+        name,
         originalUrl,
         shortCode,
         userId, // userId = createdByUserId (Future improvemnt)
@@ -52,6 +54,7 @@ export class PrismaLinksRepository implements LinksRepository {
         ...(search
           ? {
               OR: [
+                { name: { contains: search, mode: "insensitive" } },
                 { originalUrl: { contains: search, mode: "insensitive" } },
                 { shortCode: { contains: search, mode: "insensitive" } },
                 { client: { name: { contains: search, mode: "insensitive" } } },
@@ -67,8 +70,8 @@ export class PrismaLinksRepository implements LinksRepository {
       },
       include: {
         // Traz os dados relacionados para exibir na lista
-        client: { select: { name: true } },
-        campaign: { select: { name: true } },
+        client: { select: { id: true, name: true } },
+        campaign: { select: { id: true, name: true } },
         _count: { select: { clicks: true } }, //Traz a contagem de clicks
         tags: {
           include: {
@@ -133,7 +136,7 @@ export class PrismaLinksRepository implements LinksRepository {
 
   async update(
     id: string,
-    { originalUrl, clientId, campaignId, tags }: UpdateLinkDTO,
+    { name, originalUrl, clientId, campaignId, tags }: UpdateLinkDTO,
   ) {
     return await prisma.$transaction(async (tx) => {
       // Atualiza dados básicos do link
@@ -142,6 +145,7 @@ export class PrismaLinksRepository implements LinksRepository {
           id,
         },
         data: {
+          name,
           originalUrl,
           clientId,
           campaignId,

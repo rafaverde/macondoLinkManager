@@ -18,6 +18,7 @@ export interface CreateLinkDTO {
 }
 
 export interface UpdateLinkDTO {
+  name?: string;
   originalUrl?: string;
   clientId?: string;
   campaignId?: string | null;
@@ -43,7 +44,7 @@ export interface LinkWithRelations {
 
 export interface LinksRepository {
   create(data: CreateLinkDTO): Promise<LinkWithRelations>;
-  findMany(params: FindLinksParams): Promise<Link[]>;
+  findMany(params: FindLinksParams): Promise<LinkWithRelations[]>;
   findByShortCode(shortCode: string): Promise<Link | null>;
   findById(id: string): Promise<LinkWithRelations | null>;
   update(id: string, data: UpdateLinkDTO): Promise<LinkWithRelations>;

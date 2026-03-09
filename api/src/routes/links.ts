@@ -175,7 +175,7 @@ export async function linksRoutes(app: FastifyInstance) {
           id: z.uuid(),
         }),
         body: z.object({
-          name: z.string().min(1),
+          name: z.string().min(1).optional(),
           originalUrl: z.url().optional(),
           clientId: z.uuid().optional(),
           campaignId: z.uuid().optional().nullable(),
