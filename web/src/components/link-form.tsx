@@ -82,7 +82,7 @@ export default function LinkForm({ initialData }: LinkFormProps) {
       // Modo Edição
       updateMutation.mutate({
         id: initialData.id,
-        name: initialData.name,
+        name: data.name,
         originalUrl: data.originalUrl,
         clientId: data.clientId,
         campaignId: data.campaignId || null,
