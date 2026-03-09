@@ -52,7 +52,9 @@ export async function handleCopyQr(): Promise<void> {
   });
 }
 
-export async function handleDownloadQrSvg(): Promise<void> {
+export async function handleDownloadQrSvg(
+  filename: string = "untitled",
+): Promise<void> {
   const svg = document.getElementById("qr-code");
   if (!svg) return;
 
@@ -67,7 +69,7 @@ export async function handleDownloadQrSvg(): Promise<void> {
 
   const link = document.createElement("a");
   link.href = url;
-  link.download = "qrcode.svg";
+  link.download = `${filename}-qr-code.svg`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
