@@ -118,12 +118,27 @@ const DATACENTER_ORG_PATTERNS = [
   /cloudflare/i,
 ];
 
+export function isDatacenterOrganization(org?: string | null): boolean {
+  if (!org) return false;
+  return DATACENTER_ORG_PATTERNS.some((pattern) => pattern.test(org));
+}
+
 function normalizeHeaderValue(
   value: string | string[] | undefined,
 ): string | undefined {
   if (!value) return undefined;
   if (Array.isArray(value)) return value[0];
   return value;
+}
+
+function isBrowserLikeUa(ua: string) {
+  return (
+    ua.includes("mozilla/5.0") ||
+    ua.includes("chrome/") ||
+    ua.includes("firefox/") ||
+    ua.includes("safari/") ||
+    ua.includes("edg/")
+  );
 }
 
 export function detectBot(
@@ -165,28 +180,84 @@ export function detectBot(
 
   const signals: string[] = [];
   let score = 0;
+  const hasHeaderSnapshot = !!headers && Object.keys(headers).length > 0;
 
   if (ua.length < 12) {
     signals.push("SHORT_USER_AGENT");
     score += 1;
   }
 
-  const acceptLanguage = normalizeHeaderValue(headers?.["accept-language"]);
-  if (!acceptLanguage) {
-    signals.push("NO_ACCEPT_LANGUAGE");
-    score += 1;
-  }
+  let acceptLanguage: string | undefined;
+  let secChUa: string | undefined;
+  let secFetchSite: string | undefined;
+  let secFetchMode: string | undefined;
+  let secFetchDest: string | undefined;
+  let secFetchUser: string | undefined;
 
-  const secChUa = normalizeHeaderValue(headers?.["sec-ch-ua"]);
-  if (!secChUa && (ua.includes("chrome") || ua.includes("edg"))) {
-    signals.push("NO_SEC_CH_UA");
-    score += 1;
-  }
+  if (hasHeaderSnapshot) {
+    acceptLanguage = normalizeHeaderValue(headers?.["accept-language"]);
+    secChUa = normalizeHeaderValue(headers?.["sec-ch-ua"]);
+    secFetchSite = normalizeHeaderValue(headers?.["sec-fetch-site"]);
+    secFetchMode = normalizeHeaderValue(headers?.["sec-fetch-mode"]);
+    secFetchDest = normalizeHeaderValue(headers?.["sec-fetch-dest"]);
+    secFetchUser = normalizeHeaderValue(headers?.["sec-fetch-user"]);
 
-  const secFetchSite = normalizeHeaderValue(headers?.["sec-fetch-site"]);
-  if (!secFetchSite) {
-    signals.push("NO_SEC_FETCH_SITE");
-    score += 1;
+    if (!acceptLanguage) {
+      signals.push("NO_ACCEPT_LANGUAGE");
+      score += 1;
+    }
+
+    if (!secChUa && (ua.includes("chrome") || ua.includes("edg"))) {
+      signals.push("NO_SEC_CH_UA");
+      score += 1;
+    }
+
+    if (!secFetchSite) {
+      signals.push("NO_SEC_FETCH_SITE");
+      score += 1;
+    }
+
+    const purpose =
+      normalizeHeaderValue(headers?.purpose) ??
+      normalizeHeaderValue(headers?.["x-purpose"]) ??
+      normalizeHeaderValue(headers?.["sec-purpose"]);
+    if (purpose && /(prefetch|preview|prerender)/i.test(purpose)) {
+      return {
+        isBot: true,
+        reason: "PREFETCH_PREVIEW_HEADER",
+        score: 8,
+        signals: ["PREFETCH_PREVIEW_HEADER"],
+      };
+    }
+
+    const browserLikeUa = isBrowserLikeUa(ua);
+    const hasAnySecFetch = !!(secFetchSite || secFetchMode || secFetchDest);
+
+    if (browserLikeUa && !hasAnySecFetch) {
+      signals.push("NO_SEC_FETCH_FAMILY");
+      score += 2;
+    }
+
+    if (
+      browserLikeUa &&
+      !acceptLanguage &&
+      !secFetchSite &&
+      !secFetchMode &&
+      !secFetchDest
+    ) {
+      signals.push("BROWSER_UA_HEADER_MISMATCH");
+      score += 2;
+    }
+
+    if (
+      browserLikeUa &&
+      secFetchDest &&
+      secFetchDest !== "document" &&
+      !secFetchUser
+    ) {
+      signals.push("NON_DOCUMENT_FETCH");
+      score += 1;
+    }
   }
 
   const burst = context?.burst;
@@ -196,13 +267,17 @@ export function detectBot(
   }
 
   const asnOrg = context?.asnOrg;
-  if (asnOrg) {
-    for (const pattern of DATACENTER_ORG_PATTERNS) {
-      if (pattern.test(asnOrg)) {
-        signals.push("DATACENTER_ASN");
-        score += 2;
-        break;
-      }
+  if (isDatacenterOrganization(asnOrg)) {
+    signals.push("DATACENTER_ASN");
+    score += 2;
+
+    if (
+      isBrowserLikeUa(ua) &&
+      hasHeaderSnapshot &&
+      (!acceptLanguage || !secFetchSite)
+    ) {
+      signals.push("DATACENTER_BROWSER_MISMATCH");
+      score += 2;
     }
   }
 

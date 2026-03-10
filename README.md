@@ -121,6 +121,14 @@ tags: { id: string; name: string }[]
 -   Campo persistido `isBot`
 -   Métricas consideram apenas cliques válidos
 -   Backfill executado para dados históricos
+-   Classificação reforçada por sinais de headers + ASN/datacenter (quando disponível)
+-   Recomendado configurar `MAXMIND_LICENSE_KEY` para manter City + ASN atualizados
+
+Backfill manual:
+
+    cd api
+    npm run bot:backfill -- --days=90 --dry-run
+    npm run bot:backfill -- --days=90 --aggressive-datacenter
 
 ------------------------------------------------------------------------
 
