@@ -218,6 +218,7 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
         open={isShareOpen}
         onOpenChange={setIsShareOpen}
         shortUrl={link.shortCode}
+        linkName={link.name}
       />
     </>
   );

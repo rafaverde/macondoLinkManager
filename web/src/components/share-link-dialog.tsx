@@ -28,12 +28,12 @@ import {
 } from "@/lib/link-share";
 import { useState } from "react";
 import { toast } from "sonner";
-import { link } from "fs";
 
 interface ShareLinkDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   shortUrl: string;
+  linkName?: string;
   title?: string;
 }
 
@@ -41,6 +41,7 @@ export default function ShareLinkDialog({
   open,
   onOpenChange,
   shortUrl,
+  linkName,
   title,
 }: ShareLinkDialogProps) {
   const [isCopyingQr, setIsCopyingQr] = useState(false);
@@ -154,7 +155,7 @@ export default function ShareLinkDialog({
             onClick={async () => {
               try {
                 setIsDowloadingQr(true);
-                handleDownloadQrSvg(shortUrl);
+                handleDownloadQrSvg(linkName);
               } finally {
                 setTimeout(() => {
                   setIsDowloadingQr(false);

@@ -56,6 +56,7 @@ export async function handleDownloadQrSvg(
   filename: string = "untitled",
 ): Promise<void> {
   const svg = document.getElementById("qr-code");
+  const filenameFormatted = filename.toLowerCase().replaceAll(" ", "-");
   if (!svg) return;
 
   const serializer = new XMLSerializer();
@@ -69,7 +70,7 @@ export async function handleDownloadQrSvg(
 
   const link = document.createElement("a");
   link.href = url;
-  link.download = `${filename}-qr-code.svg`;
+  link.download = `${filenameFormatted}-qr-code.svg`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
