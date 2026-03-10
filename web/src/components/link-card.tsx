@@ -9,10 +9,12 @@ import {
   RiExternalLinkLine,
   RiEyeLine,
   RiFileCopyLine,
+  RiMegaphoneLine,
   RiMoreFill,
   RiPencilLine,
   RiPriceTag3Line,
   RiShareLine,
+  RiUserSharedLine,
 } from "@remixicon/react";
 import { Button } from "./ui/button";
 import {
@@ -57,9 +59,10 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
                 </h2>
               </Link>
 
-              <div>
+              <div className="flex gap-4">
                 <Link href={`/dashboard/clients/${link.clientId}`}>
                   <div className="group flex items-center-safe gap-1">
+                    <RiUserSharedLine className="text-muted-foreground size-4" />
                     <h3 className="text-muted-foreground transition-opacity duration-300 hover:opacity-75">
                       {link.client?.name}
                     </h3>
@@ -70,10 +73,11 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
                 {link.campaign?.name ? (
                   <Link href={`/dashboard/campaigns/${link.campaignId}`}>
                     <div className="group flex items-center-safe gap-1">
+                      <RiMegaphoneLine className="text-muted-foreground size-4" />
                       <h3 className="text-muted-foreground transition-opacity duration-300 hover:opacity-75">
                         {link.campaign?.name}
                       </h3>
-                      <RiBarChartFill className="size-3 opacity-0 transition-opacity duration-500 group-hover:opacity-50" />
+                      <RiBarChartFill className="size-4 opacity-0 transition-opacity duration-500 group-hover:opacity-50" />
                     </div>
                   </Link>
                 ) : (
