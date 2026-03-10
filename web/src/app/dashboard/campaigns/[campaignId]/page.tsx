@@ -29,7 +29,7 @@ export default function CampaignDashboardPage() {
 
   const normalizedCities = data?.charts.topCities.map((item) => ({
     ...item,
-    country: normalizeCity(item.city),
+    city: normalizeCity(item.city),
   }));
 
   // Cliques 7 dias

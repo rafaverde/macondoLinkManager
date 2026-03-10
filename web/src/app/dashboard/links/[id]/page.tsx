@@ -40,7 +40,7 @@ export default function LinkDetailsPage() {
 
   const normalizedCities = metrics?.topCities.map((item) => ({
     ...item,
-    country: normalizeCity(item.city),
+    city: normalizeCity(item.city),
   }));
 
   // Cliques de hoje
