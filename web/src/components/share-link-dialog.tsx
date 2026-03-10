@@ -33,6 +33,7 @@ interface ShareLinkDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   shortUrl: string;
+  linkName?: string;
   title?: string;
 }
 
@@ -40,6 +41,7 @@ export default function ShareLinkDialog({
   open,
   onOpenChange,
   shortUrl,
+  linkName,
   title,
 }: ShareLinkDialogProps) {
   const [isCopyingQr, setIsCopyingQr] = useState(false);
@@ -153,7 +155,7 @@ export default function ShareLinkDialog({
             onClick={async () => {
               try {
                 setIsDowloadingQr(true);
-                handleDownloadQrSvg();
+                handleDownloadQrSvg(linkName);
               } finally {
                 setTimeout(() => {
                   setIsDowloadingQr(false);

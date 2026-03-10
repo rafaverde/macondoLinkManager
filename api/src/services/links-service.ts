@@ -10,6 +10,7 @@ import { ClientNotFoundError } from "./errors/client-not-found-error";
 import { LinkNotFoundError } from "./errors/link-not-found-error";
 
 interface CreateLinkRequest {
+  name: string;
   originalUrl: string;
   userId: string;
   clientId: string;
@@ -31,6 +32,7 @@ export class LinksService {
   }
 
   async createLink({
+    name,
     originalUrl,
     userId,
     clientId,
@@ -57,6 +59,7 @@ export class LinksService {
 
     // Cria o link
     const link = await this.linksRepository.create({
+      name,
       originalUrl,
       shortCode,
       userId,
@@ -90,6 +93,7 @@ export class LinksService {
   async updateLink(
     id: string,
     data: {
+      name?: string;
       originalUrl?: string;
       clientId?: string;
       campaignId?: string | null;

@@ -11,6 +11,7 @@ const linkSchema = z.object({
   id: z.uuid(),
   originalUrl: z.url(),
   shortCode: z.string(),
+  name: z.string(),
   userId: z.uuid(),
   clientId: z.uuid(),
   campaignId: z.uuid().nullable(),
@@ -60,6 +61,7 @@ export async function linksRoutes(app: FastifyInstance) {
         tags: ["Links"],
         summary: "Cria um novo link encurtado.",
         body: z.object({
+          name: z.string().min(1),
           originalUrl: z.url(),
           clientId: z.uuid(),
           campaignId: z.uuid().nullish(),
@@ -72,7 +74,7 @@ export async function linksRoutes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const { originalUrl, clientId, campaignId, tags } = request.body;
+      const { name, originalUrl, clientId, campaignId, tags } = request.body;
       const userId = request.user.sub; // Pega o id do user logado no token
 
       // Instanciando dependências
@@ -82,6 +84,7 @@ export async function linksRoutes(app: FastifyInstance) {
       const service = new LinksService(linkRepo, clientsRepo, clicksRepo);
 
       const link = await service.createLink({
+        name,
         originalUrl,
         userId,
         clientId,
@@ -172,6 +175,7 @@ export async function linksRoutes(app: FastifyInstance) {
           id: z.uuid(),
         }),
         body: z.object({
+          name: z.string().min(1).optional(),
           originalUrl: z.url().optional(),
           clientId: z.uuid().optional(),
           campaignId: z.uuid().optional().nullable(),
@@ -185,7 +189,7 @@ export async function linksRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const { originalUrl, clientId, campaignId, tags } = request.body;
+      const { name, originalUrl, clientId, campaignId, tags } = request.body;
 
       const service = new LinksService(
         new PrismaLinksRepository(),
@@ -194,6 +198,7 @@ export async function linksRoutes(app: FastifyInstance) {
       );
 
       const updatedLink = await service.updateLink(id, {
+        name,
         originalUrl,
         clientId,
         campaignId,

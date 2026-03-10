@@ -9,10 +9,12 @@ import {
   RiExternalLinkLine,
   RiEyeLine,
   RiFileCopyLine,
+  RiMegaphoneLine,
   RiMoreFill,
   RiPencilLine,
   RiPriceTag3Line,
   RiShareLine,
+  RiUserSharedLine,
 } from "@remixicon/react";
 import { Button } from "./ui/button";
 import {
@@ -51,27 +53,37 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
 
           <div className="flex-1">
             <div>
-              <Link href={`/dashboard/clients/${link.clientId}`}>
-                <div className="group flex items-center-safe gap-1">
-                  <h2 className="text-2xl leading-tight transition-opacity duration-300 group-hover:opacity-75">
-                    {link.client?.name}
-                  </h2>
-                  <RiBarChartFill className="size-4 opacity-0 transition-opacity duration-500 group-hover:opacity-50" />
-                </div>
+              <Link href={`/dashboard/links/${link.id}`}>
+                <h2 className="text-2xl leading-tight transition-opacity duration-300 group-hover:opacity-75">
+                  {link.name ? link.name : "Sem nome"}
+                </h2>
               </Link>
 
-              {link.campaign?.name ? (
-                <Link href={`/dashboard/campaigns/${link.campaignId}`}>
+              <div className="flex gap-4">
+                <Link href={`/dashboard/clients/${link.clientId}`}>
                   <div className="group flex items-center-safe gap-1">
+                    <RiUserSharedLine className="text-muted-foreground size-4" />
                     <h3 className="text-muted-foreground transition-opacity duration-300 hover:opacity-75">
-                      {link.campaign?.name}
+                      {link.client?.name}
                     </h3>
-                    <RiBarChartFill className="size-3 opacity-0 transition-opacity duration-500 group-hover:opacity-50" />
+                    <RiBarChartFill className="size-4 opacity-0 transition-opacity duration-500 group-hover:opacity-50" />
                   </div>
                 </Link>
-              ) : (
-                <h3 className="text-muted-foreground">Sem campanha</h3>
-              )}
+
+                {link.campaign?.name ? (
+                  <Link href={`/dashboard/campaigns/${link.campaignId}`}>
+                    <div className="group flex items-center-safe gap-1">
+                      <RiMegaphoneLine className="text-muted-foreground size-4" />
+                      <h3 className="text-muted-foreground transition-opacity duration-300 hover:opacity-75">
+                        {link.campaign?.name}
+                      </h3>
+                      <RiBarChartFill className="size-4 opacity-0 transition-opacity duration-500 group-hover:opacity-50" />
+                    </div>
+                  </Link>
+                ) : (
+                  <h3 className="text-muted-foreground">Sem campanha</h3>
+                )}
+              </div>
 
               <button
                 onClick={() => handleCopyLink(formatLink(link.shortCode, true))}
@@ -206,6 +218,7 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
         open={isShareOpen}
         onOpenChange={setIsShareOpen}
         shortUrl={link.shortCode}
+        linkName={link.name}
       />
     </>
   );

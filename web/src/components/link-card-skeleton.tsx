@@ -9,9 +9,12 @@ export default function LinkCardSkeleton() {
           <Skeleton className="size-12 rounded-full" />
 
           <div className="flex-1">
-            <div>
-              <Skeleton className="mb-2 h-7 w-[250]" />
-              <Skeleton className="h-4 w-40" />
+            <div className="space-y-1">
+              <Skeleton className="mb-2 h-7 w-[250px]" />
+              <div className="flex gap-4">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-4 w-40" />
+              </div>
 
               <div className="text-muted-foreground group/link flex cursor-pointer gap-1 py-1 select-none">
                 <Skeleton className="size-6" />

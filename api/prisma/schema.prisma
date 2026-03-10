@@ -69,6 +69,7 @@ model Tag {
 // Modelo principal para os links encurtados
 model Link {
   id          String   @id @default(uuid()) // Chave primária UUID
+  name        String   @default("Sem nome")
   originalUrl String   @map("original_url") @db.Text // URL original longa tipo TEXT
   shortCode   String   @unique @map("short_code") // Código do encurtamento do link único
   userId      String   @map("user_id") // Chave estrangeira para user

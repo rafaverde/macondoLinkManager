@@ -35,6 +35,7 @@ import CreateClientInline from "./create-client-inline";
 import { CreateCampaignInline } from "./create-campaign-inline";
 
 const linkFormSchema = z.object({
+  name: z.string().min(1, "Informe um nome para o link."),
   originalUrl: z.url("Insira uma URL válida, ex.: 'https://...'"),
   clientId: z.string().min(1, "Selecione um cliente"),
   campaignId: z.string().optional(),
@@ -63,6 +64,7 @@ export default function LinkForm({ initialData }: LinkFormProps) {
   const form = useForm<LinkFormValues>({
     resolver: zodResolver(linkFormSchema),
     defaultValues: {
+      name: initialData?.name || "",
       originalUrl: initialData?.originalUrl || "",
       clientId: initialData?.clientId || "",
       campaignId: initialData?.campaignId || "",
@@ -80,6 +82,7 @@ export default function LinkForm({ initialData }: LinkFormProps) {
       // Modo Edição
       updateMutation.mutate({
         id: initialData.id,
+        name: data.name,
         originalUrl: data.originalUrl,
         clientId: data.clientId,
         campaignId: data.campaignId || null,
@@ -88,6 +91,7 @@ export default function LinkForm({ initialData }: LinkFormProps) {
     } else {
       // Modo criação
       createMutation.mutate({
+        name: data.name || "",
         originalUrl: data.originalUrl,
         clientId: data.clientId,
         campaignId: data.campaignId || null,
@@ -101,6 +105,26 @@ export default function LinkForm({ initialData }: LinkFormProps) {
       <CardContent className="p-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-semibold">
+                    Nome do Link*
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Ex.: Portfolio Macondo Identidade Visual Cliente"
+                      {...field}
+                      className="h-12 text-base"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="originalUrl"

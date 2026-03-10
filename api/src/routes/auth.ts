@@ -8,6 +8,11 @@ import { DomainNotAllowedError } from "../services/errors/domain-not-allowed-err
 import fp from "fastify-plugin";
 
 export const authRoutes = fp(async (app: FastifyInstance) => {
+  const callbackUri =
+    env.GOOGLE_CALLBACK_URL ??
+    `${env.BASE_URL ?? `http://localhost:${env.PORT}`}/auth/google/callback`;
+  const useSecureCookies = env.FRONTEND_URL.startsWith("https://");
+
   // Registra o plugin do Google Auth
   await app.register(fastifyOauth2, {
     name: "googleOAuth2",
@@ -21,8 +26,7 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
     },
     startRedirectPath: "/auth/google",
 
-    // callbackUri: `http://localhost:${env.PORT}/auth/google/callback`, // dev
-    callbackUri: `${env.BASE_URL}/auth/google/callback`,
+    callbackUri,
   });
 
   // O Endpoint de callback (controller)
@@ -83,8 +87,8 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
           path: "/",
           maxAge: 60 * 60 * 24 * 7, // 7 dias
           httpOnly: true,
-          sameSite: "none",
-          secure: true,
+          sameSite: useSecureCookies ? "none" : "lax",
+          secure: useSecureCookies,
         })
         .redirect(env.FRONTEND_URL);
     } catch (err) {
@@ -117,7 +121,8 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
     reply.clearCookie("macondo.token", {
       path: "/",
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: useSecureCookies ? "none" : "lax",
+      secure: useSecureCookies,
     });
 
     request.log.info(
