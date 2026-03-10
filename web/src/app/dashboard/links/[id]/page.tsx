@@ -58,7 +58,7 @@ export default function LinkDetailsPage() {
     setItems([
       { label: "Dashboard", href: "/dashboard" },
       { label: "Links", href: "/dashboard/links" },
-      { label: `ShortCode: ${link.shortCode}` },
+      { label: `Link: ${link.name}` },
     ]);
   }, [link, setItems]);
 

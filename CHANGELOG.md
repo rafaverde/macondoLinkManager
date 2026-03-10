@@ -7,6 +7,22 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.4.2] - 2026-02-20
+### 🔧 Changed
+API:
+- Adição do campo nome aos links para facilitar identificação.
+- Funcionalidade de alterar e adicionar nome nos links novos e existentes.
+- Funcionalidade de search pelo nome do link, além da URL original.
+- Nova variável de ambiente para Google Callback URL, permitindo configuração flexível entre ambientes.
+
+WEB:
+- Exibição do nome do link no LinkCard, com fallback para URL original.
+- Adição de campo de nome no formulário de criação e edição de links.
+- Ajustes visuais para acomodar o nome do link sem comprometer a legibilidade.
+- Nomeação automática do arquivo de QR Code para `<nome-do-link-qr-code>.svg` durante download.
+
+---
+
 ## [1.4.1] - 2026-02-20
 
 ### 🔧 Changed
