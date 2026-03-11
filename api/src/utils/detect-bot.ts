@@ -13,6 +13,7 @@ type BotDetectionContext = {
     windowMs: number;
   } | null;
   asnOrg?: string | null;
+  strictDatacenter?: boolean;
 };
 
 const STRONG_BOT_SIGNATURES = [
@@ -267,9 +268,15 @@ export function detectBot(
   }
 
   const asnOrg = context?.asnOrg;
+  const strictDatacenter = context?.strictDatacenter ?? false;
   if (isDatacenterOrganization(asnOrg)) {
     signals.push("DATACENTER_ASN");
     score += 2;
+
+    if (strictDatacenter) {
+      signals.push("DATACENTER_ASN_STRICT");
+      score += BOT_SCORE_THRESHOLD;
+    }
 
     if (
       isBrowserLikeUa(ua) &&

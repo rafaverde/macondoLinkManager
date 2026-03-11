@@ -124,10 +124,12 @@ export class LinksService {
   ) {
     const burst = recordClickBurst(ipAddress, userAgent);
     const asnInfo = ipAddress ? await resolveAsnInfo(ipAddress) : null;
+    const strictDatacenter = process.env.BOT_STRICT_DATACENTER !== "false";
 
-    const { isBot, reason } = detectBot(userAgent, headers, {
+    const { isBot, reason, score, signals } = detectBot(userAgent, headers, {
       burst,
       asnOrg: asnInfo?.organization ?? null,
+      strictDatacenter,
     });
 
     let country: string | null = null;
@@ -147,6 +149,10 @@ export class LinksService {
       city,
       isBot,
       botReason: reason,
+      botScore: score,
+      botSignals: signals,
+      asnNumber: asnInfo?.asn ?? null,
+      asnOrg: asnInfo?.organization ?? null,
     });
   }
 

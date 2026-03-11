@@ -109,20 +109,25 @@ model LinkTag {
 
 // Modelo para registrar cada clique
 model Click {
-  id        String   @id @default(uuid()) // Chave primária UUID
-  linkId    String   @map("link_id") // Chave estrangeira para Link
-  timestamp DateTime @default(now()) // Registra data e hora do clique
-  ipAddress String?  @map("ip_address") // IP do clique (opcional)
-  userAgent String?  @map("user_agent") @db.Text // Browser (opcional)
-  country   String? // País do clique (opcional)
-  city      String? // Cidade do clique (opcional)
-  isBot     Boolean  @default(false) // Indica se o clique é de um bot (opcional)
-  botReason String?  @map("bot_reason") // Razão para identificar como bot (opcional)
+  id         String    @id @default(uuid()) // Chave primária UUID
+  linkId     String    @map("link_id") // Chave estrangeira para Link
+  timestamp  DateTime  @default(now()) // Registra data e hora do clique
+  ipAddress  String?   @map("ip_address") // IP do clique (opcional)
+  userAgent  String?   @map("user_agent") @db.Text // Browser (opcional)
+  country    String? // País do clique (opcional)
+  city       String? // Cidade do clique (opcional)
+  isBot      Boolean   @default(false) // Indica se o clique é de um bot (opcional)
+  botReason  String?   @map("bot_reason") // Razão para identificar como bot (opcional)
+  botScore   Int?      @map("bot_score") // Score calculado pela classificação
+  botSignals String[]  @default([]) @map("bot_signals") // Sinais usados na classificação
+  asnNumber  Int?      @map("asn_number") // ASN do IP de origem
+  asnOrg     String?   @map("asn_org") // Organização ASN do IP de origem
 
   link Link @relation(fields: [linkId], references: [id], onDelete: Cascade) // Deleta os cliques do link apagado
 
   // Índices de performance
   @@index([linkId])
   @@index([timestamp])
+  @@index([isBot])
   @@map("clicks")
 }
