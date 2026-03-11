@@ -12,7 +12,7 @@ download_mmdb() {
   filename="$2"
 
   echo "⬇️  Baixando $edition..."
-  curl -L \
+  curl -fSL --retry 3 --retry-delay 2 \
     -u "$MAXMIND_LICENSE_KEY:" \
     "https://download.maxmind.com/app/geoip_download?edition_id=$edition&license_key=$MAXMIND_LICENSE_KEY&suffix=tar.gz" \
     -o "$TMP_DIR/$edition.tar.gz"
@@ -42,8 +42,8 @@ if [ "$needs_download" -eq 0 ]; then
 fi
 
 if [ -z "$MAXMIND_LICENSE_KEY" ]; then
-  echo "⚠️  MAXMIND_LICENSE_KEY não definida. Pulando download."
-  exit 0
+  echo "❌ MAXMIND_LICENSE_KEY não definida e DB GeoLite2 está incompleta."
+  exit 1
 fi
 
 mkdir -p "$TMP_DIR"
@@ -55,5 +55,12 @@ fi
 if [ ! -f "$ASN_DB" ]; then
   download_mmdb "GeoLite2-ASN" "GeoLite2-ASN.mmdb"
 fi
+
+if [ ! -f "$CITY_DB" ] || [ ! -f "$ASN_DB" ]; then
+  echo "❌ Falha ao garantir GeoLite2 City + ASN em $DB_DIR"
+  exit 1
+fi
+
+echo "✅ GeoLite2 City + ASN disponíveis em $DB_DIR"
 
 rm -rf "$TMP_DIR"
