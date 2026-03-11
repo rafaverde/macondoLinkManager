@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node --transpile-only src/server.ts",
     "build": "tsup src --out-dir dist",
-    "start": "node dist/server.js",
+    "start": "sh ./scripts/start-with-geolite.sh",
     "prisma:generate": "npx prisma generate",
     "geolite:download": "sh scripts/download-geolite.sh",
     "bot:backfill": "ts-node --transpile-only src/scripts/backfill-bot-classification.ts"

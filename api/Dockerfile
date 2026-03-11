@@ -49,4 +49,4 @@ ENV NODE_ENV=production
 
 EXPOSE 3333
 
-CMD ["sh", "-c", "./scripts/download-geolite.sh; node dist/server.js"]
+CMD ["sh", "./scripts/start-with-geolite.sh"]
