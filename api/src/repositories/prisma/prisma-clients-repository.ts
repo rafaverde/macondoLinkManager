@@ -37,6 +37,11 @@ export class PrismaClientsRepository implements ClientsRepository {
       include: {
         links: {
           select: {
+            clicks: {
+              where: {
+                isBot: false,
+              },
+            },
             _count: {
               select: { clicks: true }, // Traz a contagem de cliques de cada links
             },
