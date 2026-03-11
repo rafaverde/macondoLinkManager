@@ -14,8 +14,8 @@ RUN npm install
 # Copia o código
 COPY . .
 
-# Copia banco Geolocation Maxmind
-COPY data ./data
+# Garante diretório de dados mesmo quando vazio no repositório
+RUN mkdir -p ./data
 
 # Garante curl/tar para download opcional do GeoLite
 RUN apk add --no-cache curl tar
