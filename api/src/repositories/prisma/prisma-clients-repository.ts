@@ -29,45 +29,21 @@ export class PrismaClientsRepository implements ClientsRepository {
     return client;
   }
 
-  async findTopClients(userId: string) {
-    const clients = await prisma.client.findMany({
-      where: {
-        links: {},
-      },
-      include: {
-        links: {
-          select: {
-            clicks: {
-              where: {
-                isBot: false,
-              },
-            },
-            _count: {
-              select: { clicks: true }, // Traz a contagem de cliques de cada links
-            },
-          },
-        },
-      },
-    });
+  async findTopClients(_userId: string) {
+    const topClients = await prisma.$queryRaw<Array<{ name: string; _count: number }>>`
+      SELECT
+        c.name,
+        COUNT(*)::int AS _count
+      FROM clicks cl
+      INNER JOIN links l ON l.id = cl.link_id
+      INNER JOIN clients c ON c.id = l.client_id
+      WHERE cl."isBot" = false
+      GROUP BY c.id, c.name
+      ORDER BY _count DESC
+      LIMIT 5
+    `;
 
-    // Processamento em memória: Soma os cliques de todos os lnks do cliente
-    const clientsWithTotal = clients.map((client) => {
-      const totalClicks = client.links.reduce(
-        (acc, link) => acc + link._count.clicks,
-        0,
-      );
-
-      return {
-        name: client.name,
-        _count: totalClicks,
-      };
-    });
-
-    // Ordena decrescente e pga o Top 5
-    return clientsWithTotal
-      .filter((client) => client._count > 0)
-      .sort((a, b) => b._count - a._count)
-      .slice(0, 5);
+    return topClients;
   }
 
   // Deleta clientes

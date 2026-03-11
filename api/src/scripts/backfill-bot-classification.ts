@@ -1,13 +1,13 @@
 import { subDays } from "date-fns";
 import { prisma } from "../lib/prisma";
-import { detectBot, isDatacenterOrganization } from "../utils/detect-bot";
+import { detectBot } from "../utils/detect-bot";
 import { resolveAsnInfo } from "../utils/asn";
 
 type CliArgs = {
   days: number;
   batchSize: number;
   dryRun: boolean;
-  aggressiveDatacenter: boolean;
+  strictDatacenter: boolean;
 };
 
 function parseArgs(argv: string[]): CliArgs {
@@ -15,7 +15,7 @@ function parseArgs(argv: string[]): CliArgs {
     days: 90,
     batchSize: 500,
     dryRun: false,
-    aggressiveDatacenter: false,
+    strictDatacenter: false,
   };
 
   const parsed = { ...defaults };
@@ -26,8 +26,8 @@ function parseArgs(argv: string[]): CliArgs {
       continue;
     }
 
-    if (arg === "--aggressive-datacenter") {
-      parsed.aggressiveDatacenter = true;
+    if (arg === "--strict-datacenter" || arg === "--aggressive-datacenter") {
+      parsed.strictDatacenter = true;
       continue;
     }
 
@@ -61,6 +61,10 @@ type ClickBatchItem = {
   userAgent: string | null;
   isBot: boolean;
   botReason: string | null;
+  botScore: number | null;
+  botSignals: string[];
+  asnNumber: number | null;
+  asnOrg: string | null;
 };
 
 async function run() {
@@ -87,7 +91,7 @@ async function run() {
   console.log(`[backfill-bot] Janela: últimos ${args.days} dia(s)`);
   console.log(`[backfill-bot] Batch: ${args.batchSize}`);
   console.log(
-    `[backfill-bot] Estratégia agressiva de datacenter: ${args.aggressiveDatacenter ? "ON" : "OFF"}`,
+    `[backfill-bot] Estratégia strict de datacenter: ${args.strictDatacenter ? "ON" : "OFF"}`,
   );
   console.log(`[backfill-bot] Cliques elegíveis: ${total}`);
 
@@ -97,7 +101,7 @@ async function run() {
   let becameBot = 0;
   let becameHuman = 0;
 
-  const asnOrgCache = new Map<string, string | null>();
+  const asnCache = new Map<string, { asn: number | null; org: string | null }>();
 
   while (true) {
     const batch: ClickBatchItem[] = await prisma.click.findMany({
@@ -111,6 +115,10 @@ async function run() {
         userAgent: true,
         isBot: true,
         botReason: true,
+        botScore: true,
+        botSignals: true,
+        asnNumber: true,
+        asnOrg: true,
       },
     });
 
@@ -118,41 +126,63 @@ async function run() {
       break;
     }
 
-    const updates: Array<{ id: string; isBot: boolean; botReason: string | null }> =
-      [];
+    const updates: Array<{
+      id: string;
+      isBot: boolean;
+      botReason: string | null;
+      botScore: number | null;
+      botSignals: string[];
+      asnNumber: number | null;
+      asnOrg: string | null;
+    }> = [];
 
     for (const click of batch) {
       const ip = click.ipAddress?.trim();
       let asnOrg: string | null = null;
+      let asnNumber: number | null = null;
 
       if (ip) {
-        if (asnOrgCache.has(ip)) {
-          asnOrg = asnOrgCache.get(ip) ?? null;
+        if (asnCache.has(ip)) {
+          const cached = asnCache.get(ip);
+          asnOrg = cached?.org ?? null;
+          asnNumber = cached?.asn ?? null;
         } else {
           const asnInfo = await resolveAsnInfo(ip);
           asnOrg = asnInfo.organization ?? null;
-          asnOrgCache.set(ip, asnOrg);
+          asnNumber = asnInfo.asn ?? null;
+          asnCache.set(ip, {
+            asn: asnInfo.asn ?? null,
+            org: asnInfo.organization ?? null,
+          });
         }
       }
 
       const detected = detectBot(click.userAgent, undefined, {
         asnOrg,
+        strictDatacenter: args.strictDatacenter,
       });
 
       let nextIsBot = detected.isBot;
       let nextReason = detected.reason ?? null;
-
-      if (
-        !nextIsBot &&
-        args.aggressiveDatacenter &&
-        isDatacenterOrganization(asnOrg)
-      ) {
-        nextIsBot = true;
-        nextReason = "DATACENTER_ASN_BACKFILL_AGGRESSIVE";
-      }
+      let nextScore = detected.score ?? null;
+      let nextSignals = detected.signals ?? [];
+      const nextAsnNumber = asnNumber;
+      const nextAsnOrg = asnOrg;
 
       const currentReason = click.botReason ?? null;
-      if (click.isBot !== nextIsBot || currentReason !== nextReason) {
+      const currentSignals = click.botSignals ?? [];
+      const sameSignals =
+        currentSignals.length === nextSignals.length &&
+        currentSignals.every((value, index) => value === nextSignals[index]);
+
+      if (
+        click.isBot !== nextIsBot ||
+        currentReason !== nextReason ||
+        click.botScore !== nextScore ||
+        !sameSignals ||
+        click.asnNumber !== nextAsnNumber ||
+        (click.asnOrg ?? null) !== nextAsnOrg
+      ) {
         changed += 1;
         if (!click.isBot && nextIsBot) becameBot += 1;
         if (click.isBot && !nextIsBot) becameHuman += 1;
@@ -161,6 +191,10 @@ async function run() {
           id: click.id,
           isBot: nextIsBot,
           botReason: nextReason,
+          botScore: nextScore,
+          botSignals: nextSignals,
+          asnNumber: nextAsnNumber,
+          asnOrg: nextAsnOrg,
         });
       }
     }
@@ -175,6 +209,10 @@ async function run() {
               data: {
                 isBot: update.isBot,
                 botReason: update.botReason,
+                botScore: update.botScore,
+                botSignals: update.botSignals,
+                asnNumber: update.asnNumber,
+                asnOrg: update.asnOrg,
               },
             }),
           ),

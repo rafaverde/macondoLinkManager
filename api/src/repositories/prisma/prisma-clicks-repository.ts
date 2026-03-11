@@ -16,6 +16,10 @@ export class PrismaClicksRepository implements ClicksRepository {
     city,
     isBot,
     botReason,
+    botScore,
+    botSignals,
+    asnNumber,
+    asnOrg,
   }: CreateClickDTO) {
     const click = await prisma.click.create({
       data: {
@@ -26,6 +30,10 @@ export class PrismaClicksRepository implements ClicksRepository {
         city,
         isBot,
         botReason,
+        botScore,
+        botSignals: botSignals ?? [],
+        asnNumber,
+        asnOrg,
       },
     });
 

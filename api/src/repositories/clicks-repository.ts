@@ -8,6 +8,10 @@ export interface CreateClickDTO {
   city?: string | null;
   isBot: boolean;
   botReason?: string;
+  botScore?: number;
+  botSignals?: string[];
+  asnNumber?: number | null;
+  asnOrg?: string | null;
 }
 
 // Interface para resultados agregados
