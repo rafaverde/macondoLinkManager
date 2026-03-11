@@ -8,6 +8,7 @@ type CliArgs = {
   batchSize: number;
   dryRun: boolean;
   strictDatacenter: boolean;
+  allowDemotion: boolean;
 };
 
 function parseArgs(argv: string[]): CliArgs {
@@ -16,6 +17,7 @@ function parseArgs(argv: string[]): CliArgs {
     batchSize: 500,
     dryRun: false,
     strictDatacenter: false,
+    allowDemotion: false,
   };
 
   const parsed = { ...defaults };
@@ -28,6 +30,11 @@ function parseArgs(argv: string[]): CliArgs {
 
     if (arg === "--strict-datacenter" || arg === "--aggressive-datacenter") {
       parsed.strictDatacenter = true;
+      continue;
+    }
+
+    if (arg === "--allow-demotion") {
+      parsed.allowDemotion = true;
       continue;
     }
 
@@ -92,6 +99,9 @@ async function run() {
   console.log(`[backfill-bot] Batch: ${args.batchSize}`);
   console.log(
     `[backfill-bot] Estratégia strict de datacenter: ${args.strictDatacenter ? "ON" : "OFF"}`,
+  );
+  console.log(
+    `[backfill-bot] Permitir demotion bot->humano: ${args.allowDemotion ? "ON" : "OFF"}`,
   );
   console.log(`[backfill-bot] Cliques elegíveis: ${total}`);
 
@@ -168,6 +178,18 @@ async function run() {
       let nextSignals = detected.signals ?? [];
       const nextAsnNumber = asnNumber;
       const nextAsnOrg = asnOrg;
+
+      if (click.isBot && !nextIsBot && !args.allowDemotion) {
+        nextIsBot = true;
+        nextReason = click.botReason ?? nextReason ?? "BACKFILL_BOT_LOCKED";
+        nextScore = click.botScore ?? nextScore ?? 4;
+        nextSignals =
+          click.botSignals.length > 0
+            ? click.botSignals
+            : nextSignals.length > 0
+              ? nextSignals
+              : ["BACKFILL_BOT_LOCKED"];
+      }
 
       const currentReason = click.botReason ?? null;
       const currentSignals = click.botSignals ?? [];
