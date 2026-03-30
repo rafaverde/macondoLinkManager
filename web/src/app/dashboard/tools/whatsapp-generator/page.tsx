@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { RiFileCopyLine } from "@remixicon/react";
 import Link from "next/link";
 import { useEffect, useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 const waGeneratorSchema = z.object({
@@ -51,9 +51,9 @@ export default function WhatsAppGeneratorPage() {
 
   // Form
   const {
-    watch,
+    control,
     register,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<WhatsAppFormData>({
     resolver: zodResolver(waGeneratorSchema),
     mode: "onChange",
@@ -65,7 +65,7 @@ export default function WhatsAppGeneratorPage() {
     },
   });
 
-  const values = watch();
+  const values = useWatch({ control });
 
   // Link Generator
   const generatedLink = useMemo(() => {
@@ -79,7 +79,7 @@ export default function WhatsAppGeneratorPage() {
     }
 
     return `https://wa.me/${fullNumber}?text=${encodeURIComponent(trimmedMessage)}`;
-  }, [values, isValid]);
+  }, [values]);
 
   return (
     <>

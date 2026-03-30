@@ -1,5 +1,4 @@
 import QRCodeLib from "react-qr-code";
-import React from "react";
 
 interface QRCodeProps {
   value: string;
@@ -8,9 +7,5 @@ interface QRCodeProps {
 }
 
 export function QRCode({ value, size = 180, id }: QRCodeProps) {
-  return React.createElement(QRCodeLib as any, {
-    value,
-    size,
-    id,
-  });
+  return <QRCodeLib value={value} size={size} id={id} />;
 }

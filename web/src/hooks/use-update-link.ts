@@ -1,6 +1,11 @@
 import { api } from "@/lib/api";
+import { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+
+interface ApiErrorResponse {
+  message?: string;
+}
 
 // DTO para atualização parcial
 interface UpdateLinkData {
@@ -43,7 +48,7 @@ export function useUpdateLink(onSuccessCallback?: () => void) {
 
       if (onSuccessCallback) onSuccessCallback();
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<ApiErrorResponse>) => {
       const message =
         error.response?.data?.message || "Erro ao atualizar link.";
       toast.error(message);

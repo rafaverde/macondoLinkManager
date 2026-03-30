@@ -1,7 +1,12 @@
 import { api } from "@/lib/api";
 import { CreateLinkData } from "@/types";
+import { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+
+interface ApiErrorResponse {
+  message?: string;
+}
 
 export function useCreateLink(onSuccessCallback?: () => void) {
   const queryClient = useQueryClient();
@@ -35,9 +40,10 @@ export function useCreateLink(onSuccessCallback?: () => void) {
         onSuccessCallback();
       }
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<ApiErrorResponse>) => {
       // Tenta pegar a mensagem de erro da API ou usa uma genérica
-      const message = error.response?.data.message || "Erro ao criar o link.";
+      const message =
+        error.response?.data?.message || "Erro ao criar o link.";
       toast.error(message);
     },
   });

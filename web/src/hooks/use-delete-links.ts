@@ -9,7 +9,7 @@ export function useDeleteLink() {
     mutationFn: async (id: string) => {
       await api.delete(`/links/${id}`);
     },
-    onSuccess: (_data, variables) => {
+    onSuccess: () => {
       toast.success("Link removido com sucesso!");
 
       queryClient.invalidateQueries({ queryKey: ["links"] });

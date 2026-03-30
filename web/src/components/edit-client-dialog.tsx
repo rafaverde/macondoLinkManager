@@ -1,7 +1,7 @@
 "use client";
 
 import { useUpdateClient } from "@/hooks/use-update-client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -31,15 +31,9 @@ export default function EditClientDialog({
   open,
   onOpenChange,
 }: EditClientDialogProps) {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(client?.name ?? "");
 
   const { mutate, isPending } = useUpdateClient();
-
-  useEffect(() => {
-    if (client) {
-      setName(client.name);
-    }
-  }, [client]);
 
   function handleSave() {
     if (!client || !name.trim()) return;
@@ -55,7 +49,20 @@ export default function EditClientDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (nextOpen && client) {
+          setName(client.name);
+        }
+
+        if (!nextOpen) {
+          setName("");
+        }
+
+        onOpenChange(nextOpen);
+      }}
+    >
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Editar Cliente</DialogTitle>
@@ -68,6 +75,7 @@ export default function EditClientDialog({
           <div className="grid gap-2">
             <Label htmlFor="name">Nome do Cliente</Label>
             <Input
+              key={client?.id ?? "client-name"}
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}

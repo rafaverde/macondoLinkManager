@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { ClientListItem } from "@/types/clients";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -12,7 +13,7 @@ export function useCreateClient(onSuccessCallback?: (newId: string) => void) {
     },
     onSuccess: (data) => {
       toast.success(`Cliente ${data.name} criado!`);
-      queryClient.setQueryData(["clients"], (old: any[] = []) => [
+      queryClient.setQueryData<ClientListItem[]>(["clients"], (old = []) => [
         ...old,
         data,
       ]);

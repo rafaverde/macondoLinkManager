@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { CampaignListItem } from "@/types/campaigns";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -18,7 +19,7 @@ export function useCreateCampaign(onSuccessCallback?: (newId: string) => void) {
     onSuccess: (data) => {
       toast.success(`Campanha ${data.name} criada com sucesso!`);
 
-      queryClient.setQueryData(["campaigns"], (old: any[] = []) => [
+      queryClient.setQueryData<CampaignListItem[]>(["campaigns"], (old = []) => [
         ...old,
         data,
       ]);

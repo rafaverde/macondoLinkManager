@@ -1,7 +1,7 @@
 "use client";
 
 import { useUpdateCampaign } from "@/hooks/use-update-campaign";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -33,15 +33,9 @@ export default function EditCampaignDialog({
   open,
   onOpenChange,
 }: EditCampaignDialogProps) {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(campaign?.name ?? "");
 
   const { mutate, isPending } = useUpdateCampaign(clientId);
-
-  useEffect(() => {
-    if (campaign) {
-      setName(campaign.name);
-    }
-  }, [campaign]);
 
   function handleSave() {
     if (!campaign || !name.trim()) return;
@@ -57,7 +51,20 @@ export default function EditCampaignDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (nextOpen && campaign) {
+          setName(campaign.name);
+        }
+
+        if (!nextOpen) {
+          setName("");
+        }
+
+        onOpenChange(nextOpen);
+      }}
+    >
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Editar campanha</DialogTitle>
@@ -68,6 +75,7 @@ export default function EditCampaignDialog({
           <div className="grid gap-2">
             <Label htmlFor="name">Nome da campanha</Label>
             <Input
+              key={campaign?.id ?? "campaign-name"}
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
