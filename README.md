@@ -66,6 +66,7 @@ versionamento e deploy.
 -   Login via **Google OAuth**
 -   Restrição por domínio corporativo
 -   JWT armazenado em cookie httpOnly
+-   Callback oficial finalizado no backend, com gravação de sessão e redirect para o dashboard
 
 ------------------------------------------------------------------------
 
@@ -73,6 +74,7 @@ versionamento e deploy.
 
 -   Criação e edição de links encurtados
 -   Associação com clientes e campanhas
+-   Validação explícita da relação entre campanha e cliente no backend
 -   Sistema consolidado de **Tags**
 -   Geração de QR Code
 -   Compartilhamento simplificado

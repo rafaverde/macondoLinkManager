@@ -21,10 +21,6 @@ import { Skeleton } from "../ui/skeleton";
 import { RiEmotionUnhappyLine, RiLineChartLine } from "@remixicon/react";
 import { Cell, Label, Pie, PieChart } from "recharts";
 
-type PieChartDatum = {
-  fill?: string;
-};
-
 interface Top5PieChartProps<T extends object>
   extends React.ComponentProps<typeof Card> {
   data: T[] | undefined;

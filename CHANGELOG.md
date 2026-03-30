@@ -7,6 +7,35 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.5.0] - 2026-03-30
+### 🔧 Changed
+- API:
+  - Alinhamento dos contratos de campanhas, clientes e analytics ao escopo global da organização autenticada.
+  - Dashboard por campanha passa a refletir explicitamente o comportamento real do domínio: campanha inexistente retorna `404`.
+  - Criação e edição de links agora validam explicitamente a integridade entre `clientId` e `campaignId`, sem depender de erro implícito do banco.
+- WEB:
+  - Simplificação do callback de autenticação: o backend autentica, grava o cookie de sessão e redireciona diretamente para o dashboard.
+  - Estabilização dos fluxos de formulário e estado local em diálogos e telas críticas.
+  - Tipagem reforçada em hooks, gráficos e utilitários para reduzir `any` e fragilidade em tempo de manutenção.
+
+### 🧹 Removed
+- WEB:
+  - Remoção do fluxo legado de sessão baseado em `token` no callback do frontend.
+- API:
+  - Remoção de contratos e sinais obsoletos de autorização por owner onde o produto opera em escopo organizacional.
+
+### 🐛 Fixed
+- API:
+  - Correção de inconsistências entre Swagger, rotas, serviços e repositórios no dashboard de campanha.
+  - Resposta explícita para tentativa de vincular link a campanha incompatível com o cliente informado.
+- WEB:
+  - Correção do interceptor HTTP para tratar `401` corretamente.
+  - Correção do submit via Enter na edição/criação de campanhas.
+  - Correção de resets de estado e efeitos desnecessários em diálogos e formulários.
+  - Correção de pontos que impediam `npm run lint` e `npm run build` de fecharem com segurança no escopo do sprint.
+
+---
+
 ## [1.4.4] - 2026-03-11
 ### 🔧 Changed
 - API:
