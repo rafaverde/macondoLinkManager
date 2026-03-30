@@ -123,12 +123,20 @@ tags: { id: string; name: string }[]
 -   Backfill executado para dados históricos
 -   Classificação reforçada por sinais de headers + ASN/datacenter (quando disponível)
 -   Recomendado configurar `MAXMIND_LICENSE_KEY` para manter City + ASN atualizados
+-   No boot da API:
+    - tenta garantir GeoLite2 City + ASN (`GEOLITE_DOWNLOAD_ON_BOOT=true`)
+    - por padrão não derruba a API se o download falhar (`GEOLITE_FAIL_FAST=false`)
+    - modo estrito opcional: `GEOLITE_FAIL_FAST=true`
+-   Auditoria persistida por clique: `botReason`, `botScore`, `botSignals`, `asnNumber`, `asnOrg`
+-   Modo strict de datacenter para novos cliques (`BOT_STRICT_DATACENTER=true`)
 
 Backfill manual:
 
     cd api
     npm run bot:backfill -- --days=90 --dry-run
-    npm run bot:backfill -- --days=90 --aggressive-datacenter
+    npm run bot:backfill -- --days=90 --strict-datacenter
+    # Opcional: permitir rebaixar bot->humano (não recomendado no fluxo padrão)
+    npm run bot:backfill -- --days=90 --strict-datacenter --allow-demotion
 
 ------------------------------------------------------------------------
 

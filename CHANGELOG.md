@@ -7,6 +7,43 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.4.4] - 2026-03-11
+### 🔧 Changed
+- API:
+  - Novo bootstrap de inicialização (`scripts/start-with-geolite.sh`) para controlar o download do GeoLite no boot sem depender de comando manual no Railway.
+  - `npm run start` e `Dockerfile` passam a usar o bootstrap único de produção.
+  - Comportamento padrão de boot fica resiliente:
+    - `GEOLITE_DOWNLOAD_ON_BOOT=true` tenta preparar City + ASN.
+    - `GEOLITE_FAIL_FAST=false` evita downtime se houver falha temporária no download.
+  - Modo estrito continua disponível via `GEOLITE_FAIL_FAST=true`.
+
+---
+
+## [1.4.3] - 2026-03-11
+### ✨ Added
+- API:
+  - Persistência de auditoria da classificação de bot por clique:
+    - `botScore`
+    - `botSignals`
+    - `asnNumber`
+    - `asnOrg`
+  - Script de backfill atualizado para também preencher campos de auditoria.
+
+### 🔧 Changed
+- API:
+  - Endurecimento da classificação com modo strict de datacenter para cliques novos:
+    - `BOT_STRICT_DATACENTER=true` (default)
+    - ASN de datacenter passa a pesar decisivamente na classificação.
+  - Backfill aceita `--strict-datacenter` (mantendo compatibilidade com `--aggressive-datacenter`).
+  - Backfill passou a não rebaixar bot para humano por padrão (safe mode).
+    - Flag opcional para permitir demotion explícito: `--allow-demotion`.
+  - Inclusão de índice em `clicks.isBot` para acelerar consultas de métricas.
+  - Inicialização da API em modo fail-fast para GeoLite2 (City + ASN):
+    - Removido fallback silencioso no boot do container.
+    - Download agora falha explicitamente quando `MAXMIND_LICENSE_KEY` está ausente e a base não está completa.
+
+---
+
 ## [1.4.2] - 2026-02-20
 ### 🔧 Changed
 API:
