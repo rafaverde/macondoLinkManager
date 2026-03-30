@@ -1,6 +1,6 @@
 "use client";
 
-import { useUpdateClient } from "@/hooks/use-update-client";
+import { useUpdateClient } from "@/features/clients/hooks/use-update-client";
 import { useState } from "react";
 import {
   Dialog,

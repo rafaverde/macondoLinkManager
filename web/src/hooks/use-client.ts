@@ -1,15 +1,1 @@
-import { api } from "@/lib/api";
-import { queryKeys } from "@/lib/query-keys";
-import { Client } from "@/types/clients";
-import { useQuery } from "@tanstack/react-query";
-
-export function useClient(clientId: string) {
-  return useQuery({
-    queryKey: queryKeys.clients.detail(clientId),
-    queryFn: async () => {
-      const { data } = await api.get<Client>(`/clients/${clientId}`);
-      return data;
-    },
-    enabled: !!clientId,
-  });
-}
+export { useClient } from "@/features/clients/hooks/use-client";

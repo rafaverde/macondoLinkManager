@@ -1,6 +1,6 @@
 "use client";
 
-import { useCreateClient } from "@/hooks/use-create-client";
+import { useCreateClient } from "@/features/clients/hooks/use-create-client";
 import { useState } from "react";
 import {
   Dialog,

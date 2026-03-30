@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeleteClient } from "@/hooks/use-delete-clients";
+import { useDeleteClient } from "@/features/clients/hooks/use-delete-clients";
 import { useState } from "react";
 import { toast } from "sonner";
 import {

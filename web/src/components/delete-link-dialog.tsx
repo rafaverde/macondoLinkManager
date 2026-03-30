@@ -1,4 +1,4 @@
-import { useDeleteLink } from "@/hooks/use-delete-links";
+import { useDeleteLink } from "@/features/links/hooks/use-delete-links";
 import {
   AlertDialog,
   AlertDialogAction,

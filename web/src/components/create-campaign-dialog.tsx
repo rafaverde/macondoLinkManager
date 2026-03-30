@@ -1,6 +1,6 @@
 "use client";
 
-import { useCreateCampaign } from "@/hooks/use-create-campaign";
+import { useCreateCampaign } from "@/features/campaigns/hooks/use-create-campaign";
 import { useState } from "react";
 import {
   Dialog,

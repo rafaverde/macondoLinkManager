@@ -7,9 +7,9 @@ import { RiArrowLeftLine, RiLinkUnlink } from "@remixicon/react";
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useLink } from "@/hooks/use-link";
+import { useLink } from "@/features/links/hooks/use-link";
 import CardNumbers from "@/components/card-numbers";
-import { useLinkMetrics } from "@/hooks/use-link-metrics";
+import { useLinkMetrics } from "@/features/links/hooks/use-link-metrics";
 import { ClicksAreaChart } from "@/components/charts/clicks-area-chart";
 import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
 import { sumLastDays } from "@/lib/utils";

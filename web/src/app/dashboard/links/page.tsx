@@ -24,10 +24,10 @@ import {
   RiSearchLine,
 } from "@remixicon/react";
 
-import { useCampaigns } from "@/hooks/use-campaigns";
-import { useClients } from "@/hooks/use-clients";
+import { useCampaigns } from "@/features/campaigns/hooks/use-campaigns";
+import { useClients } from "@/features/clients/hooks/use-clients";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useLinks } from "@/hooks/use-links";
+import { useLinks } from "@/features/links/hooks/use-links";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";

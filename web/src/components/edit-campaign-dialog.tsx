@@ -1,6 +1,6 @@
 "use client";
 
-import { useUpdateCampaign } from "@/hooks/use-update-campaign";
+import { useUpdateCampaign } from "@/features/campaigns/hooks/use-update-campaign";
 import { useState } from "react";
 import {
   Dialog,

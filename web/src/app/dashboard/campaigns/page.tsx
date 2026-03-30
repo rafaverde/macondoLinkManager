@@ -23,8 +23,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
-import { useCampaigns } from "@/hooks/use-campaigns";
-import { useClients } from "@/hooks/use-clients";
+import { useCampaigns } from "@/features/campaigns/hooks/use-campaigns";
+import { useClients } from "@/features/clients/hooks/use-clients";
 import { formatDate } from "@/lib/utils";
 import {
   RiAddLine,

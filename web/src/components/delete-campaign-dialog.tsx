@@ -1,4 +1,4 @@
-import { useDeleteCampaign } from "@/hooks/use-delete-campaign";
+import { useDeleteCampaign } from "@/features/campaigns/hooks/use-delete-campaign";
 import { CampaignEdit } from "./edit-campaign-dialog";
 import {
   Dialog,

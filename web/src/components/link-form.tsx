@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useCampaigns } from "@/hooks/use-campaigns";
-import { useClients } from "@/hooks/use-clients";
-import { useCreateLink } from "@/hooks/use-create-link";
+import { useCampaigns } from "@/features/campaigns/hooks/use-campaigns";
+import { useClients } from "@/features/clients/hooks/use-clients";
+import { useCreateLink } from "@/features/links/hooks/use-create-link";
 import { Card, CardContent } from "./ui/card";
 import {
   Form,
@@ -30,7 +30,7 @@ import {
 } from "./ui/select";
 import { InputTags } from "./ui/input-tags";
 import { Link } from "@/types";
-import { useUpdateLink } from "@/hooks/use-update-link";
+import { useUpdateLink } from "@/features/links/hooks/use-update-link";
 import CreateClientInline from "./create-client-inline";
 import { CreateCampaignInline } from "./create-campaign-inline";
 

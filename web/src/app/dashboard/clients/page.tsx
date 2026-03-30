@@ -21,7 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
-import { useClients } from "@/hooks/use-clients";
+import { useClients } from "@/features/clients/hooks/use-clients";
 import { useDebounce } from "@/hooks/use-debounce";
 import { formatDate } from "@/lib/utils";
 import {
