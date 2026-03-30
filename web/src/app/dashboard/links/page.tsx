@@ -63,20 +63,6 @@ export default function LinksPage() {
     setSelectedCampaign("all");
   };
 
-  useEffect(() => {
-    if (
-      selectedCampaign !== "all" &&
-      campaigns &&
-      !campaigns.some(
-        (c) =>
-          c.id === selectedCampaign &&
-          (selectedClient === "all" || c.clientId === selectedClient),
-      )
-    ) {
-      setSelectedCampaign("all");
-    }
-  }, [selectedClient, campaigns]);
-
   // Gera breadcrumb
   useEffect(() => {
     setItems([{ label: "Dashboard", href: "/dashboard" }, { label: "Links" }]);
@@ -122,7 +108,13 @@ export default function LinksPage() {
         </div>
 
         {/* Filtro por cliente */}
-        <Select value={selectedClient} onValueChange={setSelectedClient}>
+        <Select
+          value={selectedClient}
+          onValueChange={(value) => {
+            setSelectedClient(value);
+            setSelectedCampaign("all");
+          }}
+        >
           <SelectTrigger className="w-full lg:w-[200px]">
             <SelectValue placeholder="Selecione o cliente..." />
           </SelectTrigger>

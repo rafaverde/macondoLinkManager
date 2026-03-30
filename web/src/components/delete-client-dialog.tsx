@@ -1,7 +1,7 @@
 "use client";
 
 import { useDeleteClient } from "@/hooks/use-delete-clients";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -35,12 +35,6 @@ export default function DeleteClientDialog({
 
   const { mutate, isPending } = useDeleteClient();
 
-  useEffect(() => {
-    if (!open) {
-      setConfirmation("");
-    }
-  }, [open]);
-
   if (!client) return null;
   const isConfirmed = confirmation === client.name;
 
@@ -60,7 +54,15 @@ export default function DeleteClientDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) {
+          setConfirmation("");
+        }
+        onOpenChange(nextOpen);
+      }}
+    >
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle className="text-destructive flex items-center gap-2 text-2xl font-bold">

@@ -4,16 +4,14 @@ import { useCreateCampaign } from "@/hooks/use-create-campaign";
 import { useState } from "react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { RiAddLine, RiLoader4Line } from "@remixicon/react";
+import { RiLoader4Line } from "@remixicon/react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { toast } from "sonner";
@@ -70,7 +68,7 @@ export default function CreateCampaignDialog({
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
-                  handleSave;
+                  handleSave();
                 }
               }}
             />

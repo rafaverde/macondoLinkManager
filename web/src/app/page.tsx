@@ -3,14 +3,13 @@
 import { api } from "@/lib/api";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "@/hooks/use-user";
 
 import { Button } from "@/components/ui/button";
 
 import macondoLogo from "@/assets/macondo-logo.svg";
 import googleLogo from "@/assets/google-color.svg";
-import { AuthFeedback } from "@/components/auth-feedback";
 import FullscreenLoader from "@/components/fullscreen-loader";
 
 export default function LoginPage() {
@@ -44,9 +43,6 @@ export default function LoginPage() {
 
   return (
     <>
-      <Suspense>
-        <AuthFeedback />
-      </Suspense>
       <div className="grid h-dvh w-full grid-rows-2 items-center md:grid-cols-2 md:grid-rows-none md:justify-center">
         <div className="flex flex-col items-center justify-center gap-4 p-24 md:p-10">
           <Image

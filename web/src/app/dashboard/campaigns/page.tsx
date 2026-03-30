@@ -59,18 +59,6 @@ export default function CampaignsPage() {
 
   const isScopedToClient = selectedClientId !== "all";
 
-  useEffect(() => {
-    if (!isEditOpen) {
-      setEditingCampaign(null);
-    }
-  }, [isEditOpen]);
-
-  useEffect(() => {
-    if (!isDeleteOpen) {
-      setIsDeletingCampaign(null);
-    }
-  }, [isEditOpen]);
-
   // Gera breadcrumb
   useEffect(() => {
     setItems([
@@ -95,7 +83,13 @@ export default function CampaignsPage() {
 
             <Select
               value={selectedClientId ?? ""}
-              onValueChange={(value) => setSelectedClientId(value)}
+              onValueChange={(value) => {
+                setSelectedClientId(value);
+                setEditingCampaign(null);
+                setIsDeletingCampaign(null);
+                setIsEditOpen(false);
+                setIsDeleteOpen(false);
+              }}
               disabled={isLoadingClients}
             >
               <SelectTrigger className="w-[260px]">
@@ -254,7 +248,12 @@ export default function CampaignsPage() {
       {selectedClientId && (
         <EditCampaignDialog
           open={isEditOpen}
-          onOpenChange={setIsEditOpen}
+          onOpenChange={(open) => {
+            setIsEditOpen(open);
+            if (!open) {
+              setEditingCampaign(null);
+            }
+          }}
           campaign={editingCampaign}
           clientId={selectedClientId}
         />
@@ -263,7 +262,12 @@ export default function CampaignsPage() {
       {selectedClientId && (
         <DeleteCampaignDialog
           open={isDeleteOpen}
-          onOpenChange={setIsDeleteOpen}
+          onOpenChange={(open) => {
+            setIsDeleteOpen(open);
+            if (!open) {
+              setIsDeletingCampaign(null);
+            }
+          }}
           campaign={isDeletingCampaign}
         />
       )}
