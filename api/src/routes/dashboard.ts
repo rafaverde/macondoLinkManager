@@ -7,12 +7,6 @@ import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repos
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { DashboardService } from "../services/dashboard-service";
 import { PrismaCampaignsRepository } from "../repositories/prisma/prisma-campaign-repository";
-import { CampaignNotAllowedError } from "../services/errors/campaign-not-allowed-error";
-
-// Schemas
-const errorSchema = z.object({
-  message: z.string(),
-});
 
 const topClientsSchema = z.array(
   z.object({
@@ -156,7 +150,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
         }),
         response: {
           200: analyticsOverviewSchema,
-          403: errorSchema,
+          404: z.object({ message: z.string() }),
         },
       },
     },
@@ -170,15 +164,8 @@ export async function dashboardRoutes(app: FastifyInstance) {
         new PrismaCampaignsRepository(),
       );
 
-      try {
-        const overview = await service.getCampaignOverview(campaignId);
-        return reply.send(overview);
-      } catch (err) {
-        if (err instanceof CampaignNotAllowedError) {
-          return reply.status(403).send({ message: err.message });
-        }
-        throw err;
-      }
+      const overview = await service.getCampaignOverview(campaignId);
+      return reply.send(overview);
     },
   );
 }
