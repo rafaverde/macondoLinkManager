@@ -127,7 +127,7 @@ export async function clientsRoutes(app: FastifyInstance) {
       const { id } = request.params;
 
       await app.services.clientsService.deleteClient(id);
-      return reply.status(204).send();
+      return reply.status(204).send(null);
     },
   );
 

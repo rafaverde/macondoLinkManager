@@ -1,9 +1,9 @@
 import { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import z, { ZodError } from "zod";
-import { LinkNotFoundError } from "../services/errors/link-not-found-error";
+import { LinkNotFoundError } from "../domains/links/domain/errors/link-not-found-error";
 import { ClientNotFoundError } from "../services/errors/client-not-found-error";
 import { CampaignNotFoundError } from "../services/errors/campaign-not-found.error";
-import { CampaignClientMismatchError } from "../services/errors/campaign-client-mismatch-error";
+import { CampaignClientMismatchError } from "../domains/links/domain/errors/campaign-client-mismatch-error";
 
 export function errorHandler(
   error: FastifyError | Error,

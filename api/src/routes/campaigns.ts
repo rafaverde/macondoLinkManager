@@ -134,7 +134,7 @@ export async function campaignsRoutes(app: FastifyInstance) {
       const { id } = request.params;
 
       await app.services.campaignsService.deleteCampaign(id);
-      return reply.status(204).send();
+      return reply.status(204).send(null);
     },
   );
 

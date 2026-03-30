@@ -1,8 +1,8 @@
-import { CampaignsRepository } from "../repositories/campaigns-repository";
-import { ClicksRepository } from "../repositories/clicks-repository";
-import { ClientsRepository } from "../repositories/clients-repository";
-import { LinksRepository } from "../repositories/links-repository";
-import { CampaignNotFoundError } from "./errors/campaign-not-found.error";
+import { CampaignsRepository } from "../../../repositories/campaigns-repository";
+import { ClicksRepository } from "../../../repositories/clicks-repository";
+import { ClientsRepository } from "../../../repositories/clients-repository";
+import { LinksRepository } from "../../../repositories/links-repository";
+import { CampaignNotFoundError } from "../../../services/errors/campaign-not-found.error";
 
 export class DashboardService {
   constructor(
@@ -13,7 +13,6 @@ export class DashboardService {
   ) {}
 
   async getOrganizationGeneralMetrics() {
-    // Executa em paralelo para ser mais rápido
     const [totalClicks, activeLinks] = await Promise.all([
       this.clicksRepository.countOrganization(),
       this.linksRepository.count({}),
@@ -46,7 +45,6 @@ export class DashboardService {
   async getTopClients() {
     const topClients = await this.clientsRepository.findTopClients();
 
-    // Mapeia para o formato que o front precisa
     return topClients.map((client) => ({
       name: client.name,
       clicks: client._count,
@@ -54,9 +52,7 @@ export class DashboardService {
   }
 
   async getOrganizationAnalyticsOverview() {
-    // Visão geral com padrão para 30 dias
-    const metrics = await this.clicksRepository.getOrganizationMetrics(30);
-    return metrics;
+    return this.clicksRepository.getOrganizationMetrics(30);
   }
 
   async getClientAnalyticsOverview(clientId: string) {
@@ -73,8 +69,6 @@ export class DashboardService {
       this.getOrganizationAnalyticsOverview(),
     ]);
 
-    const hasData = general.totalClicks > 0;
-
     return {
       summary: {
         totalClicks: general.totalClicks,
@@ -88,7 +82,7 @@ export class DashboardService {
         topCities: analytics.topCities,
       },
       meta: {
-        hasData,
+        hasData: general.totalClicks > 0,
       },
     };
   }
@@ -99,8 +93,6 @@ export class DashboardService {
       this.getClientAnalyticsOverview(clientId),
     ]);
 
-    const hasData = general.totalClicks > 0;
-
     return {
       summary: {
         totalClicks: general.totalClicks,
@@ -108,7 +100,7 @@ export class DashboardService {
         period: "30d",
       },
       charts: analytics,
-      meta: { hasData },
+      meta: { hasData: general.totalClicks > 0 },
     };
   }
 
@@ -124,8 +116,6 @@ export class DashboardService {
       this.getCampaignAnalyticsOverview(campaignId),
     ]);
 
-    const hasData = general.totalClicks > 0;
-
     return {
       summary: {
         totalClicks: general.totalClicks,
@@ -133,7 +123,7 @@ export class DashboardService {
         period: "30d",
       },
       charts: analytics,
-      meta: { hasData },
+      meta: { hasData: general.totalClicks > 0 },
     };
   }
 }

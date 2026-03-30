@@ -7,13 +7,13 @@ import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repos
 import { PrismaUsersRepository } from "../repositories/prisma/prisma-users-repository";
 import { CampaignsListRepository } from "../repositories/read-models/campaigns-list-repository";
 import { ClientsListRepository } from "../repositories/read-models/client-list-repository";
+import { DashboardService } from "../domains/analytics/application/dashboard-service";
+import { LinksService } from "../domains/links/application/links-service";
 import { AuthService } from "../services/auth-service";
 import { CampaignsListService } from "../services/campaings-list-service";
 import { CampaignsService } from "../services/campaigns-service";
 import { ClientsListService } from "../services/clients-list-service";
 import { ClientsService } from "../services/clients-service";
-import { DashboardService } from "../services/dashboard-service";
-import { LinksService } from "../services/links-service";
 
 export interface AppServices {
   authService: AuthService;

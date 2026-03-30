@@ -202,7 +202,7 @@ export async function linksRoutes(app: FastifyInstance) {
       const { id } = request.params;
 
       await app.services.linksService.deleteLink(id);
-      return reply.status(204).send();
+      return reply.status(204).send(null);
     },
   );
 

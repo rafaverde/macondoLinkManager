@@ -1,16 +1,16 @@
-import { CampaignsRepository } from "../repositories/campaigns-repository";
-import { ClicksRepository } from "../repositories/clicks-repository";
-import { ClientsRepository } from "../repositories/clients-repository";
-import { LinksRepository } from "../repositories/links-repository";
-import { CampaignClientMismatchError } from "./errors/campaign-client-mismatch-error";
-import { CampaignNotFoundError } from "./errors/campaign-not-found.error";
-import { detectBot } from "../utils/detect-bot";
-import { recordClickBurst } from "../utils/bot-burst-detector";
-import { resolveAsnInfo } from "../utils/asn";
-import { generateShortCode } from "../utils/generate-short-code";
-import { resolveGeoLocation } from "../utils/geoip";
-import { ClientNotFoundError } from "./errors/client-not-found-error";
-import { LinkNotFoundError } from "./errors/link-not-found-error";
+import { CampaignsRepository } from "../../../repositories/campaigns-repository";
+import { ClicksRepository } from "../../../repositories/clicks-repository";
+import { ClientsRepository } from "../../../repositories/clients-repository";
+import { LinksRepository } from "../../../repositories/links-repository";
+import { CampaignNotFoundError } from "../../../services/errors/campaign-not-found.error";
+import { ClientNotFoundError } from "../../../services/errors/client-not-found-error";
+import { resolveAsnInfo } from "../../../utils/asn";
+import { recordClickBurst } from "../../../utils/bot-burst-detector";
+import { detectBot } from "../../../utils/detect-bot";
+import { generateShortCode } from "../../../utils/generate-short-code";
+import { resolveGeoLocation } from "../../../utils/geoip";
+import { CampaignClientMismatchError } from "../domain/errors/campaign-client-mismatch-error";
+import { LinkNotFoundError } from "../domain/errors/link-not-found-error";
 
 interface CreateLinkRequest {
   name: string;
@@ -48,10 +48,8 @@ export class LinksService {
     }
   }
 
-  // Método público que busca por ShortCode (usado no redirecionamento)
   async getLinkByShortCode(shortCode: string) {
-    const link = await this.linksRepository.findByShortCode(shortCode);
-    return link;
+    return this.linksRepository.findByShortCode(shortCode);
   }
 
   async createLink({
@@ -62,28 +60,23 @@ export class LinksService {
     campaignId,
     tags = [],
   }: CreateLinkRequest) {
-    // Validação se cliente existe
     const client = await this.clientsRepository.findById(clientId);
     if (!client) {
-      throw new ClientNotFoundError(); // Erro cliente não encontrado
+      throw new ClientNotFoundError();
     }
 
     await this.validateCampaignForClient(clientId, campaignId);
 
-    // Gera um shortcode único
     let shortCode = generateShortCode();
-
     let linkAlreadyExists =
       await this.linksRepository.findByShortCode(shortCode);
 
-    // Retry logic, tenta maus uma vez se colidir
     while (linkAlreadyExists) {
       shortCode = generateShortCode();
       linkAlreadyExists = await this.linksRepository.findByShortCode(shortCode);
     }
 
-    // Cria o link
-    const link = await this.linksRepository.create({
+    return this.linksRepository.create({
       name,
       originalUrl,
       shortCode,
@@ -92,8 +85,6 @@ export class LinksService {
       campaignId,
       tags,
     });
-
-    return link;
   }
 
   async listLinks(filters: {
@@ -101,8 +92,7 @@ export class LinksService {
     campaignId?: string;
     search?: string;
   }) {
-    const links = await this.linksRepository.findMany(filters);
-    return links;
+    return this.linksRepository.findMany(filters);
   }
 
   async getLink(id: string) {
@@ -126,20 +116,20 @@ export class LinksService {
     },
   ) {
     const existingLink = await this.getLink(id);
-
     const nextClientId = data.clientId ?? existingLink.clientId;
     const nextCampaignId =
       data.campaignId === undefined ? existingLink.campaignId : data.campaignId;
 
     if (data.clientId) {
       const client = await this.clientsRepository.findById(nextClientId);
-      if (!client) throw new ClientNotFoundError();
+      if (!client) {
+        throw new ClientNotFoundError();
+      }
     }
 
     await this.validateCampaignForClient(nextClientId, nextCampaignId);
 
-    const updatedLink = await this.linksRepository.update(id, data);
-    return updatedLink;
+    return this.linksRepository.update(id, data);
   }
 
   async deleteLink(id: string) {
@@ -188,11 +178,7 @@ export class LinksService {
   }
 
   async getLinkMetrics(id: string, days: number = 30) {
-    // Apenas garante que o link existe
     await this.getLink(id);
-
-    // Busca dados agragados
-    const metrics = await this.clicksRepository.getMetrics(id, days);
-    return metrics;
+    return this.clicksRepository.getMetrics(id, days);
   }
 }
