@@ -41,10 +41,7 @@ export class PrismaCampaignsRepository implements CampaignsRepository {
     return campaign;
   }
 
-  async findByIdWithUserLinks(
-    campaignId: string,
-    userId: string,
-  ): Promise<{ id: string } | null> {
+  async findByIdWithLinks(campaignId: string): Promise<{ id: string } | null> {
     return prisma.campaign.findFirst({
       where: {
         id: campaignId,

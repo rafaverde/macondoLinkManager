@@ -29,7 +29,7 @@ export class PrismaClientsRepository implements ClientsRepository {
     return client;
   }
 
-  async findTopClients(_userId: string) {
+  async findTopClients() {
     const topClients = await prisma.$queryRaw<Array<{ name: string; _count: number }>>`
       SELECT
         c.name,

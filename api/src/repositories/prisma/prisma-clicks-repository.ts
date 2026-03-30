@@ -62,7 +62,7 @@ export class PrismaClicksRepository implements ClicksRepository {
     return aggregateClickMetrics(clicks, days);
   }
 
-  async count(userId?: string) {
+  async countOrganization() {
     const count = await prisma.click.count({
       where: {
         link: {},
@@ -73,7 +73,7 @@ export class PrismaClicksRepository implements ClicksRepository {
     return count;
   }
 
-  async countByClient(userId: string, clientId: string) {
+  async countByClient(clientId: string) {
     return prisma.click.count({
       where: {
         link: {
@@ -84,7 +84,7 @@ export class PrismaClicksRepository implements ClicksRepository {
     });
   }
 
-  async countByCampaign(userId: string, campaignId: string): Promise<number> {
+  async countByCampaign(campaignId: string): Promise<number> {
     return prisma.click.count({
       where: {
         link: {
@@ -95,13 +95,10 @@ export class PrismaClicksRepository implements ClicksRepository {
     });
   }
 
-  async getMetricsByUserId(
-    userId: string,
-    days: number,
-  ): Promise<MetricsResult> {
+  async getOrganizationMetrics(days: number): Promise<MetricsResult> {
     const startDate = subDays(new Date(), days);
 
-    // Busca todos os cliques do user
+    // Busca todos os cliques da organização autenticada
     const clicks = await prisma.click.findMany({
       where: {
         link: {},
@@ -118,8 +115,7 @@ export class PrismaClicksRepository implements ClicksRepository {
     return aggregateClickMetrics(clicks, days);
   }
 
-  async getMetricsByClientId(
-    userId: string,
+  async getClientMetrics(
     clientId: string,
     days: number,
   ): Promise<MetricsResult> {
@@ -143,8 +139,7 @@ export class PrismaClicksRepository implements ClicksRepository {
     return aggregateClickMetrics(clicks, days);
   }
 
-  async getMetricsByCampaignId(
-    userId: string,
+  async getCampaignMetrics(
     campaignId: string,
     days: number,
   ): Promise<MetricsResult> {

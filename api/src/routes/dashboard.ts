@@ -73,8 +73,6 @@ export async function dashboardRoutes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user.sub;
-
       const service = new DashboardService(
         new PrismaClicksRepository(),
         new PrismaLinksRepository(),
@@ -82,7 +80,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
         new PrismaCampaignsRepository(),
       );
 
-      const topClients = await service.getTopClients(userId);
+      const topClients = await service.getTopClients();
       return reply.send(topClients);
     },
   );
@@ -95,15 +93,13 @@ export async function dashboardRoutes(app: FastifyInstance) {
       schema: {
         tags: ["Analytics"],
         summary:
-          "Obtém métricas agregadas de todos os links do usuários (últimos 30 dias)",
+          "Obtém métricas agregadas dos links da organização autenticada (últimos 30 dias).",
         response: {
           200: analyticsOverviewSchema,
         },
       },
     },
-    async (request, reply) => {
-      const userId = request.user.sub;
-
+    async (_request, reply) => {
       const service = new DashboardService(
         new PrismaClicksRepository(),
         new PrismaLinksRepository(),
@@ -111,7 +107,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
         new PrismaCampaignsRepository(),
       );
 
-      const overview = await service.getOverview(userId);
+      const overview = await service.getOverview();
       return reply.send(overview);
     },
   );
@@ -134,7 +130,6 @@ export async function dashboardRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { clientId } = request.params;
-      const userId = request.user.sub;
 
       const service = new DashboardService(
         new PrismaClicksRepository(),
@@ -143,7 +138,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
         new PrismaCampaignsRepository(),
       );
 
-      const overview = await service.getClientOverview(userId, clientId);
+      const overview = await service.getClientOverview(clientId);
       return reply.send(overview);
     },
   );
@@ -167,7 +162,6 @@ export async function dashboardRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { campaignId } = request.params;
-      const userId = request.user.sub;
 
       const service = new DashboardService(
         new PrismaClicksRepository(),
@@ -177,7 +171,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
       );
 
       try {
-        const overview = await service.getCampaignOverview(userId, campaignId);
+        const overview = await service.getCampaignOverview(campaignId);
         return reply.send(overview);
       } catch (err) {
         if (err instanceof CampaignNotAllowedError) {

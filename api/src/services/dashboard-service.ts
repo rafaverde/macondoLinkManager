@@ -12,10 +12,10 @@ export class DashboardService {
     private campaignsRepository: CampaignsRepository,
   ) {}
 
-  async getGeneralMetrics(userId: string) {
+  async getOrganizationGeneralMetrics() {
     // Executa em paralelo para ser mais rápido
     const [totalClicks, activeLinks] = await Promise.all([
-      this.clicksRepository.count(userId),
+      this.clicksRepository.countOrganization(),
       this.linksRepository.count({}),
     ]);
 
@@ -25,26 +25,26 @@ export class DashboardService {
     };
   }
 
-  async getClientGeneralMetrics(userId: string, clientId: string) {
+  async getClientGeneralMetrics(clientId: string) {
     const [totalClicks, activeLinks] = await Promise.all([
-      this.clicksRepository.countByClient(userId, clientId),
+      this.clicksRepository.countByClient(clientId),
       this.linksRepository.count({ clientId }),
     ]);
 
     return { totalClicks, activeLinks };
   }
 
-  async getCampaignGeneralMetrics(userId: string, campaignId: string) {
+  async getCampaignGeneralMetrics(campaignId: string) {
     const [totalClicks, activeLinks] = await Promise.all([
-      this.clicksRepository.countByCampaign(userId, campaignId),
+      this.clicksRepository.countByCampaign(campaignId),
       this.linksRepository.count({ campaignId }),
     ]);
 
     return { totalClicks, activeLinks };
   }
 
-  async getTopClients(userId: string) {
-    const topClients = await this.clientsRepository.findTopClients(userId);
+  async getTopClients() {
+    const topClients = await this.clientsRepository.findTopClients();
 
     // Mapeia para o formato que o front precisa
     return topClients.map((client) => ({
@@ -53,24 +53,24 @@ export class DashboardService {
     }));
   }
 
-  async getAnalyticsOverview(userId: string) {
+  async getOrganizationAnalyticsOverview() {
     // Visão geral com padrão para 30 dias
-    const metrics = await this.clicksRepository.getMetricsByUserId(userId, 30);
+    const metrics = await this.clicksRepository.getOrganizationMetrics(30);
     return metrics;
   }
 
-  async getClientAnalyticsOverview(userId: string, clientId: string) {
-    return this.clicksRepository.getMetricsByClientId(userId, clientId, 30);
+  async getClientAnalyticsOverview(clientId: string) {
+    return this.clicksRepository.getClientMetrics(clientId, 30);
   }
 
-  async getCampaignAnalyticsOverview(userId: string, campaignId: string) {
-    return this.clicksRepository.getMetricsByCampaignId(userId, campaignId, 30);
+  async getCampaignAnalyticsOverview(campaignId: string) {
+    return this.clicksRepository.getCampaignMetrics(campaignId, 30);
   }
 
-  async getOverview(userId: string) {
+  async getOverview() {
     const [general, analytics] = await Promise.all([
-      this.getGeneralMetrics(userId),
-      this.getAnalyticsOverview(userId),
+      this.getOrganizationGeneralMetrics(),
+      this.getOrganizationAnalyticsOverview(),
     ]);
 
     const hasData = general.totalClicks > 0;
@@ -93,10 +93,10 @@ export class DashboardService {
     };
   }
 
-  async getClientOverview(userId: string, clientId: string) {
+  async getClientOverview(clientId: string) {
     const [general, analytics] = await Promise.all([
-      this.getClientGeneralMetrics(userId, clientId),
-      this.getClientAnalyticsOverview(userId, clientId),
+      this.getClientGeneralMetrics(clientId),
+      this.getClientAnalyticsOverview(clientId),
     ]);
 
     const hasData = general.totalClicks > 0;
@@ -112,19 +112,16 @@ export class DashboardService {
     };
   }
 
-  async getCampaignOverview(userId: string, campaignId: string) {
-    const campaign = await this.campaignsRepository.findByIdWithUserLinks(
-      campaignId,
-      userId,
-    );
+  async getCampaignOverview(campaignId: string) {
+    const campaign = await this.campaignsRepository.findByIdWithLinks(campaignId);
 
     if (!campaign) {
       throw new CampaignNotFoundError();
     }
 
     const [general, analytics] = await Promise.all([
-      this.getCampaignGeneralMetrics(userId, campaignId),
-      this.getCampaignAnalyticsOverview(userId, campaignId),
+      this.getCampaignGeneralMetrics(campaignId),
+      this.getCampaignAnalyticsOverview(campaignId),
     ]);
 
     const hasData = general.totalClicks > 0;
