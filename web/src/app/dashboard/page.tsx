@@ -3,7 +3,7 @@
 import { TopClientsChart } from "@/components/charts/top-clients-chart";
 import { Button } from "@/components/ui/button";
 import CardNumbers from "@/components/card-numbers";
-import { useDashboardMetrics } from "@/hooks/use-dashboard-metrics";
+import { useDashboardMetrics } from "@/features/dashboard/hooks/use-dashboard-metrics";
 import { RiAddLine, RiLinkUnlink } from "@remixicon/react";
 import Link from "next/link";
 import { Top5PieChart } from "@/components/charts/top-5-pie-chart";

@@ -3,7 +3,7 @@
 import LinkForm from "@/components/link-form";
 import { Button } from "@/components/ui/button";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
-import { useLink } from "@/hooks/use-link";
+import { useLink } from "@/features/links/hooks/use-link";
 import { formatLink } from "@/lib/utils";
 import { RiArrowLeftLine, RiLinkUnlink, RiLoader4Line } from "@remixicon/react";
 import Link from "next/link";

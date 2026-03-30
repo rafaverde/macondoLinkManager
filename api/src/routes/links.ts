@@ -2,54 +2,8 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { authHook } from "../hooks/auth";
-import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repository";
-import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
-import { LinksService } from "../services/links-service";
-import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
-
-const linkSchema = z.object({
-  id: z.uuid(),
-  originalUrl: z.url(),
-  shortCode: z.string(),
-  name: z.string(),
-  userId: z.uuid(),
-  clientId: z.uuid(),
-  campaignId: z.uuid().nullable(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-  // Campos relacionamentos
-  client: z.object({ name: z.string() }).optional(),
-  campaign: z.object({ name: z.string() }).nullable().optional(),
-  _count: z.object({ clicks: z.number() }).optional(),
-  tags: z.array(z.object({ id: z.uuid(), name: z.string() })).optional(),
-});
-
-const metricsSchema = z.object({
-  clicksByDate: z.array(
-    z.object({
-      date: z.string(),
-      count: z.number(),
-    }),
-  ),
-  topBrowsers: z.array(
-    z.object({
-      browser: z.string(),
-      count: z.number(),
-    }),
-  ),
-  topCountries: z.array(
-    z.object({
-      country: z.string().nullable(),
-      count: z.number(),
-    }),
-  ),
-  topCities: z.array(
-    z.object({
-      city: z.string().nullable(),
-      count: z.number(),
-    }),
-  ),
-});
+import { messageResponseSchema } from "../interfaces/http/schemas/common-schemas";
+import { linkMetricsSchema, linkSchema } from "../interfaces/http/schemas/link-schemas";
 
 export async function linksRoutes(app: FastifyInstance) {
   // Rota POST cria link
@@ -69,7 +23,8 @@ export async function linksRoutes(app: FastifyInstance) {
         }),
         response: {
           201: linkSchema,
-          404: z.object({ message: z.string() }), // Erro cliente não encontrado
+          400: messageResponseSchema,
+          404: messageResponseSchema,
         },
       },
     },
@@ -77,13 +32,7 @@ export async function linksRoutes(app: FastifyInstance) {
       const { name, originalUrl, clientId, campaignId, tags } = request.body;
       const userId = request.user.sub; // Pega o id do user logado no token
 
-      // Instanciando dependências
-      const linkRepo = new PrismaLinksRepository();
-      const clientsRepo = new PrismaClientsRepository();
-      const clicksRepo = new PrismaClicksRepository();
-      const service = new LinksService(linkRepo, clientsRepo, clicksRepo);
-
-      const link = await service.createLink({
+      const link = await app.services.linksService.createLink({
         name,
         originalUrl,
         userId,
@@ -118,13 +67,7 @@ export async function linksRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { clientId, campaignId, search } = request.query;
 
-      const service = new LinksService(
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaClicksRepository(),
-      );
-
-      const links = await service.listLinks({
+      const links = await app.services.linksService.listLinks({
         clientId,
         campaignId,
         search,
@@ -145,20 +88,14 @@ export async function linksRoutes(app: FastifyInstance) {
         params: z.object({ id: z.uuid() }),
         response: {
           200: linkSchema,
-          404: z.object({ message: z.string() }),
+          404: messageResponseSchema,
         },
       },
     },
     async (request, reply) => {
       const { id } = request.params;
 
-      const service = new LinksService(
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaClicksRepository(),
-      );
-
-      const link = await service.getLink(id);
+      const link = await app.services.linksService.getLink(id);
       return reply.send(link);
     },
   );
@@ -183,7 +120,8 @@ export async function linksRoutes(app: FastifyInstance) {
         }),
         response: {
           200: linkSchema,
-          404: z.object({ message: z.string() }),
+          400: messageResponseSchema,
+          404: messageResponseSchema,
         },
       },
     },
@@ -191,13 +129,7 @@ export async function linksRoutes(app: FastifyInstance) {
       const { id } = request.params;
       const { name, originalUrl, clientId, campaignId, tags } = request.body;
 
-      const service = new LinksService(
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaClicksRepository(),
-      );
-
-      const updatedLink = await service.updateLink(id, {
+      const updatedLink = await app.services.linksService.updateLink(id, {
         name,
         originalUrl,
         clientId,
@@ -220,21 +152,15 @@ export async function linksRoutes(app: FastifyInstance) {
         params: z.object({ id: z.uuid() }),
         response: {
           204: z.null(),
-          404: z.object({ message: z.string() }),
+          404: messageResponseSchema,
         },
       },
     },
     async (request, reply) => {
       const { id } = request.params;
 
-      const service = new LinksService(
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaClicksRepository(),
-      );
-
-      await service.deleteLink(id);
-      return reply.status(204).send();
+      await app.services.linksService.deleteLink(id);
+      return reply.status(204).send(null);
     },
   );
 
@@ -253,8 +179,8 @@ export async function linksRoutes(app: FastifyInstance) {
           days: z.coerce.number().min(1).max(365).optional().default(30),
         }),
         response: {
-          200: metricsSchema,
-          404: z.object({ message: z.string() }),
+          200: linkMetricsSchema,
+          404: messageResponseSchema,
         },
       },
     },
@@ -262,13 +188,7 @@ export async function linksRoutes(app: FastifyInstance) {
       const { id } = request.params;
       const { days } = request.query;
 
-      const service = new LinksService(
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaClicksRepository(),
-      );
-
-      const metrics = await service.getLinkMetrics(id, days);
+      const metrics = await app.services.linksService.getLinkMetrics(id, days);
       return reply.status(200).send(metrics);
     },
   );

@@ -21,8 +21,9 @@ import { Skeleton } from "../ui/skeleton";
 import { RiEmotionUnhappyLine, RiLineChartLine } from "@remixicon/react";
 import { Cell, Label, Pie, PieChart } from "recharts";
 
-interface Top5PieChartProps extends React.ComponentProps<typeof Card> {
-  data: any[] | undefined;
+interface Top5PieChartProps<T extends object>
+  extends React.ComponentProps<typeof Card> {
+  data: T[] | undefined;
   dataKey: string; //Ex.: "count"
   nameKey: string; //Ex.: "browser" or "ip"
   title: string;
@@ -31,7 +32,7 @@ interface Top5PieChartProps extends React.ComponentProps<typeof Card> {
   isLoading?: boolean;
 }
 
-export function Top5PieChart({
+export function Top5PieChart<T extends object>({
   data,
   dataKey,
   nameKey,
@@ -41,13 +42,14 @@ export function Top5PieChart({
   isLoading,
   className,
   ...props
-}: Top5PieChartProps) {
+}: Top5PieChartProps<T>) {
   // Processa dados
   const processedData = React.useMemo(() => {
     if (!data) return [];
 
     return data.slice(0, 5).map((item, index) => {
-      const rawName = item[nameKey];
+      const dataItem = item as Record<string, string | number | null | undefined>;
+      const rawName = dataItem[nameKey];
 
       return {
         ...item,
@@ -79,7 +81,11 @@ export function Top5PieChart({
 
   // Cálculo do total para exibir no centro (Donut)
   const total = React.useMemo(() => {
-    return processedData.reduce((acc, curr) => acc + (curr[dataKey] || 0), 0);
+    return processedData.reduce((acc, curr) => {
+      const currentValue = (curr as Record<string, string | number | null | undefined>)[dataKey];
+
+      return acc + (typeof currentValue === "number" ? currentValue : 0);
+    }, 0);
   }, [processedData, dataKey]);
 
   return (

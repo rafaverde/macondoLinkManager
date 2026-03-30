@@ -1,4 +1,4 @@
-import { useDeleteLink } from "@/hooks/use-delete-links";
+import { useDeleteLink } from "@/features/links/hooks/use-delete-links";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,7 +11,6 @@ import {
 } from "./ui/alert-dialog";
 import { formatLink } from "@/lib/utils";
 import { RiLoader4Line } from "@remixicon/react";
-import { link } from "fs";
 
 interface DeleteLinkDialogProps {
   open: boolean;

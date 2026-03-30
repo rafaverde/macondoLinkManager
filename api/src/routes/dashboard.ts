@@ -2,61 +2,8 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { authHook } from "../hooks/auth";
-import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
-import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repository";
-import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
-import { DashboardService } from "../services/dashboard-service";
-import { PrismaCampaignsRepository } from "../repositories/prisma/prisma-campaign-repository";
-import { CampaignNotAllowedError } from "../services/errors/campaign-not-allowed-error";
-
-// Schemas
-const errorSchema = z.object({
-  message: z.string(),
-});
-
-const topClientsSchema = z.array(
-  z.object({
-    name: z.string(),
-    clicks: z.number(),
-  }),
-);
-
-const analyticsOverviewSchema = z.object({
-  summary: z.object({
-    totalClicks: z.number(),
-    activeLinks: z.number(),
-    period: z.string(),
-  }),
-  charts: z.object({
-    clicksByDate: z.array(
-      z.object({
-        date: z.string(),
-        count: z.number(),
-      }),
-    ),
-    topBrowsers: z.array(
-      z.object({
-        browser: z.string(),
-        count: z.number(),
-      }),
-    ),
-    topCountries: z.array(
-      z.object({
-        country: z.string().nullable(),
-        count: z.number(),
-      }),
-    ),
-    topCities: z.array(
-      z.object({
-        city: z.string().nullable(),
-        count: z.number(),
-      }),
-    ),
-  }),
-  meta: z.object({
-    hasData: z.boolean(),
-  }),
-});
+import { analyticsOverviewSchema, topClientsSchema } from "../interfaces/http/schemas/analytics-schemas";
+import { messageResponseSchema } from "../interfaces/http/schemas/common-schemas";
 
 export async function dashboardRoutes(app: FastifyInstance) {
   // Rota GET Top 5 Clientes
@@ -73,16 +20,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user.sub;
-
-      const service = new DashboardService(
-        new PrismaClicksRepository(),
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaCampaignsRepository(),
-      );
-
-      const topClients = await service.getTopClients(userId);
+      const topClients = await app.services.dashboardService.getTopClients();
       return reply.send(topClients);
     },
   );
@@ -95,23 +33,14 @@ export async function dashboardRoutes(app: FastifyInstance) {
       schema: {
         tags: ["Analytics"],
         summary:
-          "Obtém métricas agregadas de todos os links do usuários (últimos 30 dias)",
+          "Obtém métricas agregadas dos links da organização autenticada (últimos 30 dias).",
         response: {
           200: analyticsOverviewSchema,
         },
       },
     },
-    async (request, reply) => {
-      const userId = request.user.sub;
-
-      const service = new DashboardService(
-        new PrismaClicksRepository(),
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaCampaignsRepository(),
-      );
-
-      const overview = await service.getOverview(userId);
+    async (_request, reply) => {
+      const overview = await app.services.dashboardService.getOverview();
       return reply.send(overview);
     },
   );
@@ -134,16 +63,8 @@ export async function dashboardRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { clientId } = request.params;
-      const userId = request.user.sub;
-
-      const service = new DashboardService(
-        new PrismaClicksRepository(),
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaCampaignsRepository(),
-      );
-
-      const overview = await service.getClientOverview(userId, clientId);
+      const overview =
+        await app.services.dashboardService.getClientOverview(clientId);
       return reply.send(overview);
     },
   );
@@ -161,30 +82,15 @@ export async function dashboardRoutes(app: FastifyInstance) {
         }),
         response: {
           200: analyticsOverviewSchema,
-          403: errorSchema,
+          404: messageResponseSchema,
         },
       },
     },
     async (request, reply) => {
       const { campaignId } = request.params;
-      const userId = request.user.sub;
-
-      const service = new DashboardService(
-        new PrismaClicksRepository(),
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaCampaignsRepository(),
-      );
-
-      try {
-        const overview = await service.getCampaignOverview(userId, campaignId);
-        return reply.send(overview);
-      } catch (err) {
-        if (err instanceof CampaignNotAllowedError) {
-          return reply.status(403).send({ message: err.message });
-        }
-        throw err;
-      }
+      const overview =
+        await app.services.dashboardService.getCampaignOverview(campaignId);
+      return reply.send(overview);
     },
   );
 }

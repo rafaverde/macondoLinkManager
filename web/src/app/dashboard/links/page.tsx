@@ -24,10 +24,10 @@ import {
   RiSearchLine,
 } from "@remixicon/react";
 
-import { useCampaigns } from "@/hooks/use-campaigns";
-import { useClients } from "@/hooks/use-clients";
+import { useCampaigns } from "@/features/campaigns/hooks/use-campaigns";
+import { useClients } from "@/features/clients/hooks/use-clients";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useLinks } from "@/hooks/use-links";
+import { useLinks } from "@/features/links/hooks/use-links";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
@@ -62,20 +62,6 @@ export default function LinksPage() {
     setSelectedClient("all");
     setSelectedCampaign("all");
   };
-
-  useEffect(() => {
-    if (
-      selectedCampaign !== "all" &&
-      campaigns &&
-      !campaigns.some(
-        (c) =>
-          c.id === selectedCampaign &&
-          (selectedClient === "all" || c.clientId === selectedClient),
-      )
-    ) {
-      setSelectedCampaign("all");
-    }
-  }, [selectedClient, campaigns]);
 
   // Gera breadcrumb
   useEffect(() => {
@@ -122,7 +108,13 @@ export default function LinksPage() {
         </div>
 
         {/* Filtro por cliente */}
-        <Select value={selectedClient} onValueChange={setSelectedClient}>
+        <Select
+          value={selectedClient}
+          onValueChange={(value) => {
+            setSelectedClient(value);
+            setSelectedCampaign("all");
+          }}
+        >
           <SelectTrigger className="w-full lg:w-[200px]">
             <SelectValue placeholder="Selecione o cliente..." />
           </SelectTrigger>

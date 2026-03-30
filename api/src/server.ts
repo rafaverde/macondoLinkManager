@@ -20,6 +20,7 @@ import { linksRoutes } from "./routes/links";
 import { redirectRoutes } from "./routes/redirect";
 import { dashboardRoutes } from "./routes/dashboard";
 import { errorHandler } from "./errors/error-handler";
+import { appServicesPlugin } from "./plugins/app-services";
 
 // Inicializa o Fastify
 const app = Fastify({
@@ -86,6 +87,7 @@ const start = async () => {
     });
 
     app.setErrorHandler(errorHandler);
+    await app.register(appServicesPlugin);
 
     await app.register(authRoutes);
     await app.register(usersRoutes);

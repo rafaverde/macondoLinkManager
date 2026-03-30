@@ -1,12 +1,5 @@
-"use client";
-
-import { Suspense } from "react";
-import AuthCallbackClient from "./callback-client";
+import { redirect } from "next/navigation";
 
 export default function AuthCallbackPage() {
-  return (
-    <Suspense fallback={<p>Autenticando...</p>}>
-      <AuthCallbackClient />
-    </Suspense>
-  );
+  redirect("/");
 }

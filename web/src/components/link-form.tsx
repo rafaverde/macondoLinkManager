@@ -1,13 +1,13 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useCampaigns } from "@/hooks/use-campaigns";
-import { useClients } from "@/hooks/use-clients";
-import { useCreateLink } from "@/hooks/use-create-link";
+import { useCampaigns } from "@/features/campaigns/hooks/use-campaigns";
+import { useClients } from "@/features/clients/hooks/use-clients";
+import { useCreateLink } from "@/features/links/hooks/use-create-link";
 import { Card, CardContent } from "./ui/card";
 import {
   Form,
@@ -30,7 +30,7 @@ import {
 } from "./ui/select";
 import { InputTags } from "./ui/input-tags";
 import { Link } from "@/types";
-import { useUpdateLink } from "@/hooks/use-update-link";
+import { useUpdateLink } from "@/features/links/hooks/use-update-link";
 import CreateClientInline from "./create-client-inline";
 import { CreateCampaignInline } from "./create-campaign-inline";
 
@@ -73,7 +73,10 @@ export default function LinkForm({ initialData }: LinkFormProps) {
   });
 
   // Assistir o valor do campo "clientId" e passa para o hook de campanhas
-  const selectedClientId = form.watch("clientId");
+  const selectedClientId = useWatch({
+    control: form.control,
+    name: "clientId",
+  });
   const { data: campaigns, isLoading: isLoadingCampaigns } =
     useCampaigns(selectedClientId);
 
@@ -229,7 +232,7 @@ export default function LinkForm({ initialData }: LinkFormProps) {
                         </SelectContent>
                       </Select>
                       <CreateCampaignInline
-                        clientId={form.watch("clientId")}
+                        clientId={selectedClientId}
                         onSelectNew={(id) => field.onChange(id)}
                       />
                     </div>

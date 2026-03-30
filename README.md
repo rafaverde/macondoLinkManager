@@ -56,6 +56,22 @@ versionamento e deploy.
 -   Frontend consome read models estáveis
 -   Operações críticas são transacionais
 -   Create e Update seguem comportamento simétrico
+-   A composição da API é centralizada em um composition root
+-   Regras de negócio novas devem nascer por domínio primeiro, camada depois
+-   Cache e hooks do frontend são organizados por feature
+
+### Organização Técnica
+
+-   API:
+    - `api/src/plugins/app-services.ts` centraliza a composição de dependências
+    - `api/src/domains/links` e `api/src/domains/analytics` inauguram a organização por domínio
+    - `api/src/interfaces/http/schemas` concentra contratos HTTP reutilizáveis
+-   WEB:
+    - `web/src/features/*/hooks` concentra a camada de dados por feature
+    - `web/src/features/shared/cache` concentra query keys e invalidação
+    - `web/src/hooks` e `web/src/lib/query-*.ts` permanecem como compatibilidade temporária
+
+Referência técnica rápida: [docs/architecture.md](./docs/architecture.md)
 
 ------------------------------------------------------------------------
 
@@ -66,6 +82,7 @@ versionamento e deploy.
 -   Login via **Google OAuth**
 -   Restrição por domínio corporativo
 -   JWT armazenado em cookie httpOnly
+-   Callback oficial finalizado no backend, com gravação de sessão e redirect para o dashboard
 
 ------------------------------------------------------------------------
 
@@ -73,6 +90,7 @@ versionamento e deploy.
 
 -   Criação e edição de links encurtados
 -   Associação com clientes e campanhas
+-   Validação explícita da relação entre campanha e cliente no backend
 -   Sistema consolidado de **Tags**
 -   Geração de QR Code
 -   Compartilhamento simplificado
@@ -240,6 +258,12 @@ O projeto segue **Semantic Versioning (MAJOR.MINOR.PATCH)**.
 -   WhatsApp Link Generator
 -   Padronização de retornos de Link
 -   Correção de cache no detalhe de links
+
+### v1.5.0
+
+-   Hardening de auth, contratos e integridade entre cliente e campanha
+-   Composition root na API e início da organização por domínio
+-   Query keys centralizadas e organização de hooks por feature no frontend
 
 📄 Histórico completo: ➡️ [CHANGELOG.md](./CHANGELOG.md)
 

@@ -14,7 +14,7 @@ export interface ClientsRepository {
   create(data: CreateClientDTO): Promise<Client>; // Cria um novo cliente
   findByName(name: string): Promise<Client | null>; // Busca cliente pelo nome
   findById(id: string): Promise<Client | null>; // Busca cliente pelo id
-  findTopClients(userId?: string): Promise<ClientsWithClicks[]>; // Pega os clientes com mais cliques
+  findTopClients(): Promise<ClientsWithClicks[]>; // Pega os clientes com mais cliques da organização
   delete(id: string): Promise<void>; // Deleta cliente pelo id
   update(id: string, data: Prisma.ClientUpdateInput): Promise<Client>; // Atualiza dados do cliente
 }

@@ -2,12 +2,7 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { authHook } from "../hooks/auth";
-import { PrismaCampaignsRepository } from "../repositories/prisma/prisma-campaign-repository";
-import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
-import { CampaignsService } from "../services/campaigns-service";
-import { CampaignAlreadyExistsError } from "../services/errors/campaign-already-exists-error";
-import { CampaignsListRepository } from "../repositories/read-models/campaigns-list-repository";
-import { CampaignsListService } from "../services/campaings-list-service";
+import { messageResponseSchema } from "../interfaces/http/schemas/common-schemas";
 
 const campaignSchema = z.object({
   id: z.uuid(),
@@ -46,12 +41,9 @@ export async function campaignsRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { clientId } = request.query;
-
-      const listSservice = new CampaignsListService(
-        new CampaignsListRepository(),
+      const campaigns = await app.services.campaignsListService.execute(
+        clientId,
       );
-
-      const campaigns = await listSservice.execute(clientId);
       return reply.status(200).send(campaigns);
     },
   );
@@ -70,29 +62,18 @@ export async function campaignsRoutes(app: FastifyInstance) {
         }),
         response: {
           201: campaignSchema, // Sucesso
-          404: z.object({ message: z.string() }), // Cliente não encontrado
-          409: z.object({ message: z.string() }), // Conflito, campanha já existe no cliente
+          404: messageResponseSchema,
+          409: messageResponseSchema,
         },
       },
     },
     async (request, reply) => {
       const { clientId, name } = request.body;
-
-      const campaignsRepo = new PrismaCampaignsRepository();
-      const clientsRepo = new PrismaClientsRepository();
-      const service = new CampaignsService(campaignsRepo, clientsRepo);
-
-      try {
-        const campaign = await service.createCampaign({ name, clientId });
-        return reply.status(201).send(campaign);
-      } catch (err) {
-        // Lida com nossos erros customizados
-        if (err instanceof CampaignAlreadyExistsError) {
-          return reply.status(409).send({ message: err.message });
-        }
-
-        throw err; // Fastify lida com outros erros
-      }
+      const campaign = await app.services.campaignsService.createCampaign({
+        name,
+        clientId,
+      });
+      return reply.status(201).send(campaign);
     },
   );
 
@@ -109,19 +90,14 @@ export async function campaignsRoutes(app: FastifyInstance) {
         }),
         response: {
           200: campaignSchema,
-          404: z.object({ message: z.string() }),
+          404: messageResponseSchema,
         },
       },
     },
     async (request, reply) => {
       const { id } = request.params;
 
-      const service = new CampaignsService(
-        new PrismaCampaignsRepository(),
-        new PrismaClientsRepository(),
-      );
-
-      const campaign = await service.getCampaignById(id);
+      const campaign = await app.services.campaignsService.getCampaignById(id);
       return reply.send(campaign);
     },
   );
@@ -140,20 +116,15 @@ export async function campaignsRoutes(app: FastifyInstance) {
         }),
         response: {
           204: z.null(),
-          404: z.object({ message: z.string() }),
+          404: messageResponseSchema,
         },
       },
     },
     async (request, reply) => {
       const { id } = request.params;
 
-      const service = new CampaignsService(
-        new PrismaCampaignsRepository(),
-        new PrismaClientsRepository(),
-      );
-
-      await service.deleteCampaign(id);
-      return reply.status(204).send();
+      await app.services.campaignsService.deleteCampaign(id);
+      return reply.status(204).send(null);
     },
   );
 
@@ -173,29 +144,19 @@ export async function campaignsRoutes(app: FastifyInstance) {
         }),
         response: {
           200: campaignSchema,
-          404: z.object({ message: z.string() }),
-          409: z.object({ message: z.string() }),
+          404: messageResponseSchema,
+          409: messageResponseSchema,
         },
       },
     },
     async (request, reply) => {
       const { id } = request.params;
       const { name } = request.body;
-
-      const service = new CampaignsService(
-        new PrismaCampaignsRepository(),
-        new PrismaClientsRepository(),
+      const campaign = await app.services.campaignsService.updateCampaign(
+        id,
+        name,
       );
-
-      try {
-        const campaign = await service.updateCampaign(id, name);
-        return reply.status(200).send(campaign);
-      } catch (err) {
-        if (err instanceof CampaignAlreadyExistsError) {
-          return reply.status(409).send({ message: err.message });
-        }
-        throw err;
-      }
+      return reply.status(200).send(campaign);
     },
   );
 }

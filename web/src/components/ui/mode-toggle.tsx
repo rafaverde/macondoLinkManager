@@ -9,29 +9,9 @@ import {
 } from "./dropdown-menu";
 import { Button } from "./button";
 import { RiMoonLine, RiSunLine } from "@remixicon/react";
-import { useEffect, useState } from "react";
 
 export default function ModeToggle() {
   const { setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <Button
-        variant="ghost"
-        size="icon"
-        className="text-muted-foreground"
-        disabled
-      >
-        <RiSunLine className="h-[1.2rem] w-[1.2rem]" />
-        <span className="sr-only">Toggle theme</span>
-      </Button>
-    );
-  }
 
   return (
     <DropdownMenu>

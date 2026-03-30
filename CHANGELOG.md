@@ -7,6 +7,61 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.5.0] - 2026-03-30
+### ✨ Added
+- API:
+  - Composition root central para serviços e repositórios via plugin de aplicação.
+  - Base comum para erros de domínio HTTP-aware com categorização explícita.
+  - Schemas HTTP reutilizáveis para contratos compartilhados de links e analytics.
+- WEB:
+  - Fábrica central de query keys.
+  - Helpers compartilhados de invalidação de cache por domínio.
+  - Estrutura inicial de `feature folders` para hooks de dados.
+- Docs:
+  - Documento técnico de arquitetura em `docs/architecture.md`.
+
+### 🔧 Changed
+- API:
+  - Alinhamento dos contratos de campanhas, clientes e analytics ao escopo global da organização autenticada.
+  - Dashboard por campanha passa a refletir explicitamente o comportamento real do domínio: campanha inexistente retorna `404`.
+  - Criação e edição de links agora validam explicitamente a integridade entre `clientId` e `campaignId`, sem depender de erro implícito do banco.
+  - Rotas deixam de instanciar dependências manualmente e passam a consumir serviços centralizados.
+  - Início da organização por domínio em `links` e `analytics`, preservando os contratos públicos existentes.
+- WEB:
+  - Simplificação do callback de autenticação: o backend autentica, grava o cookie de sessão e redireciona diretamente para o dashboard.
+  - Estabilização dos fluxos de formulário e estado local em diálogos e telas críticas.
+  - Tipagem reforçada em hooks, gráficos e utilitários para reduzir `any` e fragilidade em tempo de manutenção.
+  - Hooks de dados passam a consumir query keys centralizadas e helpers de invalidação compartilhados.
+  - Organização incremental da camada de dados em `features/clients`, `features/campaigns`, `features/links` e `features/dashboard`.
+
+### 🧹 Removed
+- WEB:
+  - Remoção do fluxo legado de sessão baseado em `token` no callback do frontend.
+- API:
+  - Remoção de contratos e sinais obsoletos de autorização por owner onde o produto opera em escopo organizacional.
+  - Remoção da instanciação repetida de serviços e repositórios dentro dos handlers das rotas principais.
+
+### 🐛 Fixed
+- API:
+  - Correção de inconsistências entre Swagger, rotas, serviços e repositórios no dashboard de campanha.
+  - Resposta explícita para tentativa de vincular link a campanha incompatível com o cliente informado.
+  - Ambiente local da API passa a sincronizar o schema Prisma no boot Docker dev, reduzindo falhas por banco desatualizado.
+- WEB:
+  - Correção do interceptor HTTP para tratar `401` corretamente.
+  - Correção do submit via Enter na edição/criação de campanhas.
+  - Correção de resets de estado e efeitos desnecessários em diálogos e formulários.
+  - Correção de pontos que impediam `npm run lint` e `npm run build` de fecharem com segurança no escopo do sprint.
+
+### ♻️ Refactored
+- API:
+  - `LinksService` e `DashboardService` passam a viver em domínios explícitos, em vez de uma pasta genérica de services.
+  - Error handler passa a usar uma base única para mapear erros de domínio para HTTP.
+- WEB:
+  - Caminhos antigos de hooks e cache permanecem como camada de compatibilidade temporária via re-export.
+  - Fluxo de cache do React Query fica previsível e centralizado para criação, edição e exclusão de clientes, campanhas e links.
+
+---
+
 ## [1.4.4] - 2026-03-11
 ### 🔧 Changed
 - API:
