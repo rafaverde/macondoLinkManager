@@ -2,12 +2,7 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { authHook } from "../hooks/auth";
-import { PrismaCampaignsRepository } from "../repositories/prisma/prisma-campaign-repository";
-import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
-import { CampaignsService } from "../services/campaigns-service";
 import { CampaignAlreadyExistsError } from "../services/errors/campaign-already-exists-error";
-import { CampaignsListRepository } from "../repositories/read-models/campaigns-list-repository";
-import { CampaignsListService } from "../services/campaings-list-service";
 
 const campaignSchema = z.object({
   id: z.uuid(),
@@ -46,12 +41,9 @@ export async function campaignsRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { clientId } = request.query;
-
-      const listSservice = new CampaignsListService(
-        new CampaignsListRepository(),
+      const campaigns = await app.services.campaignsListService.execute(
+        clientId,
       );
-
-      const campaigns = await listSservice.execute(clientId);
       return reply.status(200).send(campaigns);
     },
   );
@@ -78,12 +70,11 @@ export async function campaignsRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { clientId, name } = request.body;
 
-      const campaignsRepo = new PrismaCampaignsRepository();
-      const clientsRepo = new PrismaClientsRepository();
-      const service = new CampaignsService(campaignsRepo, clientsRepo);
-
       try {
-        const campaign = await service.createCampaign({ name, clientId });
+        const campaign = await app.services.campaignsService.createCampaign({
+          name,
+          clientId,
+        });
         return reply.status(201).send(campaign);
       } catch (err) {
         // Lida com nossos erros customizados
@@ -116,12 +107,7 @@ export async function campaignsRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = request.params;
 
-      const service = new CampaignsService(
-        new PrismaCampaignsRepository(),
-        new PrismaClientsRepository(),
-      );
-
-      const campaign = await service.getCampaignById(id);
+      const campaign = await app.services.campaignsService.getCampaignById(id);
       return reply.send(campaign);
     },
   );
@@ -147,12 +133,7 @@ export async function campaignsRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = request.params;
 
-      const service = new CampaignsService(
-        new PrismaCampaignsRepository(),
-        new PrismaClientsRepository(),
-      );
-
-      await service.deleteCampaign(id);
+      await app.services.campaignsService.deleteCampaign(id);
       return reply.status(204).send();
     },
   );
@@ -182,13 +163,11 @@ export async function campaignsRoutes(app: FastifyInstance) {
       const { id } = request.params;
       const { name } = request.body;
 
-      const service = new CampaignsService(
-        new PrismaCampaignsRepository(),
-        new PrismaClientsRepository(),
-      );
-
       try {
-        const campaign = await service.updateCampaign(id, name);
+        const campaign = await app.services.campaignsService.updateCampaign(
+          id,
+          name,
+        );
         return reply.status(200).send(campaign);
       } catch (err) {
         if (err instanceof CampaignAlreadyExistsError) {

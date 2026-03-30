@@ -1,8 +1,6 @@
 import fastifyOauth2 from "@fastify/oauth2";
 import { FastifyInstance } from "fastify";
 import { env } from "../env";
-import { PrismaUsersRepository } from "../repositories/prisma/prisma-users-repository";
-import { AuthService } from "../services/auth-service";
 import { z } from "zod";
 import { DomainNotAllowedError } from "../services/errors/domain-not-allowed-error";
 import fp from "fastify-plugin";
@@ -31,10 +29,6 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
 
   // O Endpoint de callback (controller)
   app.get("/auth/google/callback", async (request, reply) => {
-    // Instanciando dependências
-    const usersRepository = new PrismaUsersRepository();
-    const authService = new AuthService(usersRepository);
-
     try {
       // Pega o token do Google
       const { token } =
@@ -58,7 +52,9 @@ export const authRoutes = fp(async (app: FastifyInstance) => {
       const userInfo = userInfoSchema.parse(googleUser);
 
       // Chama o serviço (Lógica de Negócio)
-      const user = await authService.authenticateWithGoogle(userInfo);
+      const user = await app.services.authService.authenticateWithGoogle(
+        userInfo,
+      );
 
       // Gera o token JWT, caso o serviço seja bem sucedido.
       const jwtToken = app.jwt.sign(

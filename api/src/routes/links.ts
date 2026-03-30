@@ -2,11 +2,6 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { authHook } from "../hooks/auth";
-import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repository";
-import { PrismaCampaignsRepository } from "../repositories/prisma/prisma-campaign-repository";
-import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
-import { LinksService } from "../services/links-service";
-import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
 
 const linkSchema = z.object({
   id: z.uuid(),
@@ -79,19 +74,7 @@ export async function linksRoutes(app: FastifyInstance) {
       const { name, originalUrl, clientId, campaignId, tags } = request.body;
       const userId = request.user.sub; // Pega o id do user logado no token
 
-      // Instanciando dependências
-      const linkRepo = new PrismaLinksRepository();
-      const clientsRepo = new PrismaClientsRepository();
-      const campaignsRepo = new PrismaCampaignsRepository();
-      const clicksRepo = new PrismaClicksRepository();
-      const service = new LinksService(
-        linkRepo,
-        clientsRepo,
-        campaignsRepo,
-        clicksRepo,
-      );
-
-      const link = await service.createLink({
+      const link = await app.services.linksService.createLink({
         name,
         originalUrl,
         userId,
@@ -126,14 +109,7 @@ export async function linksRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { clientId, campaignId, search } = request.query;
 
-      const service = new LinksService(
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaCampaignsRepository(),
-        new PrismaClicksRepository(),
-      );
-
-      const links = await service.listLinks({
+      const links = await app.services.linksService.listLinks({
         clientId,
         campaignId,
         search,
@@ -161,14 +137,7 @@ export async function linksRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = request.params;
 
-      const service = new LinksService(
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaCampaignsRepository(),
-        new PrismaClicksRepository(),
-      );
-
-      const link = await service.getLink(id);
+      const link = await app.services.linksService.getLink(id);
       return reply.send(link);
     },
   );
@@ -202,14 +171,7 @@ export async function linksRoutes(app: FastifyInstance) {
       const { id } = request.params;
       const { name, originalUrl, clientId, campaignId, tags } = request.body;
 
-      const service = new LinksService(
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaCampaignsRepository(),
-        new PrismaClicksRepository(),
-      );
-
-      const updatedLink = await service.updateLink(id, {
+      const updatedLink = await app.services.linksService.updateLink(id, {
         name,
         originalUrl,
         clientId,
@@ -239,14 +201,7 @@ export async function linksRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = request.params;
 
-      const service = new LinksService(
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaCampaignsRepository(),
-        new PrismaClicksRepository(),
-      );
-
-      await service.deleteLink(id);
+      await app.services.linksService.deleteLink(id);
       return reply.status(204).send();
     },
   );
@@ -275,14 +230,7 @@ export async function linksRoutes(app: FastifyInstance) {
       const { id } = request.params;
       const { days } = request.query;
 
-      const service = new LinksService(
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaCampaignsRepository(),
-        new PrismaClicksRepository(),
-      );
-
-      const metrics = await service.getLinkMetrics(id, days);
+      const metrics = await app.services.linksService.getLinkMetrics(id, days);
       return reply.status(200).send(metrics);
     },
   );

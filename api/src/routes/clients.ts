@@ -8,11 +8,7 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { authHook } from "../hooks/auth";
-import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
-import { ClientsService } from "../services/clients-service";
 import { ClientAlreadyExistsError } from "../services/errors/client-already-exists-error";
-import { ClientsListRepository } from "../repositories/read-models/client-list-repository";
-import { ClientsListService } from "../services/clients-list-service";
 
 // Define a forma de um cliente para a API
 const clientSchema = z.object({
@@ -46,10 +42,7 @@ export async function clientsRoutes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const listRepository = new ClientsListRepository();
-      const listService = new ClientsListService(listRepository);
-
-      const clients = await listService.execute();
+      const clients = await app.services.clientsListService.execute();
       return reply.status(200).send(clients);
     },
   );
@@ -75,11 +68,8 @@ export async function clientsRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { name } = request.body;
 
-      const repo = new PrismaClientsRepository();
-      const service = new ClientsService(repo);
-
       try {
-        const client = await service.createClient(name);
+        const client = await app.services.clientsService.createClient(name);
         return reply.status(201).send(client);
       } catch (err) {
         if (err instanceof ClientAlreadyExistsError) {
@@ -110,9 +100,7 @@ export async function clientsRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = request.params;
 
-      const service = new ClientsService(new PrismaClientsRepository());
-
-      const client = await service.getClientById(id);
+      const client = await app.services.clientsService.getClientById(id);
       return reply.send(client);
     },
   );
@@ -138,9 +126,7 @@ export async function clientsRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = request.params;
 
-      const service = new ClientsService(new PrismaClientsRepository());
-
-      await service.deleteClient(id);
+      await app.services.clientsService.deleteClient(id);
       return reply.status(204).send();
     },
   );
@@ -170,10 +156,8 @@ export async function clientsRoutes(app: FastifyInstance) {
       const { id } = request.params;
       const { name } = request.body;
 
-      const service = new ClientsService(new PrismaClientsRepository());
-
       try {
-        const client = await service.updateClient(id, name);
+        const client = await app.services.clientsService.updateClient(id, name);
         return reply.status(200).send(client);
       } catch (err) {
         if (err instanceof ClientAlreadyExistsError) {

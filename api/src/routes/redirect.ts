@@ -1,11 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
-import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repository";
-import { PrismaCampaignsRepository } from "../repositories/prisma/prisma-campaign-repository";
-import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
-import { LinksService } from "../services/links-service";
-import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
 import { getPublicClientIp } from "../utils/get-public-client-ip";
 
 export async function redirectRoutes(app: FastifyInstance) {
@@ -27,15 +22,8 @@ export async function redirectRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { shortCode } = request.params;
 
-      const service = new LinksService(
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaCampaignsRepository(),
-        new PrismaClicksRepository(),
-      );
-
       // Busca o link pelo código
-      const link = await service.getLinkByShortCode(shortCode);
+      const link = await app.services.linksService.getLinkByShortCode(shortCode);
 
       // Se não existe, 404
       if (!link) {
@@ -54,7 +42,12 @@ export async function redirectRoutes(app: FastifyInstance) {
       const ip = getPublicClientIp(request);
       const userAgent = request.headers["user-agent"];
 
-      await service.trackClick(link.id, ip, userAgent, request.headers);
+      await app.services.linksService.trackClick(
+        link.id,
+        ip,
+        userAgent,
+        request.headers,
+      );
 
       // Redireciona para a URL original
       return reply.redirect(link.originalUrl);

@@ -2,11 +2,6 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { authHook } from "../hooks/auth";
-import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
-import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repository";
-import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
-import { DashboardService } from "../services/dashboard-service";
-import { PrismaCampaignsRepository } from "../repositories/prisma/prisma-campaign-repository";
 
 const topClientsSchema = z.array(
   z.object({
@@ -67,14 +62,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const service = new DashboardService(
-        new PrismaClicksRepository(),
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaCampaignsRepository(),
-      );
-
-      const topClients = await service.getTopClients();
+      const topClients = await app.services.dashboardService.getTopClients();
       return reply.send(topClients);
     },
   );
@@ -94,14 +82,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
       },
     },
     async (_request, reply) => {
-      const service = new DashboardService(
-        new PrismaClicksRepository(),
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaCampaignsRepository(),
-      );
-
-      const overview = await service.getOverview();
+      const overview = await app.services.dashboardService.getOverview();
       return reply.send(overview);
     },
   );
@@ -124,15 +105,8 @@ export async function dashboardRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { clientId } = request.params;
-
-      const service = new DashboardService(
-        new PrismaClicksRepository(),
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaCampaignsRepository(),
-      );
-
-      const overview = await service.getClientOverview(clientId);
+      const overview =
+        await app.services.dashboardService.getClientOverview(clientId);
       return reply.send(overview);
     },
   );
@@ -156,15 +130,8 @@ export async function dashboardRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { campaignId } = request.params;
-
-      const service = new DashboardService(
-        new PrismaClicksRepository(),
-        new PrismaLinksRepository(),
-        new PrismaClientsRepository(),
-        new PrismaCampaignsRepository(),
-      );
-
-      const overview = await service.getCampaignOverview(campaignId);
+      const overview =
+        await app.services.dashboardService.getCampaignOverview(campaignId);
       return reply.send(overview);
     },
   );
