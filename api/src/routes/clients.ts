@@ -8,7 +8,7 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { authHook } from "../hooks/auth";
-import { ClientAlreadyExistsError } from "../services/errors/client-already-exists-error";
+import { messageResponseSchema } from "../interfaces/http/schemas/common-schemas";
 
 // Define a forma de um cliente para a API
 const clientSchema = z.object({
@@ -61,22 +61,14 @@ export async function clientsRoutes(app: FastifyInstance) {
         }),
         response: {
           201: clientSchema, // Retorna cliente criado.
-          409: z.object({ message: z.string() }), // Erro de conflito.
+          409: messageResponseSchema, // Erro de conflito.
         },
       },
     },
     async (request, reply) => {
       const { name } = request.body;
-
-      try {
-        const client = await app.services.clientsService.createClient(name);
-        return reply.status(201).send(client);
-      } catch (err) {
-        if (err instanceof ClientAlreadyExistsError) {
-          return reply.status(409).send({ message: err.message });
-        }
-        throw err; // Deixa o Fastify lidar com outros erros
-      }
+      const client = await app.services.clientsService.createClient(name);
+      return reply.status(201).send(client);
     },
   );
 
@@ -93,7 +85,7 @@ export async function clientsRoutes(app: FastifyInstance) {
         }),
         response: {
           200: clientSchema,
-          404: z.object({ message: z.string() }),
+          404: messageResponseSchema,
         },
       },
     },
@@ -119,7 +111,7 @@ export async function clientsRoutes(app: FastifyInstance) {
         }),
         response: {
           204: z.null(),
-          404: z.object({ message: z.string() }),
+          404: messageResponseSchema,
         },
       },
     },
@@ -147,24 +139,16 @@ export async function clientsRoutes(app: FastifyInstance) {
         }),
         response: {
           200: clientSchema,
-          404: z.object({ message: z.string() }),
-          409: z.object({ message: z.string() }),
+          404: messageResponseSchema,
+          409: messageResponseSchema,
         },
       },
     },
     async (request, reply) => {
       const { id } = request.params;
       const { name } = request.body;
-
-      try {
-        const client = await app.services.clientsService.updateClient(id, name);
-        return reply.status(200).send(client);
-      } catch (err) {
-        if (err instanceof ClientAlreadyExistsError) {
-          return reply.status(409).send({ message: err.message });
-        }
-        throw err;
-      }
+      const client = await app.services.clientsService.updateClient(id, name);
+      return reply.status(200).send(client);
     },
   );
 }

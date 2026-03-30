@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { getPublicClientIp } from "../utils/get-public-client-ip";
+import { messageResponseSchema } from "../interfaces/http/schemas/common-schemas";
 
 export async function redirectRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
@@ -15,7 +16,7 @@ export async function redirectRoutes(app: FastifyInstance) {
         }),
         response: {
           302: z.null(), //Redirecionamento (sem corpo)
-          404: z.object({ message: z.string() }),
+          404: messageResponseSchema,
         },
       },
     },

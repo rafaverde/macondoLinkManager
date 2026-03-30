@@ -2,50 +2,8 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { authHook } from "../hooks/auth";
-
-const topClientsSchema = z.array(
-  z.object({
-    name: z.string(),
-    clicks: z.number(),
-  }),
-);
-
-const analyticsOverviewSchema = z.object({
-  summary: z.object({
-    totalClicks: z.number(),
-    activeLinks: z.number(),
-    period: z.string(),
-  }),
-  charts: z.object({
-    clicksByDate: z.array(
-      z.object({
-        date: z.string(),
-        count: z.number(),
-      }),
-    ),
-    topBrowsers: z.array(
-      z.object({
-        browser: z.string(),
-        count: z.number(),
-      }),
-    ),
-    topCountries: z.array(
-      z.object({
-        country: z.string().nullable(),
-        count: z.number(),
-      }),
-    ),
-    topCities: z.array(
-      z.object({
-        city: z.string().nullable(),
-        count: z.number(),
-      }),
-    ),
-  }),
-  meta: z.object({
-    hasData: z.boolean(),
-  }),
-});
+import { analyticsOverviewSchema, topClientsSchema } from "../interfaces/http/schemas/analytics-schemas";
+import { messageResponseSchema } from "../interfaces/http/schemas/common-schemas";
 
 export async function dashboardRoutes(app: FastifyInstance) {
   // Rota GET Top 5 Clientes
@@ -124,7 +82,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
         }),
         response: {
           200: analyticsOverviewSchema,
-          404: z.object({ message: z.string() }),
+          404: messageResponseSchema,
         },
       },
     },

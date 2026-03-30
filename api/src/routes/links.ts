@@ -2,50 +2,8 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { authHook } from "../hooks/auth";
-
-const linkSchema = z.object({
-  id: z.uuid(),
-  originalUrl: z.url(),
-  shortCode: z.string(),
-  name: z.string(),
-  userId: z.uuid(),
-  clientId: z.uuid(),
-  campaignId: z.uuid().nullable(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-  // Campos relacionamentos
-  client: z.object({ name: z.string() }).optional(),
-  campaign: z.object({ name: z.string() }).nullable().optional(),
-  _count: z.object({ clicks: z.number() }).optional(),
-  tags: z.array(z.object({ id: z.uuid(), name: z.string() })).optional(),
-});
-
-const metricsSchema = z.object({
-  clicksByDate: z.array(
-    z.object({
-      date: z.string(),
-      count: z.number(),
-    }),
-  ),
-  topBrowsers: z.array(
-    z.object({
-      browser: z.string(),
-      count: z.number(),
-    }),
-  ),
-  topCountries: z.array(
-    z.object({
-      country: z.string().nullable(),
-      count: z.number(),
-    }),
-  ),
-  topCities: z.array(
-    z.object({
-      city: z.string().nullable(),
-      count: z.number(),
-    }),
-  ),
-});
+import { messageResponseSchema } from "../interfaces/http/schemas/common-schemas";
+import { linkMetricsSchema, linkSchema } from "../interfaces/http/schemas/link-schemas";
 
 export async function linksRoutes(app: FastifyInstance) {
   // Rota POST cria link
@@ -65,8 +23,8 @@ export async function linksRoutes(app: FastifyInstance) {
         }),
         response: {
           201: linkSchema,
-          400: z.object({ message: z.string() }),
-          404: z.object({ message: z.string() }), // Erro cliente não encontrado
+          400: messageResponseSchema,
+          404: messageResponseSchema,
         },
       },
     },
@@ -130,7 +88,7 @@ export async function linksRoutes(app: FastifyInstance) {
         params: z.object({ id: z.uuid() }),
         response: {
           200: linkSchema,
-          404: z.object({ message: z.string() }),
+          404: messageResponseSchema,
         },
       },
     },
@@ -162,8 +120,8 @@ export async function linksRoutes(app: FastifyInstance) {
         }),
         response: {
           200: linkSchema,
-          400: z.object({ message: z.string() }),
-          404: z.object({ message: z.string() }),
+          400: messageResponseSchema,
+          404: messageResponseSchema,
         },
       },
     },
@@ -194,7 +152,7 @@ export async function linksRoutes(app: FastifyInstance) {
         params: z.object({ id: z.uuid() }),
         response: {
           204: z.null(),
-          404: z.object({ message: z.string() }),
+          404: messageResponseSchema,
         },
       },
     },
@@ -221,8 +179,8 @@ export async function linksRoutes(app: FastifyInstance) {
           days: z.coerce.number().min(1).max(365).optional().default(30),
         }),
         response: {
-          200: metricsSchema,
-          404: z.object({ message: z.string() }),
+          200: linkMetricsSchema,
+          404: messageResponseSchema,
         },
       },
     },

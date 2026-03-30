@@ -1,9 +1,6 @@
 import { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import z, { ZodError } from "zod";
-import { LinkNotFoundError } from "../domains/links/domain/errors/link-not-found-error";
-import { ClientNotFoundError } from "../services/errors/client-not-found-error";
-import { CampaignNotFoundError } from "../services/errors/campaign-not-found.error";
-import { CampaignClientMismatchError } from "../domains/links/domain/errors/campaign-client-mismatch-error";
+import { AppError } from "./app-error";
 
 export function errorHandler(
   error: FastifyError | Error,
@@ -18,19 +15,8 @@ export function errorHandler(
     });
   }
 
-  if (error instanceof CampaignClientMismatchError) {
-    return reply.status(400).send({
-      message: error.message,
-    });
-  }
-
-  // Erros de domínio (404)
-  if (
-    error instanceof LinkNotFoundError ||
-    error instanceof ClientNotFoundError ||
-    error instanceof CampaignNotFoundError
-  ) {
-    return reply.status(404).send({
+  if (error instanceof AppError) {
+    return reply.status(error.statusCode).send({
       message: error.message,
     });
   }

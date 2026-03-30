@@ -1,6 +1,11 @@
-export class CampaignAlreadyExistsError extends Error {
+import { AppError } from "../../errors/app-error";
+
+export class CampaignAlreadyExistsError extends AppError {
   constructor() {
-    super("Esse nome de campanha já está sendo usado por esse cliente.");
-    this.name = "CampaignAlreadyExistsError";
+    super(
+      "Esse nome de campanha já está sendo usado por esse cliente.",
+      409,
+      "conflict_or_invalid_relation",
+    );
   }
 }
