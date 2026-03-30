@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { queryKeys } from "@/lib/query-keys";
 import { Link } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
@@ -14,8 +15,7 @@ export function useLinks({
   search,
 }: useLinksParams = {}) {
   return useQuery({
-    // Filtros na queryKey, caso mude refaz a busca
-    queryKey: ["links", { clientId, campaignId, search }],
+    queryKey: queryKeys.links.list({ clientId, campaignId, search }),
     queryFn: async () => {
       const { data } = await api.get<Link[]>("/links", {
         params: { clientId, campaignId, search },

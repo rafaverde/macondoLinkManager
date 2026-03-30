@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { invalidateLinksData } from "@/lib/query-invalidation";
 import { CreateLinkData } from "@/types";
 import { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -18,30 +19,16 @@ export function useCreateLink(onSuccessCallback?: () => void) {
     },
     onSuccess: (_data, variables) => {
       toast.success("Link criado com sucesso.");
+      void invalidateLinksData(queryClient, {
+        clientId: variables.clientId,
+        campaignId: variables.campaignId,
+      });
 
-      // Força o React Query a buscar a lista de links atualizada.
-      queryClient.invalidateQueries({ queryKey: ["links"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-
-      if (variables.clientId) {
-        queryClient.invalidateQueries({
-          queryKey: ["dashboard", "client", variables.clientId],
-        });
-      }
-
-      if (variables.campaignId) {
-        queryClient.invalidateQueries({
-          queryKey: ["dashboard", "campaign", variables.campaignId],
-        });
-      }
-
-      // Executa função extra
       if (onSuccessCallback) {
         onSuccessCallback();
       }
     },
     onError: (error: AxiosError<ApiErrorResponse>) => {
-      // Tenta pegar a mensagem de erro da API ou usa uma genérica
       const message =
         error.response?.data?.message || "Erro ao criar o link.";
       toast.error(message);

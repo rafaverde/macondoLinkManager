@@ -1,4 +1,8 @@
 import { api } from "@/lib/api";
+import {
+  invalidateCampaignsData,
+  invalidateLinksData,
+} from "@/lib/query-invalidation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -11,8 +15,8 @@ export function useDeleteCampaign() {
     },
     onSuccess: () => {
       toast.warning("Campanha apagada e seus links desassociados!");
-      queryClient.invalidateQueries({ queryKey: ["campaigns"] });
-      queryClient.invalidateQueries({ queryKey: ["links"] });
+      void invalidateCampaignsData(queryClient);
+      void invalidateLinksData(queryClient);
     },
     onError: () => {
       toast.error("Erro ao excluir a campanha. Tente novamente mais tarde.");

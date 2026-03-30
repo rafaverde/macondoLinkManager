@@ -1,4 +1,6 @@
 import { api } from "@/lib/api";
+import { invalidateLinksData } from "@/lib/query-invalidation";
+import { queryKeys } from "@/lib/query-keys";
 import { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -28,23 +30,12 @@ export function useUpdateLink(onSuccessCallback?: () => void) {
     },
     onSuccess: (data, variables) => {
       toast.success("Link atualizado com sucesso");
-
-      queryClient.invalidateQueries({ queryKey: ["links"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-
-      queryClient.setQueryData(["link", variables.id], data);
-
-      if (variables.clientId) {
-        queryClient.invalidateQueries({
-          queryKey: ["dashboard", "client", variables.clientId],
-        });
-      }
-
-      if (variables.campaignId) {
-        queryClient.invalidateQueries({
-          queryKey: ["dashboard", "campaign", variables.campaignId],
-        });
-      }
+      queryClient.setQueryData(queryKeys.links.detail(variables.id), data);
+      void invalidateLinksData(queryClient, {
+        clientId: variables.clientId,
+        campaignId: variables.campaignId,
+        linkId: variables.id,
+      });
 
       if (onSuccessCallback) onSuccessCallback();
     },

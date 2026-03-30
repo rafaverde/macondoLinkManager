@@ -1,4 +1,8 @@
 import { api } from "@/lib/api";
+import {
+  invalidateCampaignsData,
+  invalidateLinksData,
+} from "@/lib/query-invalidation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -17,7 +21,8 @@ export function useUpdateCampaign(clientId: string) {
     },
     onSuccess: () => {
       toast.success("Campanha alterada com sucesso!");
-      queryClient.invalidateQueries({ queryKey: ["campaigns", clientId] });
+      void invalidateCampaignsData(queryClient, clientId);
+      void invalidateLinksData(queryClient, { clientId });
     },
     onError: () => {
       toast.error(

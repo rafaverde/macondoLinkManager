@@ -1,10 +1,11 @@
 import { api } from "@/lib/api";
+import { queryKeys } from "@/lib/query-keys";
 import { OverviewMetrics } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
 export function useClientDashboard(clientId: string) {
   return useQuery({
-    queryKey: ["dashboard", "client", clientId],
+    queryKey: queryKeys.dashboard.client(clientId),
     queryFn: async () => {
       const { data } = await api.get<OverviewMetrics>(
         `/dashboard/clients/${clientId}/overview`,

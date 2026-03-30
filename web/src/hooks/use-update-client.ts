@@ -1,4 +1,8 @@
 import { api } from "@/lib/api";
+import {
+  invalidateClientsData,
+  invalidateDashboardData,
+} from "@/lib/query-invalidation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -17,7 +21,8 @@ export function useUpdateClient() {
     },
     onSuccess: () => {
       toast.success("Cliente alterado com sucesso!");
-      queryClient.invalidateQueries({ queryKey: ["clients"] });
+      void invalidateClientsData(queryClient);
+      void invalidateDashboardData(queryClient);
     },
     onError: () => {
       toast.error(

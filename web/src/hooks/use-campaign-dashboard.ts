@@ -1,10 +1,11 @@
 import { api } from "@/lib/api";
+import { queryKeys } from "@/lib/query-keys";
 import { OverviewMetrics } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
 export function useCampaignDashboard(campaignId: string) {
   return useQuery({
-    queryKey: ["dashboard", "campaign", campaignId],
+    queryKey: queryKeys.dashboard.campaign(campaignId),
     queryFn: async () => {
       const { data } = await api.get<OverviewMetrics>(
         `/dashboard/campaigns/${campaignId}/overview`,
