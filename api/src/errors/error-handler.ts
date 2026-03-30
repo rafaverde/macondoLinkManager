@@ -3,6 +3,7 @@ import z, { ZodError } from "zod";
 import { LinkNotFoundError } from "../services/errors/link-not-found-error";
 import { ClientNotFoundError } from "../services/errors/client-not-found-error";
 import { CampaignNotFoundError } from "../services/errors/campaign-not-found.error";
+import { CampaignClientMismatchError } from "../services/errors/campaign-client-mismatch-error";
 
 export function errorHandler(
   error: FastifyError | Error,
@@ -14,6 +15,12 @@ export function errorHandler(
     return reply.status(400).send({
       message: "Erro de validação.",
       issues: z.treeifyError(error),
+    });
+  }
+
+  if (error instanceof CampaignClientMismatchError) {
+    return reply.status(400).send({
+      message: error.message,
     });
   }
 

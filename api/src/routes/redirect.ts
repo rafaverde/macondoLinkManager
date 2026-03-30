@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repository";
+import { PrismaCampaignsRepository } from "../repositories/prisma/prisma-campaign-repository";
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { LinksService } from "../services/links-service";
 import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
@@ -29,6 +30,7 @@ export async function redirectRoutes(app: FastifyInstance) {
       const service = new LinksService(
         new PrismaLinksRepository(),
         new PrismaClientsRepository(),
+        new PrismaCampaignsRepository(),
         new PrismaClicksRepository(),
       );
 

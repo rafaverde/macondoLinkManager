@@ -1,6 +1,9 @@
+import { CampaignsRepository } from "../repositories/campaigns-repository";
 import { ClicksRepository } from "../repositories/clicks-repository";
 import { ClientsRepository } from "../repositories/clients-repository";
 import { LinksRepository } from "../repositories/links-repository";
+import { CampaignClientMismatchError } from "./errors/campaign-client-mismatch-error";
+import { CampaignNotFoundError } from "./errors/campaign-not-found.error";
 import { detectBot } from "../utils/detect-bot";
 import { recordClickBurst } from "../utils/bot-burst-detector";
 import { resolveAsnInfo } from "../utils/asn";
@@ -22,8 +25,28 @@ export class LinksService {
   constructor(
     private linksRepository: LinksRepository,
     private clientsRepository: ClientsRepository,
+    private campaignsRepository: CampaignsRepository,
     private clicksRepository: ClicksRepository,
   ) {}
+
+  private async validateCampaignForClient(
+    clientId: string,
+    campaignId?: string | null,
+  ) {
+    if (!campaignId) {
+      return;
+    }
+
+    const campaign = await this.campaignsRepository.findById(campaignId);
+
+    if (!campaign) {
+      throw new CampaignNotFoundError();
+    }
+
+    if (campaign.clientId !== clientId) {
+      throw new CampaignClientMismatchError();
+    }
+  }
 
   // Método público que busca por ShortCode (usado no redirecionamento)
   async getLinkByShortCode(shortCode: string) {
@@ -44,6 +67,8 @@ export class LinksService {
     if (!client) {
       throw new ClientNotFoundError(); // Erro cliente não encontrado
     }
+
+    await this.validateCampaignForClient(clientId, campaignId);
 
     // Gera um shortcode único
     let shortCode = generateShortCode();
@@ -100,12 +125,18 @@ export class LinksService {
       tags?: string[];
     },
   ) {
-    await this.getLink(id);
+    const existingLink = await this.getLink(id);
+
+    const nextClientId = data.clientId ?? existingLink.clientId;
+    const nextCampaignId =
+      data.campaignId === undefined ? existingLink.campaignId : data.campaignId;
 
     if (data.clientId) {
-      const client = await this.clientsRepository.findById(data.clientId);
+      const client = await this.clientsRepository.findById(nextClientId);
       if (!client) throw new ClientNotFoundError();
     }
+
+    await this.validateCampaignForClient(nextClientId, nextCampaignId);
 
     const updatedLink = await this.linksRepository.update(id, data);
     return updatedLink;

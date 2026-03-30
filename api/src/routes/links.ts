@@ -3,6 +3,7 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { authHook } from "../hooks/auth";
 import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repository";
+import { PrismaCampaignsRepository } from "../repositories/prisma/prisma-campaign-repository";
 import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
 import { LinksService } from "../services/links-service";
 import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
@@ -69,6 +70,7 @@ export async function linksRoutes(app: FastifyInstance) {
         }),
         response: {
           201: linkSchema,
+          400: z.object({ message: z.string() }),
           404: z.object({ message: z.string() }), // Erro cliente não encontrado
         },
       },
@@ -80,8 +82,14 @@ export async function linksRoutes(app: FastifyInstance) {
       // Instanciando dependências
       const linkRepo = new PrismaLinksRepository();
       const clientsRepo = new PrismaClientsRepository();
+      const campaignsRepo = new PrismaCampaignsRepository();
       const clicksRepo = new PrismaClicksRepository();
-      const service = new LinksService(linkRepo, clientsRepo, clicksRepo);
+      const service = new LinksService(
+        linkRepo,
+        clientsRepo,
+        campaignsRepo,
+        clicksRepo,
+      );
 
       const link = await service.createLink({
         name,
@@ -121,6 +129,7 @@ export async function linksRoutes(app: FastifyInstance) {
       const service = new LinksService(
         new PrismaLinksRepository(),
         new PrismaClientsRepository(),
+        new PrismaCampaignsRepository(),
         new PrismaClicksRepository(),
       );
 
@@ -155,6 +164,7 @@ export async function linksRoutes(app: FastifyInstance) {
       const service = new LinksService(
         new PrismaLinksRepository(),
         new PrismaClientsRepository(),
+        new PrismaCampaignsRepository(),
         new PrismaClicksRepository(),
       );
 
@@ -183,6 +193,7 @@ export async function linksRoutes(app: FastifyInstance) {
         }),
         response: {
           200: linkSchema,
+          400: z.object({ message: z.string() }),
           404: z.object({ message: z.string() }),
         },
       },
@@ -194,6 +205,7 @@ export async function linksRoutes(app: FastifyInstance) {
       const service = new LinksService(
         new PrismaLinksRepository(),
         new PrismaClientsRepository(),
+        new PrismaCampaignsRepository(),
         new PrismaClicksRepository(),
       );
 
@@ -230,6 +242,7 @@ export async function linksRoutes(app: FastifyInstance) {
       const service = new LinksService(
         new PrismaLinksRepository(),
         new PrismaClientsRepository(),
+        new PrismaCampaignsRepository(),
         new PrismaClicksRepository(),
       );
 
@@ -265,6 +278,7 @@ export async function linksRoutes(app: FastifyInstance) {
       const service = new LinksService(
         new PrismaLinksRepository(),
         new PrismaClientsRepository(),
+        new PrismaCampaignsRepository(),
         new PrismaClicksRepository(),
       );
 
