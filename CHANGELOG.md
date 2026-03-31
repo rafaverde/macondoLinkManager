@@ -7,6 +7,23 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.5.2] - 2026-03-31
+### ✨ Added
+- DEVOPS:
+  - Novo workflow de CI para validar `api build`, `web lint` e `web build` em pushes e pull requests.
+  - Nova documentação operacional em `docs/operations.md`, cobrindo release, smoke pós-deploy, responsabilidades de frontend/API e rollback rápido.
+
+### 🔧 Changed
+- API:
+  - Boot Docker dev passa a reutilizar `node_modules` em volume dedicado, reinstalando dependências apenas quando o `package-lock.json` muda.
+  - Espera do banco deixa de depender de `sleep` fixo e passa a usar retry controlado na sincronização do Prisma.
+- WEB:
+  - Configuração do Next.js migra de `next.config.js` para `next.config.mjs`, eliminando o warning de módulo ESM no build local.
+- DOCS:
+  - README passa a apontar explicitamente para o guia operacional do projeto.
+
+---
+
 ## [1.5.1] - 2026-03-31
 ### 🐛 Fixed
 - WEB:
