@@ -23,7 +23,7 @@ versionamento e deploy.
     │
     ├── web/        # Frontend (Next.js 14 + App Router)
     │ ├── src/
-    │ └── next.config.ts
+    │ └── next.config.mjs
     │
     └── README.md
 
@@ -72,6 +72,7 @@ versionamento e deploy.
     - `web/src/hooks` e `web/src/lib/query-*.ts` permanecem como compatibilidade temporária
 
 Referência técnica rápida: [docs/architecture.md](./docs/architecture.md)
+Operação e release: [docs/operations.md](./docs/operations.md)
 
 ------------------------------------------------------------------------
 

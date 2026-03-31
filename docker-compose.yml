@@ -26,6 +26,7 @@ services:
       DATABASE_URL: ${DATABASE_URL}
     volumes:
       - ./api:/app
+      - api_node_modules:/app/node_modules
     command: sh ./start.sh
     depends_on:
       - postgres
@@ -38,3 +39,4 @@ networks:
 
 volumes:
   pgdata:
+  api_node_modules:
