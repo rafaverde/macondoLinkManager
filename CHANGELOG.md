@@ -7,6 +7,18 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.5.1] - 2026-03-31
+### 🐛 Fixed
+- WEB:
+  - Remoção de atualização otimista inconsistente nas criações de cliente e campanha, evitando inserir itens com shape incompleto nas listagens antes do refetch.
+
+### 🧹 Removed
+- API:
+  - Remoção do middleware legado `require-link-owner`, que não é mais compatível com o modelo global da organização.
+  - Remoção do erro legado `ResourcetNotFoundError`, que ficou obsoleto após a revisão arquitetural da `v1.5.0`.
+
+---
+
 ## [1.5.0] - 2026-03-30
 ### ✨ Added
 - API:
