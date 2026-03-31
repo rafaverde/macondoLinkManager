@@ -7,6 +7,33 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.6.0] - 2026-03-31
+### ✨ Added
+- API:
+  - Base minima de testes automatizados com Vitest e smoke tests para rotas protegidas, dashboard overview, metricas de link e CRUD principal de links.
+- WEB:
+  - Base minima de testes automatizados com Vitest para componentes e leitura de metricas/paginacao.
+
+### 🔧 Changed
+- API:
+  - `GET /links`, `GET /clients` e `GET /campaigns` passam a responder com contrato paginado (`items`, `page`, `pageSize`, `total`, `totalPages`).
+  - Dashboards e metricas de link passam a usar semantica oficial de cliques validos (`isBot = false`) em todos os numeros user-facing.
+  - Agregacoes de analytics foram ajustadas para expor resumo consistente com total, hoje e ultimos 7 dias.
+  - `GET /health` permanece estavel para monitoramento e smoke operacional.
+- WEB:
+  - Listagens de links, clientes e campanhas passam a consumir contratos paginados com navegacao simples por pagina.
+  - Detalhe do link passa a exibir totais consistentes com os graficos e filtros de bots.
+- DEVOPS:
+  - CI passa a executar tambem a camada minima de testes da API e do frontend.
+
+### 🐛 Fixed
+- API:
+  - Correcao da inconsistência em que totais de cliques exibidos ao usuario podiam incluir bots mesmo quando os dashboards internos estavam filtrados.
+- WEB:
+  - Correcao dos cards de totalizacao no detalhe do link para refletirem apenas cliques validos.
+
+---
+
 ## [1.5.2] - 2026-03-31
 ### ✨ Added
 - DEVOPS:

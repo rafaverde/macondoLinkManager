@@ -52,6 +52,7 @@ versionamento e deploy.
 -   Links são globais à organização
 -   Métricas utilizam estado persistido (sem heurísticas em tempo de
     leitura)
+-   Todo número user-facing de cliques representa apenas cliques válidos (`isBot = false`)
 -   Agregações são responsabilidade do backend
 -   Frontend consome read models estáveis
 -   Operações críticas são transacionais
@@ -133,12 +134,13 @@ tags: { id: string; name: string }[]
 -   Navegadores
 -   Países
 -   Cidades
+-   Cards-resumo com total, hoje e últimos 7 dias
 
 ### 🔒 Filtragem de Bots
 
 -   Detecção ocorre em **write-time**
 -   Campo persistido `isBot`
--   Métricas consideram apenas cliques válidos
+-   Métricas e totais user-facing consideram apenas cliques válidos
 -   Backfill executado para dados históricos
 -   Classificação reforçada por sinais de headers + ASN/datacenter (quando disponível)
 -   Recomendado configurar `MAXMIND_LICENSE_KEY` para manter City + ASN atualizados
@@ -169,6 +171,32 @@ Listagens utilizam **modelos agregados no backend**:
 -   Associação explícita de cliente na campanha
 
 Frontend não realiza cálculos de domínio.
+
+### Paginação server-side
+
+As listagens principais agora usam paginação `offset/limit` com o
+seguinte contrato:
+
+-   Query params:
+    -   `page` (default `1`)
+    -   `pageSize` (default `20`, máximo `100`)
+-   Resposta:
+
+``` ts
+{
+  items: T[]
+  page: number
+  pageSize: number
+  total: number
+  totalPages: number
+}
+```
+
+Endpoints paginados:
+
+-   `GET /links`
+-   `GET /clients`
+-   `GET /campaigns`
 
 ------------------------------------------------------------------------
 
@@ -235,6 +263,19 @@ Resposta esperada:
 }
 ```
 
+O endpoint deve permanecer estável para monitoramento e smoke
+operacional.
+
+## ✅ Testes
+
+Comandos principais:
+
+    cd api && npm test
+    cd api && npm run build
+    cd web && npm run lint
+    cd web && npm test
+    cd web && npm run build
+
 ------------------------------------------------------------------------
 
 # 📦 Versionamento
@@ -266,6 +307,13 @@ O projeto segue **Semantic Versioning (MAJOR.MINOR.PATCH)**.
 -   Composition root na API e início da organização por domínio
 -   Query keys centralizadas e organização de hooks por feature no frontend
 
+### v1.6.0
+
+-   Paginação server-side em clientes, campanhas e links
+-   Semântica oficial de cliques válidos padronizada em dashboards e detalhe de link
+-   Base mínima de testes automatizados na API e no frontend
+-   CI passa a validar também os testes da aplicação
+
 📄 Histórico completo: ➡️ [CHANGELOG.md](./CHANGELOG.md)
 
 ------------------------------------------------------------------------
@@ -277,9 +325,8 @@ Próximas evoluções possíveis:
 -   Filtro por tags
 -   CRUD dedicado de tags
 -   Relatórios exportáveis
--   Paginação server-side completa
 -   RBAC / múltiplas organizações
--   Testes automatizados
+-   Testes automatizados mais amplos
 
 ------------------------------------------------------------------------
 
