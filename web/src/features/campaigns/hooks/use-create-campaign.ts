@@ -3,8 +3,6 @@ import {
   invalidateCampaignsData,
   invalidateDashboardData,
 } from "@/features/shared/cache/query-invalidation";
-import { queryKeys } from "@/features/shared/cache/query-keys";
-import { CampaignListItem } from "@/types/campaigns";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -23,11 +21,6 @@ export function useCreateCampaign(onSuccessCallback?: (newId: string) => void) {
     },
     onSuccess: (data) => {
       toast.success(`Campanha ${data.name} criada com sucesso!`);
-
-      queryClient.setQueryData<CampaignListItem[]>(
-        queryKeys.campaigns.list(data.clientId),
-        (old = []) => [...old, data],
-      );
       void invalidateCampaignsData(queryClient, data.clientId);
       void invalidateDashboardData(queryClient, { clientId: data.clientId });
 

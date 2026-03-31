@@ -3,8 +3,6 @@ import {
   invalidateClientsData,
   invalidateDashboardData,
 } from "@/features/shared/cache/query-invalidation";
-import { queryKeys } from "@/features/shared/cache/query-keys";
-import { ClientListItem } from "@/types/clients";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -18,10 +16,6 @@ export function useCreateClient(onSuccessCallback?: (newId: string) => void) {
     },
     onSuccess: (data) => {
       toast.success(`Cliente ${data.name} criado!`);
-      queryClient.setQueryData<ClientListItem[]>(
-        queryKeys.clients.list(),
-        (old = []) => [...old, data],
-      );
       void invalidateClientsData(queryClient);
       void invalidateDashboardData(queryClient);
 
