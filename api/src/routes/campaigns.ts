@@ -2,7 +2,11 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { authHook } from "../hooks/auth";
-import { messageResponseSchema } from "../interfaces/http/schemas/common-schemas";
+import {
+  messageResponseSchema,
+  paginatedResponseSchema,
+  paginationQuerySchema,
+} from "../interfaces/http/schemas/common-schemas";
 
 const campaignSchema = z.object({
   id: z.uuid(),
@@ -31,19 +35,21 @@ export async function campaignsRoutes(app: FastifyInstance) {
       schema: {
         tags: ["Management"],
         summary: "Lista todas as campanhas.",
-        querystring: z.object({
+        querystring: paginationQuerySchema.extend({
           clientId: z.uuid().optional(),
         }),
         response: {
-          200: z.array(campaingsListSchema), // Retorna um array de campanhas
+          200: paginatedResponseSchema(campaingsListSchema),
         },
       },
     },
     async (request, reply) => {
-      const { clientId } = request.query;
-      const campaigns = await app.services.campaignsListService.execute(
+      const { clientId, page, pageSize } = request.query;
+      const campaigns = await app.services.campaignsListService.execute({
         clientId,
-      );
+        page,
+        pageSize,
+      });
       return reply.status(200).send(campaigns);
     },
   );

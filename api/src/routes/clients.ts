@@ -8,7 +8,11 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { authHook } from "../hooks/auth";
-import { messageResponseSchema } from "../interfaces/http/schemas/common-schemas";
+import {
+  messageResponseSchema,
+  paginatedResponseSchema,
+  paginationQuerySchema,
+} from "../interfaces/http/schemas/common-schemas";
 
 // Define a forma de um cliente para a API
 const clientSchema = z.object({
@@ -24,6 +28,7 @@ const clientListSchema = z.object({
   campaignsCount: z.number().int().nonnegative(),
   linksCount: z.number().int().nonnegative(),
   createdAt: z.date(),
+  updatedAt: z.date(),
 });
 
 export async function clientsRoutes(app: FastifyInstance) {
@@ -36,13 +41,21 @@ export async function clientsRoutes(app: FastifyInstance) {
         // Documenta no Swagger
         tags: ["Management"],
         summary: "Lista todos os clientes da agência.",
+        querystring: paginationQuerySchema.extend({
+          search: z.string().optional(),
+        }),
         response: {
-          200: z.array(clientListSchema), // Retorna uma array de clientes
+          200: paginatedResponseSchema(clientListSchema),
         },
       },
     },
     async (request, reply) => {
-      const clients = await app.services.clientsListService.execute();
+      const { page, pageSize, search } = request.query;
+      const clients = await app.services.clientsListService.execute({
+        page,
+        pageSize,
+        search,
+      });
       return reply.status(200).send(clients);
     },
   );

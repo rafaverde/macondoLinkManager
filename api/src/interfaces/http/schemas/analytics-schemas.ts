@@ -11,6 +11,7 @@ export const analyticsOverviewSchema = z.object({
   summary: z.object({
     totalClicks: z.number(),
     activeLinks: z.number(),
+    last7DaysClicks: z.number(),
     period: z.string(),
   }),
   charts: z.object({

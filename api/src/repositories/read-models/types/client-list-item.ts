@@ -4,4 +4,5 @@ export interface ClientListItem {
   campaignsCount: number;
   linksCount: number;
   createdAt: Date;
+  updatedAt: Date;
 }

@@ -2,7 +2,11 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { authHook } from "../hooks/auth";
-import { messageResponseSchema } from "../interfaces/http/schemas/common-schemas";
+import {
+  messageResponseSchema,
+  paginatedResponseSchema,
+  paginationQuerySchema,
+} from "../interfaces/http/schemas/common-schemas";
 import { linkMetricsSchema, linkSchema } from "../interfaces/http/schemas/link-schemas";
 
 export async function linksRoutes(app: FastifyInstance) {
@@ -53,24 +57,26 @@ export async function linksRoutes(app: FastifyInstance) {
       schema: {
         tags: ["Links"],
         summary: "Lista os links do usuário logado.",
-        querystring: z.object({
+        querystring: paginationQuerySchema.extend({
           // Filtros opcionais na URL
           clientId: z.uuid().optional(),
           campaignId: z.uuid().optional(),
           search: z.string().optional(),
         }),
         response: {
-          200: z.array(linkSchema),
+          200: paginatedResponseSchema(linkSchema),
         },
       },
     },
     async (request, reply) => {
-      const { clientId, campaignId, search } = request.query;
+      const { clientId, campaignId, search, page, pageSize } = request.query;
 
       const links = await app.services.linksService.listLinks({
         clientId,
         campaignId,
         search,
+        page,
+        pageSize,
       });
 
       return reply.status(200).send(links);
