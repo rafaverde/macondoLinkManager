@@ -1,4 +1,17 @@
-export interface LinksListFilters {
+export interface PaginationFilters {
+  page?: number;
+  pageSize?: number;
+}
+
+export interface ClientsListFilters extends PaginationFilters {
+  search?: string;
+}
+
+export interface CampaignsListFilters extends PaginationFilters {
+  clientId?: string;
+}
+
+export interface LinksListFilters extends PaginationFilters {
   clientId?: string;
   campaignId?: string;
   search?: string;
@@ -11,14 +24,31 @@ export const queryKeys = {
   },
   clients: {
     all: ["clients"] as const,
-    list: () => [...queryKeys.clients.all, "list"] as const,
+    list: (filters: ClientsListFilters = {}) =>
+      [
+        ...queryKeys.clients.all,
+        "list",
+        {
+          search: filters.search ?? "",
+          page: filters.page ?? 1,
+          pageSize: filters.pageSize ?? 20,
+        },
+      ] as const,
     detail: (clientId: string) =>
       [...queryKeys.clients.all, "detail", clientId] as const,
   },
   campaigns: {
     all: ["campaigns"] as const,
-    list: (clientId?: string) =>
-      [...queryKeys.campaigns.all, "list", { clientId: clientId ?? null }] as const,
+    list: (filters: CampaignsListFilters = {}) =>
+      [
+        ...queryKeys.campaigns.all,
+        "list",
+        {
+          clientId: filters.clientId ?? null,
+          page: filters.page ?? 1,
+          pageSize: filters.pageSize ?? 20,
+        },
+      ] as const,
     detail: (campaignId: string) =>
       [...queryKeys.campaigns.all, "detail", campaignId] as const,
   },
@@ -32,6 +62,8 @@ export const queryKeys = {
           clientId: filters.clientId ?? null,
           campaignId: filters.campaignId ?? null,
           search: filters.search ?? "",
+          page: filters.page ?? 1,
+          pageSize: filters.pageSize ?? 20,
         },
       ] as const,
     detail: (linkId: string) =>

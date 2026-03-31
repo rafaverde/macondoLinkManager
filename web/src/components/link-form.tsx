@@ -50,9 +50,10 @@ interface LinkFormProps {
 
 export default function LinkForm({ initialData }: LinkFormProps) {
   const router = useRouter();
+  const selectionPageSize = 100;
 
   // Hooks de dados
-  const { data: clients } = useClients();
+  const { data: clients } = useClients({ pageSize: selectionPageSize });
 
   // Hook de criação e edição (Mutations)
   const createMutation = useCreateLink(() => router.push("/dashboard/links"));
@@ -78,7 +79,10 @@ export default function LinkForm({ initialData }: LinkFormProps) {
     name: "clientId",
   });
   const { data: campaigns, isLoading: isLoadingCampaigns } =
-    useCampaigns(selectedClientId);
+    useCampaigns({
+      clientId: selectedClientId,
+      pageSize: selectionPageSize,
+    });
 
   function onSubmit(data: LinkFormValues) {
     if (initialData) {
@@ -170,12 +174,12 @@ export default function LinkForm({ initialData }: LinkFormProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {clients?.length === 0 ? (
+                          {clients?.items.length === 0 ? (
                             <div className="text-muted-foreground p-2 text-center text-sm">
                               Nenhum cliente encontrado.
                             </div>
                           ) : (
-                            clients?.map((client) => (
+                            clients?.items.map((client) => (
                               <SelectItem key={client.id} value={client.id}>
                                 {client.name}
                               </SelectItem>
@@ -218,12 +222,12 @@ export default function LinkForm({ initialData }: LinkFormProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {campaigns?.length === 0 ? (
+                          {campaigns?.items.length === 0 ? (
                             <div className="text-muted-foreground p-2 text-center text-sm">
                               Nenhuma campanha encontrada.
                             </div>
                           ) : (
-                            campaigns?.map((campaign) => (
+                            campaigns?.items.map((campaign) => (
                               <SelectItem key={campaign.id} value={campaign.id}>
                                 {campaign.name}
                               </SelectItem>

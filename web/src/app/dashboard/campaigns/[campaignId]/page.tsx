@@ -9,7 +9,6 @@ import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useCampaign } from "@/features/campaigns/hooks/use-campaign";
 import { useCampaignDashboard } from "@/features/dashboard/hooks/use-campaign-dashboard";
 import { normalizeCity, normalizeCountry } from "@/lib/normalize-geolocation";
-import { sumLastDays } from "@/lib/utils";
 import { RiAddLine, RiLinksLine, RiLinkUnlink } from "@remixicon/react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -31,9 +30,6 @@ export default function CampaignDashboardPage() {
     ...item,
     city: normalizeCity(item.city),
   }));
-
-  // Cliques 7 dias
-  const last7DaysClicks = data ? sumLastDays(data.charts.clicksByDate, 7) : 0;
 
   useEffect(() => {
     if (!campaign) return;
@@ -96,7 +92,7 @@ export default function CampaignDashboardPage() {
         />
         <CardNumbers
           title="Cliques"
-          value={last7DaysClicks}
+          value={data.summary.last7DaysClicks}
           description="nos últimos 7 dias"
         />
       </div>

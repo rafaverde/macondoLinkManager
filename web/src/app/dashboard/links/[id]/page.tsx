@@ -12,7 +12,6 @@ import CardNumbers from "@/components/card-numbers";
 import { useLinkMetrics } from "@/features/links/hooks/use-link-metrics";
 import { ClicksAreaChart } from "@/components/charts/clicks-area-chart";
 import { Top5PieChart } from "@/components/charts/top-5-pie-chart";
-import { sumLastDays } from "@/lib/utils";
 import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useEffect } from "react";
 import { normalizeCity, normalizeCountry } from "@/lib/normalize-geolocation";
@@ -42,15 +41,6 @@ export default function LinkDetailsPage() {
     ...item,
     city: normalizeCity(item.city),
   }));
-
-  // Cliques de hoje
-  const todayDate = new Date().toISOString().split("T")[0];
-  const todayClicks =
-    metrics?.clicksByDate.find((item) => item.date.startsWith(todayDate))
-      ?.count || 0;
-
-  // Cliques 7 dias
-  const last7DaysClicks = metrics ? sumLastDays(metrics.clicksByDate, 7) : 0;
 
   useEffect(() => {
     if (!link) return;
@@ -103,20 +93,20 @@ export default function LinkDetailsPage() {
           <CardNumbers
             title="Total de cliques"
             description="clique(s) em todo o período"
-            value={link?._count?.clicks}
-            isLoading={isLoadingLink}
+            value={metrics?.summary.totalClicks}
+            isLoading={isLoadingLink || isLoadingMetrics}
           />
           <CardNumbers
             title="Cliques de hoje"
             description="clique(s) no período do dia atual"
-            value={todayClicks}
-            isLoading={isLoadingLink}
+            value={metrics?.summary.clicksToday}
+            isLoading={isLoadingLink || isLoadingMetrics}
           />
           <CardNumbers
             title="Últimos 7 dias"
             description="clique(s) nos últimos 7 dias"
-            value={last7DaysClicks}
-            isLoading={isLoadingLink}
+            value={metrics?.summary.last7DaysClicks}
+            isLoading={isLoadingLink || isLoadingMetrics}
           />
         </div>
 

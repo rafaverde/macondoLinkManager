@@ -52,7 +52,7 @@ export async function invalidateCampaignsData(
 
   if (clientId) {
     await queryClient.invalidateQueries({
-      queryKey: queryKeys.campaigns.list(clientId),
+      queryKey: queryKeys.campaigns.list({ clientId }),
     });
   }
 }

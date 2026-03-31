@@ -113,8 +113,7 @@ export default function LinkCard({ link, isDetails }: LinkCardProps) {
               >
                 <div className="text-primary flex items-start gap-1 font-bold opacity-100 transition-opacity duration-300 hover:opacity-80 md:items-center">
                   <RiBarChartFill className="size-4" />
-                  {link._count?.clicks}{" "}
-                  {link._count?.clicks === 1 ? "clique" : "cliques"}
+                  {link.validClicks} {link.validClicks === 1 ? "clique" : "cliques"}
                 </div>
               </Link>
 
