@@ -6,7 +6,7 @@ import { parseBrowserName } from "./parse-user-agent";
 export function aggregateClickMetrics(
   clicks: Click[],
   days: number,
-): MetricsResult {
+): Omit<MetricsResult, "summary"> {
   // ==== Clicks By Date ====
   // Agrupar por Data (YYYY-MM-DD)
   const clicksByDateMap = new Map<string, number>();

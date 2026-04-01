@@ -91,6 +91,8 @@ export class LinksService {
     clientId?: string;
     campaignId?: string;
     search?: string;
+    page: number;
+    pageSize: number;
   }) {
     return this.linksRepository.findMany(filters);
   }

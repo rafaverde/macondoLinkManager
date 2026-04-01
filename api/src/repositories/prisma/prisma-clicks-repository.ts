@@ -1,4 +1,4 @@
-import { subDays } from "date-fns";
+import { startOfDay, subDays } from "date-fns";
 import { prisma } from "../../lib/prisma";
 import {
   ClicksRepository,
@@ -8,6 +8,63 @@ import {
 import { aggregateClickMetrics } from "../../utils/aggregate-click-metrics";
 
 export class PrismaClicksRepository implements ClicksRepository {
+  private async buildMetrics(
+    baseWhere: Record<string, unknown>,
+    days: number,
+  ): Promise<MetricsResult> {
+    const periodStart = subDays(new Date(), days);
+    const todayStart = startOfDay(new Date());
+    const last7DaysStart = startOfDay(subDays(new Date(), 6));
+
+    const validWhere = {
+      ...baseWhere,
+      isBot: false,
+    };
+
+    const [clicks, totalClicks, clicksToday, last7DaysClicks] =
+      await prisma.$transaction([
+        prisma.click.findMany({
+          where: {
+            ...validWhere,
+            timestamp: {
+              gte: periodStart,
+            },
+          },
+          orderBy: {
+            timestamp: "asc",
+          },
+        }),
+        prisma.click.count({
+          where: validWhere,
+        }),
+        prisma.click.count({
+          where: {
+            ...validWhere,
+            timestamp: {
+              gte: todayStart,
+            },
+          },
+        }),
+        prisma.click.count({
+          where: {
+            ...validWhere,
+            timestamp: {
+              gte: last7DaysStart,
+            },
+          },
+        }),
+      ]);
+
+    return {
+      summary: {
+        totalClicks,
+        clicksToday,
+        last7DaysClicks,
+      },
+      ...aggregateClickMetrics(clicks, days),
+    };
+  }
+
   async create({
     linkId,
     ipAddress,
@@ -41,125 +98,38 @@ export class PrismaClicksRepository implements ClicksRepository {
   }
 
   async getMetrics(linkId: string, days: number): Promise<MetricsResult> {
-    // Calcula a data de corte (Ex.: 30 dias atrás)
-    const startDate = subDays(new Date(), days);
-
-    // Busca TODOS os cliques brutos desse período
-    // (Isso é rápido para milhares de cliques. Se fossem milhões, usaríamos raw SQL)
-    const clicks = await prisma.click.findMany({
-      where: {
-        linkId,
-        isBot: false,
-        timestamp: {
-          gte: startDate, // Maior ou igual a data de corte
-        },
-      },
-      orderBy: {
-        timestamp: "asc",
-      },
-    });
-
-    return aggregateClickMetrics(clicks, days);
-  }
-
-  async countOrganization() {
-    const count = await prisma.click.count({
-      where: {
-        link: {},
-        isBot: false,
-      },
-    });
-
-    return count;
-  }
-
-  async countByClient(clientId: string) {
-    return prisma.click.count({
-      where: {
-        link: {
-          clientId,
-        },
-        isBot: false,
-      },
-    });
-  }
-
-  async countByCampaign(campaignId: string): Promise<number> {
-    return prisma.click.count({
-      where: {
-        link: {
-          campaignId,
-        },
-        isBot: false,
-      },
-    });
+    return this.buildMetrics({ linkId }, days);
   }
 
   async getOrganizationMetrics(days: number): Promise<MetricsResult> {
-    const startDate = subDays(new Date(), days);
-
-    // Busca todos os cliques da organização autenticada
-    const clicks = await prisma.click.findMany({
-      where: {
-        link: {},
-        isBot: false,
-        timestamp: {
-          gte: startDate,
-        },
-      },
-      orderBy: {
-        timestamp: "asc",
-      },
-    });
-
-    return aggregateClickMetrics(clicks, days);
+    return this.buildMetrics({}, days);
   }
 
   async getClientMetrics(
     clientId: string,
     days: number,
   ): Promise<MetricsResult> {
-    const startDate = subDays(new Date(), days);
-
-    const clicks = await prisma.click.findMany({
-      where: {
+    return this.buildMetrics(
+      {
         link: {
           clientId,
         },
-        isBot: false,
-        timestamp: {
-          gte: startDate,
-        },
       },
-      orderBy: {
-        timestamp: "asc",
-      },
-    });
-
-    return aggregateClickMetrics(clicks, days);
+      days,
+    );
   }
 
   async getCampaignMetrics(
     campaignId: string,
     days: number,
   ): Promise<MetricsResult> {
-    const startDate = subDays(new Date(), days);
-
-    const clicks = await prisma.click.findMany({
-      where: {
+    return this.buildMetrics(
+      {
         link: {
           campaignId,
         },
-        isBot: false,
-        timestamp: {
-          gte: startDate,
-        },
       },
-      orderBy: {
-        timestamp: "asc",
-      },
-    });
-
-    return aggregateClickMetrics(clicks, days);
+      days,
+    );
   }
 }

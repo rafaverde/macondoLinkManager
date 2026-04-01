@@ -1,6 +1,7 @@
 export interface OverviewSummary {
   totalClicks: number;
   activeLinks: number;
+  last7DaysClicks: number;
   period: string;
 }
 
@@ -15,12 +16,12 @@ export interface TopBrowser {
 }
 
 export interface TopCountry {
-  country: string;
+  country: string | null;
   count: number;
 }
 
 export interface TopCity {
-  city: string;
+  city: string | null;
   count: number;
 }
 
@@ -42,6 +43,11 @@ export interface OverviewMetrics {
 }
 
 export interface LinkMetrics {
+  summary: {
+    totalClicks: number;
+    clicksToday: number;
+    last7DaysClicks: number;
+  };
   clicksByDate: ClicksByDate[];
   topBrowsers: TopBrowser[];
   topCountries: TopCountry[];

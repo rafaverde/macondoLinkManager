@@ -14,7 +14,9 @@ devemos seguir antes e depois de cada release.
 - O workflow de CI vive em `.github/workflows/ci.yml`.
 - O CI valida:
   - `api`: `npm run build`
+  - `api`: `npm test`
   - `web`: `npm run lint`
+  - `web`: `npm test`
   - `web`: `npm run build`
 
 ## Fluxo recomendado de release
@@ -53,16 +55,21 @@ devemos seguir antes e depois de cada release.
 - dashboard geral
 - dashboard por cliente
 - dashboard por campanha
+- detalhe de link com total filtrado de bots
 - CRUD de cliente
 - CRUD de campanha
 - CRUD de link
 - redirect de link curto
+- paginacao de clientes, campanhas e links
 
 ### API
 
 - `GET /health`
 - `GET /docs`
 - validacao de conexao com banco
+- `GET /links?page=1&pageSize=20`
+- `GET /clients?page=1&pageSize=20`
+- `GET /campaigns?page=1&pageSize=20`
 
 ## Rollback rapido
 
@@ -89,12 +96,41 @@ O ambiente Docker dev da API foi endurecido para reduzir ruido de tooling:
 
 Isso reduz churn em `package-lock.json` e deixa o boot local mais previsivel.
 
-## Norte do Sprint 3
+## Norte pos-v1.6.0
 
-O proximo sprint deve focar em confiabilidade e escala, nao em novo refactor
-estrutural amplo:
+Com a `v1.6.0`, a base passa a contar com paginacao, semantica unificada de
+cliques validos e camada minima de testes automatizados. Os proximos ganhos
+mais naturais tendem a estar em:
 
-- paginacao e limites de listagem
-- revisao de analytics para reduzir leituras pesadas
-- smoke automatizado dos fluxos criticos
-- checklist de deploy e rollback mantidos junto da documentacao
+- ampliacao da cobertura de testes
+- evolucao de analytics para agregacoes ainda mais baratas no banco
+- observabilidade e healthchecks mais ricos
+- refinamentos de UX nas listagens paginadas
+
+## Politicas operacionais da v1.6.0
+
+### Cliques validos
+
+- Todo numero user-facing de "cliques" deve ignorar bots por padrao.
+- O campo persistido `isBot` e a fonte de verdade para filtros analiticos.
+- Cards, totais e dashboards devem refletir o mesmo universo filtrado.
+
+### Paginacao
+
+- `GET /links`, `GET /clients` e `GET /campaigns` usam resposta paginada.
+- Parametros padrao:
+  - `page=1`
+  - `pageSize=20`
+- Limite maximo de `pageSize`: `100`
+
+Shape esperado:
+
+```ts
+{
+  items: T[]
+  page: number
+  pageSize: number
+  total: number
+  totalPages: number
+}
+```

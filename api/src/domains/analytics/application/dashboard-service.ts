@@ -13,33 +13,17 @@ export class DashboardService {
   ) {}
 
   async getOrganizationGeneralMetrics() {
-    const [totalClicks, activeLinks] = await Promise.all([
-      this.clicksRepository.countOrganization(),
-      this.linksRepository.count({}),
-    ]);
-
     return {
-      totalClicks,
-      activeLinks,
+      activeLinks: await this.linksRepository.count({}),
     };
   }
 
   async getClientGeneralMetrics(clientId: string) {
-    const [totalClicks, activeLinks] = await Promise.all([
-      this.clicksRepository.countByClient(clientId),
-      this.linksRepository.count({ clientId }),
-    ]);
-
-    return { totalClicks, activeLinks };
+    return { activeLinks: await this.linksRepository.count({ clientId }) };
   }
 
   async getCampaignGeneralMetrics(campaignId: string) {
-    const [totalClicks, activeLinks] = await Promise.all([
-      this.clicksRepository.countByCampaign(campaignId),
-      this.linksRepository.count({ campaignId }),
-    ]);
-
-    return { totalClicks, activeLinks };
+    return { activeLinks: await this.linksRepository.count({ campaignId }) };
   }
 
   async getTopClients() {
@@ -71,8 +55,9 @@ export class DashboardService {
 
     return {
       summary: {
-        totalClicks: general.totalClicks,
+        totalClicks: analytics.summary.totalClicks,
         activeLinks: general.activeLinks,
+        last7DaysClicks: analytics.summary.last7DaysClicks,
         period: "30d",
       },
       charts: {
@@ -82,7 +67,7 @@ export class DashboardService {
         topCities: analytics.topCities,
       },
       meta: {
-        hasData: general.totalClicks > 0,
+        hasData: analytics.summary.totalClicks > 0,
       },
     };
   }
@@ -95,12 +80,18 @@ export class DashboardService {
 
     return {
       summary: {
-        totalClicks: general.totalClicks,
+        totalClicks: analytics.summary.totalClicks,
         activeLinks: general.activeLinks,
+        last7DaysClicks: analytics.summary.last7DaysClicks,
         period: "30d",
       },
-      charts: analytics,
-      meta: { hasData: general.totalClicks > 0 },
+      charts: {
+        clicksByDate: analytics.clicksByDate,
+        topBrowsers: analytics.topBrowsers,
+        topCountries: analytics.topCountries,
+        topCities: analytics.topCities,
+      },
+      meta: { hasData: analytics.summary.totalClicks > 0 },
     };
   }
 
@@ -118,12 +109,18 @@ export class DashboardService {
 
     return {
       summary: {
-        totalClicks: general.totalClicks,
+        totalClicks: analytics.summary.totalClicks,
         activeLinks: general.activeLinks,
+        last7DaysClicks: analytics.summary.last7DaysClicks,
         period: "30d",
       },
-      charts: analytics,
-      meta: { hasData: general.totalClicks > 0 },
+      charts: {
+        clicksByDate: analytics.clicksByDate,
+        topBrowsers: analytics.topBrowsers,
+        topCountries: analytics.topCountries,
+        topCities: analytics.topCities,
+      },
+      meta: { hasData: analytics.summary.totalClicks > 0 },
     };
   }
 }

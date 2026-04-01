@@ -1,12 +1,82 @@
 import {
   CreateLinkDTO,
   FindLinksParams,
+  LinkFilters,
+  LinkWithRelations,
   LinksRepository,
   UpdateLinkDTO,
 } from "../links-repository";
 import { prisma } from "../../lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export class PrismaLinksRepository implements LinksRepository {
+  private buildWhere({
+    clientId,
+    campaignId,
+    search,
+  }: LinkFilters): Prisma.LinkWhereInput {
+    return {
+      clientId,
+      campaignId,
+      ...(search
+        ? {
+            OR: [
+              { name: { contains: search, mode: "insensitive" } },
+              { originalUrl: { contains: search, mode: "insensitive" } },
+              { shortCode: { contains: search, mode: "insensitive" } },
+              { client: { name: { contains: search, mode: "insensitive" } } },
+              {
+                campaign: { name: { contains: search, mode: "insensitive" } },
+              },
+            ],
+          }
+        : {}),
+    };
+  }
+
+  private async hydrateClickCounts<T extends { id: string }>(
+    links: T[],
+  ): Promise<Array<T & Pick<LinkWithRelations, "validClicks" | "rawClicks">>> {
+    if (links.length === 0) {
+      return links.map((link) => ({
+        ...link,
+        rawClicks: 0,
+        validClicks: 0,
+      }));
+    }
+
+    const linkIds = links.map((link) => link.id);
+    const [rawCounts, validCounts] = await prisma.$transaction([
+      prisma.$queryRaw<Array<{ linkId: string; count: number }>>(Prisma.sql`
+        SELECT
+          link_id AS "linkId",
+          COUNT(*)::int AS "count"
+        FROM clicks
+        WHERE link_id IN (${Prisma.join(linkIds)})
+        GROUP BY link_id
+      `),
+      prisma.$queryRaw<Array<{ linkId: string; count: number }>>(Prisma.sql`
+        SELECT
+          link_id AS "linkId",
+          COUNT(*)::int AS "count"
+        FROM clicks
+        WHERE link_id IN (${Prisma.join(linkIds)}) AND "isBot" = false
+        GROUP BY link_id
+      `),
+    ]);
+
+    const rawCountMap = new Map(rawCounts.map((item) => [item.linkId, item.count]));
+    const validCountMap = new Map(
+      validCounts.map((item) => [item.linkId, item.count]),
+    );
+
+    return links.map((link) => ({
+      ...link,
+      rawClicks: rawCountMap.get(link.id) ?? 0,
+      validClicks: validCountMap.get(link.id) ?? 0,
+    }));
+  }
+
   async create({
     name,
     originalUrl,
@@ -42,54 +112,62 @@ export class PrismaLinksRepository implements LinksRepository {
       },
     });
 
-    return link;
+    const createdLink = await this.findById(link.id);
+
+    if (!createdLink) {
+      throw new Error("Unexpected null after create");
+    }
+
+    return createdLink;
   }
 
-  async findMany({ campaignId, clientId, search }: FindLinksParams) {
-    const links = await prisma.link.findMany({
-      where: {
-        clientId, // Opcional
-        campaignId, // Opcional
-        // Busca textual
-        ...(search
-          ? {
-              OR: [
-                { name: { contains: search, mode: "insensitive" } },
-                { originalUrl: { contains: search, mode: "insensitive" } },
-                { shortCode: { contains: search, mode: "insensitive" } },
-                { client: { name: { contains: search, mode: "insensitive" } } },
-                {
-                  campaign: { name: { contains: search, mode: "insensitive" } },
+  async findMany({
+    campaignId,
+    clientId,
+    search,
+    page,
+    pageSize,
+  }: FindLinksParams) {
+    const where = this.buildWhere({ clientId, campaignId, search });
+
+    const [links, total] = await prisma.$transaction([
+      prisma.link.findMany({
+        where,
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        include: {
+          client: { select: { id: true, name: true } },
+          campaign: { select: { id: true, name: true } },
+          tags: {
+            include: {
+              tag: {
+                select: {
+                  id: true,
+                  name: true,
                 },
-              ],
-            }
-          : {}),
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      include: {
-        // Traz os dados relacionados para exibir na lista
-        client: { select: { id: true, name: true } },
-        campaign: { select: { id: true, name: true } },
-        _count: { select: { clicks: true } }, //Traz a contagem de clicks
-        tags: {
-          include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
               },
             },
           },
         },
-      },
-    });
+      }),
+      prisma.link.count({ where }),
+    ]);
 
-    return links.map((link) => ({
-      ...link,
-      tags: link.tags.map((linkTag) => linkTag.tag),
-    }));
+    const hydratedLinks = await this.hydrateClickCounts(links);
+
+    return {
+      items: hydratedLinks.map((link) => ({
+        ...link,
+        tags: link.tags.map((linkTag) => linkTag.tag),
+      })),
+      page,
+      pageSize,
+      total,
+      totalPages: Math.ceil(total / pageSize),
+    };
   }
 
   async findByShortCode(shortCode: string) {
@@ -116,11 +194,6 @@ export class PrismaLinksRepository implements LinksRepository {
             name: true,
           },
         },
-        _count: {
-          select: {
-            clicks: true,
-          },
-        },
         tags: {
           include: {
             tag: true,
@@ -131,7 +204,12 @@ export class PrismaLinksRepository implements LinksRepository {
 
     if (!link) return null;
 
-    return { ...link, tags: link.tags.map((linkTag) => linkTag.tag) };
+    const [hydratedLink] = await this.hydrateClickCounts([link]);
+
+    return {
+      ...hydratedLink,
+      tags: link.tags.map((linkTag) => linkTag.tag),
+    };
   }
 
   async update(
@@ -191,7 +269,6 @@ export class PrismaLinksRepository implements LinksRepository {
         include: {
           client: { select: { id: true, name: true } },
           campaign: { select: { id: true, name: true } },
-          _count: { select: { clicks: true } },
           tags: {
             include: {
               tag: {
@@ -209,8 +286,10 @@ export class PrismaLinksRepository implements LinksRepository {
         throw new Error("Unexpected null after update");
       }
 
+      const [hydratedLink] = await this.hydrateClickCounts([linkWithRelations]);
+
       return {
-        ...linkWithRelations,
+        ...hydratedLink,
         tags: linkWithRelations.tags.map((lt) => lt.tag),
       };
     });
@@ -222,7 +301,7 @@ export class PrismaLinksRepository implements LinksRepository {
     });
   }
 
-  async count({ clientId, campaignId }: FindLinksParams) {
+  async count({ clientId, campaignId }: LinkFilters) {
     const count = await prisma.link.count({
       where: {
         clientId,

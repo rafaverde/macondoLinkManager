@@ -1,12 +1,5 @@
 import fp from "fastify-plugin";
 import { FastifyInstance } from "fastify";
-import { PrismaCampaignsRepository } from "../repositories/prisma/prisma-campaign-repository";
-import { PrismaClicksRepository } from "../repositories/prisma/prisma-clicks-repository";
-import { PrismaClientsRepository } from "../repositories/prisma/prisma-clients-repository";
-import { PrismaLinksRepository } from "../repositories/prisma/prisma-links-repository";
-import { PrismaUsersRepository } from "../repositories/prisma/prisma-users-repository";
-import { CampaignsListRepository } from "../repositories/read-models/campaigns-list-repository";
-import { ClientsListRepository } from "../repositories/read-models/client-list-repository";
 import { DashboardService } from "../domains/analytics/application/dashboard-service";
 import { LinksService } from "../domains/links/application/links-service";
 import { AuthService } from "../services/auth-service";
@@ -14,6 +7,7 @@ import { CampaignsListService } from "../services/campaings-list-service";
 import { CampaignsService } from "../services/campaigns-service";
 import { ClientsListService } from "../services/clients-list-service";
 import { ClientsService } from "../services/clients-service";
+import { FastifyPluginAsync } from "fastify";
 
 export interface AppServices {
   authService: AuthService;
@@ -26,6 +20,14 @@ export interface AppServices {
 }
 
 function buildAppServices(): AppServices {
+  const { PrismaUsersRepository } = require("../repositories/prisma/prisma-users-repository");
+  const { PrismaClientsRepository } = require("../repositories/prisma/prisma-clients-repository");
+  const { PrismaCampaignsRepository } = require("../repositories/prisma/prisma-campaign-repository");
+  const { PrismaLinksRepository } = require("../repositories/prisma/prisma-links-repository");
+  const { PrismaClicksRepository } = require("../repositories/prisma/prisma-clicks-repository");
+  const { ClientsListRepository } = require("../repositories/read-models/client-list-repository");
+  const { CampaignsListRepository } = require("../repositories/read-models/campaigns-list-repository");
+
   const usersRepository = new PrismaUsersRepository();
   const clientsRepository = new PrismaClientsRepository();
   const campaignsRepository = new PrismaCampaignsRepository();
@@ -58,6 +60,13 @@ function buildAppServices(): AppServices {
   };
 }
 
-export const appServicesPlugin = fp(async (app: FastifyInstance) => {
-  app.decorate("services", buildAppServices());
-});
+interface AppServicesPluginOptions {
+  services?: AppServices;
+}
+
+const appServicesPluginCallback: FastifyPluginAsync<AppServicesPluginOptions> =
+  async (app: FastifyInstance, options) => {
+    app.decorate("services", options.services ?? buildAppServices());
+  };
+
+export const appServicesPlugin = fp(appServicesPluginCallback);

@@ -26,6 +26,7 @@ import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useCampaigns } from "@/features/campaigns/hooks/use-campaigns";
 import { useClients } from "@/features/clients/hooks/use-clients";
 import { formatDate } from "@/lib/utils";
+import { PaginationControls } from "@/components/pagination-controls";
 import {
   RiAddLine,
   RiBarChartFill,
@@ -42,16 +43,23 @@ export default function CampaignsPage() {
   const { setItems } = useBreadcrumb();
   const [selectedClientId, setSelectedClientId] = useState<ClientScope>("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
+  const selectionPageSize = 100;
 
   const [editingCampaign, setEditingCampaign] = useState<CampaignEdit | null>(
     null,
   );
   const [isEditOpen, setIsEditOpen] = useState(false);
 
-  const { data: clients, isLoading: isLoadingClients } = useClients();
-  const { data: campaigns, isLoading: isLoadingCampaigns } = useCampaigns(
-    selectedClientId === "all" ? undefined : selectedClientId,
-  );
+  const { data: clients, isLoading: isLoadingClients } = useClients({
+    pageSize: selectionPageSize,
+  });
+  const { data: campaigns, isLoading: isLoadingCampaigns } = useCampaigns({
+    clientId: selectedClientId === "all" ? undefined : selectedClientId,
+    page,
+    pageSize,
+  });
 
   const [isDeletingCampaign, setIsDeletingCampaign] =
     useState<CampaignEdit | null>(null);
@@ -89,6 +97,7 @@ export default function CampaignsPage() {
                 setIsDeletingCampaign(null);
                 setIsEditOpen(false);
                 setIsDeleteOpen(false);
+                setPage(1);
               }}
               disabled={isLoadingClients}
             >
@@ -98,7 +107,7 @@ export default function CampaignsPage() {
 
               <SelectContent>
                 <SelectItem value="all">Todos os clientes</SelectItem>
-                {clients?.map((client) => (
+                {clients?.items.map((client) => (
                   <SelectItem key={client.id} value={client.id}>
                     {client.name}
                   </SelectItem>
@@ -158,7 +167,7 @@ export default function CampaignsPage() {
               </TableRow>
             ))}
 
-          {campaigns?.map((campaign) => (
+          {campaigns?.items.map((campaign) => (
             <TableRow key={campaign.id}>
               <TableCell>
                 <Link
@@ -216,7 +225,7 @@ export default function CampaignsPage() {
         </TableBody>
       </Table>
 
-      {isScopedToClient && campaigns?.length === 0 && (
+      {isScopedToClient && campaigns?.items.length === 0 && (
         <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-2 py-20">
           <RiEmotionUnhappyLine className="text-primary size-10" />
           <h3 className="text-3xl font-bold">Nenhuma campanha cadastrada.</h3>
@@ -226,7 +235,9 @@ export default function CampaignsPage() {
         </div>
       )}
 
-      {!isLoadingCampaigns && campaigns?.length === 0 && !isScopedToClient && (
+      {!isLoadingCampaigns &&
+        campaigns?.items.length === 0 &&
+        !isScopedToClient && (
         <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-2 py-20">
           <RiEmotionUnhappyLine className="text-primary size-10" />
           <h3 className="text-3xl font-bold">Nenhuma campanha encontrada.</h3>
@@ -234,6 +245,17 @@ export default function CampaignsPage() {
             Selecione um cliente para mostrar suas campanhas.
           </p>
         </div>
+      )}
+
+      {campaigns && (
+        <PaginationControls
+          page={campaigns.page}
+          pageSize={campaigns.pageSize}
+          total={campaigns.total}
+          totalPages={campaigns.totalPages}
+          onPageChange={setPage}
+          isDisabled={isLoadingCampaigns}
+        />
       )}
 
       {selectedClientId && (

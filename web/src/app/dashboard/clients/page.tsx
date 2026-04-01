@@ -24,6 +24,7 @@ import { useBreadcrumb } from "@/contexts/breadcrumb-context";
 import { useClients } from "@/features/clients/hooks/use-clients";
 import { useDebounce } from "@/hooks/use-debounce";
 import { formatDate } from "@/lib/utils";
+import { PaginationControls } from "@/components/pagination-controls";
 import {
   RiAddLine,
   RiBarChartFill,
@@ -41,6 +42,8 @@ export default function ClientsPage() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearch = useDebounce(searchTerm, 400);
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<ClientEdit | null>(null);
@@ -51,13 +54,11 @@ export default function ClientsPage() {
   );
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  const { data: clients, isLoading } = useClients();
-  const filteredClients =
-    debouncedSearch.trim().length > 0
-      ? clients?.filter((client) =>
-          client.name.toLowerCase().includes(debouncedSearch.toLowerCase()),
-        )
-      : clients;
+  const { data: clients, isLoading } = useClients({
+    search: debouncedSearch.trim() || undefined,
+    page,
+    pageSize,
+  });
 
   // Gera breadcrumb
   useEffect(() => {
@@ -84,7 +85,10 @@ export default function ClientsPage() {
           <InputGroupInput
             placeholder="Buscar cliente pelo nome..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1);
+            }}
           />
 
           <InputGroupAddon align="inline-start">
@@ -93,7 +97,10 @@ export default function ClientsPage() {
 
           {searchTerm && (
             <InputGroupAddon
-              onClick={() => setSearchTerm("")}
+              onClick={() => {
+                setSearchTerm("");
+                setPage(1);
+              }}
               align="inline-end"
               className="cursor-pointer"
             >
@@ -137,8 +144,8 @@ export default function ClientsPage() {
               </TableRow>
             ))}
 
-          {filteredClients?.map((client, i) => (
-            <TableRow key={i}>
+          {clients?.items.map((client) => (
+            <TableRow key={client.id}>
               <TableCell>
                 <Link
                   href={`/dashboard/clients/${client.id}`}
@@ -193,23 +200,41 @@ export default function ClientsPage() {
         </TableBody>
       </Table>
 
-      {!isLoading && filteredClients?.length === 0 && searchTerm && (
+      {!isLoading && clients?.items.length === 0 && searchTerm && (
         <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-2 py-20">
           <RiLinkUnlink className="text-primary size-10" />
           <h3 className="text-3xl font-bold">Nenhum cliente encontrado.</h3>
           <p className="mb-6 text-center text-sm">
             Tente ajustar ou limpar o filtro de busca
           </p>
-          <Button onClick={() => setSearchTerm("")}>Limpar busca</Button>
+          <Button
+            onClick={() => {
+              setSearchTerm("");
+              setPage(1);
+            }}
+          >
+            Limpar busca
+          </Button>
         </div>
       )}
 
-      {!isLoading && clients?.length === 0 && (
+      {!isLoading && clients?.items.length === 0 && !searchTerm && (
         <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-2 py-20">
           <RiLinkUnlink className="text-primary size-10" />
           <h3 className="text-3xl font-bold">Nenhum cliente encontrado.</h3>
           <p className="mb-6 text-center text-sm">Cadastre um novo cliente.</p>
         </div>
+      )}
+
+      {clients && (
+        <PaginationControls
+          page={clients.page}
+          pageSize={clients.pageSize}
+          total={clients.total}
+          totalPages={clients.totalPages}
+          onPageChange={setPage}
+          isDisabled={isLoading}
+        />
       )}
 
       <CreateClientDialog

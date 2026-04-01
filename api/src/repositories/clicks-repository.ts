@@ -20,7 +20,14 @@ export interface ClicksByDate {
   count: number;
 }
 
+export interface MetricsSummary {
+  totalClicks: number;
+  clicksToday: number;
+  last7DaysClicks: number;
+}
+
 export interface MetricsResult {
+  summary: MetricsSummary;
   clicksByDate: ClicksByDate[];
   topBrowsers: { browser: string; count: number }[];
   topCountries: { country: string | null; count: number }[];
@@ -31,17 +38,12 @@ export interface ClicksRepository {
   create(data: CreateClickDTO): Promise<Click>;
   // Link
   getMetrics(linkId: string, days: number): Promise<MetricsResult>;
-
-  // Organization
-  countOrganization(): Promise<number>;
   getOrganizationMetrics(days: number): Promise<MetricsResult>;
 
   // Client
-  countByClient(clientId: string): Promise<number>;
   getClientMetrics(clientId: string, days: number): Promise<MetricsResult>;
 
   // Campaign
-  countByCampaign(campaignId: string): Promise<number>;
   getCampaignMetrics(
     campaignId: string,
     days: number,

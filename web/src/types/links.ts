@@ -8,9 +8,10 @@ export interface Link {
   campaignId: string | null;
   createdAt: string;
   updatedAt: string;
+  rawClicks: number;
+  validClicks: number;
   client?: { name: string };
   campaign?: { name: string } | null;
-  _count?: { clicks: number };
   tags?: { id: string; name: string }[];
 }
 
